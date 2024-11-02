@@ -1,0 +1,38 @@
+digraph "G" {
+    graph [
+    fontsize = "10",
+    fontname = "Verdana",
+    compound = "true",
+  ];
+  edge [
+    fontsize = "10",
+    fontname = "Verdana",
+  ];
+  node [
+    shape = "record",
+    fontsize = "10",
+    fontname = "Verdana",
+  ];
+  "mul0" [label="mul0"];
+  "const1";
+  "load2";
+  "mul3";
+  "const4";
+  "load5";
+  "mul6";
+  "add7";
+  "output8";
+  "add9";
+  "const10";
+  "load2" -> "mul6";
+  "load5" -> "mul6";
+  "mul6" -> "add7";
+  "add7" -> "output8";
+  "add9" -> "mul0";
+  "add9" -> "mul3";
+  "const1" -> "mul0";
+  "mul0" -> "load2" [weight = 9];
+  "const4" -> "mul3";
+  "mul3" -> "load5";
+  "const10" -> "add9";
+}

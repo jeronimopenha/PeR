@@ -1,0 +1,13 @@
+strict digraph "arf" {
+0 [alap=0, asap=0, label=in0, op=in];
+1 [alap=1, asap=1, label=add1, op=addi, value=2];
+2 [alap=2, asap=2, label=add2, op=add, value=2];
+3 [alap=3, asap=3, label=add3, op=add, value=2];
+4 [alap=4, asap=4, label=out4, op=out];
+0 -> 1  [label=2, port=0, weight=2];
+0 -> 2  [port=0, weight=0];
+0 -> 3  [port=0, weight=0];
+1 -> 2  [label=1, port=1, weight=1];
+2 -> 3  [port=1, weight=0];
+3 -> 4  [port=0, weight=0];
+}
