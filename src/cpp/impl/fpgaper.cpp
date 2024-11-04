@@ -11,7 +11,9 @@ FPGAPPeR::FPGAPPeR(const Graph &graph): graph(graph) {
 }
 
 void FPGAPPeR::perYoto(int nExec) {
-    for (int i = 0; i < nExec; i++) {
+    std::unordered_map<int, ReportData> report;
+
+    for (int exec_id = 0; exec_id < nExec; exec_id++) {
         std::vector<int> placement(graph.nCells, -1);
         std::vector<int> n2c(graph.nNodes, -1);
         std::vector<std::vector<std::vector<int> > > distCells = graph.getMeshDistances();
@@ -27,12 +29,76 @@ void FPGAPPeR::perYoto(int nExec) {
 
 
         for (auto [a,b]: ed) {
-            if (n2c[b] != 1) {
+            if (n2c[b] != -1) {
                 continue;
             }
-            if (n2c[a] == -1) {
+            const int ja = n2c[a] / graph.nCellsSqrt;
+            const int ia = n2c[a] % graph.nCellsSqrt;
+
+            for (const auto &line: distCells) {
+                bool placed = false;
+
+                for (const auto &ij: line) {
+                    ++tries;
+                    const int ib = ia + ij[0];
+                    const int jb = ja + ij[1];
+
+                    // Define boundary and corner conditions
+                    const bool outOfBounds = (ib < 0 || ib >= graph.nCellsSqrt || jb < 0 || jb >= graph.nCellsSqrt);
+                    const bool isTopLeftCorner = (ib == 0 && jb == 0);
+                    const bool isBottomRightCorner = (ib == graph.nCellsSqrt - 1 && jb == graph.nCellsSqrt - 1);
+                    const bool isBottomLeftCorner = (ib == graph.nCellsSqrt - 1 && jb == 0);
+                    const bool isTopRightCorner = (ib == 0 && jb == graph.nCellsSqrt - 1);
+
+                    // Check if any condition is met
+                    if (outOfBounds || isTopLeftCorner || isBottomRightCorner || isBottomLeftCorner ||
+                        isTopRightCorner) {
+                        continue;
+                    }
+
+
+                    int ch = ib * graph.nCellsSqrt + jb;
+
+                    // Check if 'ch' is in possibleInOut
+                    const bool chInPossibleInOut = (
+                        std::find(possibleInOut.begin(), possibleInOut.end(), ch) != possibleInOut
+                        .end());
+                    // Check if 'b' is in inputNodesIdx or outputNodesIdx
+                    const bool bIsIoNode = (std::find(graph.inputNodesIdx.begin(), graph.inputNodesIdx.end(), b) !=
+                                            graph.
+                                            inputNodesIdx.end() ||
+                                            std::find(graph.outputNodesIdx.begin(), graph.outputNodesIdx.end(),
+                                                      b) != graph.
+                                            outputNodesIdx.end());
+
+                    if (chInPossibleInOut) {
+                        // 'ch' is in possible_positions
+                        if (!bIsIoNode) {
+                            continue;
+                        }
+                    } else {
+                        // 'ch' is not in possible_positions
+                        if (bIsIoNode) {
+                            continue;
+                        }
+                    }
+
+                    // Place the node if `placement[ch]` is unoccupied
+                    if (placement[ch] == -1) {
+                        placement[ch] = b;
+                        n2c[b] = ch;
+                        placed = true;
+                        ++swaps;
+                        break;
+                    }
+                }
+                if (placed) {
+                    break;
+                }
             }
         }
+        //TODO
+        //report[exec_id] = ReportData(exec_id, graph.dotName, graph.dotPath, "yoto", tries, swaps, "DEPTH_FIRST");
     }
 }
 

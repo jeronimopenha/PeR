@@ -5,6 +5,7 @@
 #ifndef FPGAPER_H
 #define FPGAPER_H
 #include "graph.h"
+#include "util.h"
 
 
 class FPGAPPeR {
@@ -20,8 +21,9 @@ public:
     void perYoto(int nExec);
 
     void placeNodes(std::vector<int> &n2c, std::vector<int> &placement, const std::vector<int> &possible_pos,
-                     const std::vector<int> &nodes);
-    int FPGAPPeR::choose_position(const std::vector<int>& placement, const std::vector<int>& choices);
+                    const std::vector<int> &nodes);
+
+    static int choose_position(const std::vector<int> &placement, const std::vector<int> &choices);
 };
 
 
