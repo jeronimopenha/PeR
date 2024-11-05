@@ -21,7 +21,7 @@ for file in "$input_dir"/*_k6*; do
         filename=$(basename -- "$file")
         filename_no_ext="${filename%.*}"
 
-        bin/vpr "$file" "arch/k6-n1.xml" "vpr_reports/fast/${filename_no_ext}_place.txt" "vpr_reports/fast/${filename_no_ext}_route.txt" -nodisp  > "vpr_reports/normal/${filename_no_ext}.txt"
+        bin/vpr "$file" "arch/k6-n1.xml" "vpr_reports/normal/${filename_no_ext}_place.txt" "vpr_reports/normal/${filename_no_ext}_route.txt" -nodisp  > "vpr_reports/normal/${filename_no_ext}.txt"
 
         # Run the 'x' program on the file, assuming it generates two output files
         #./x "$file"
