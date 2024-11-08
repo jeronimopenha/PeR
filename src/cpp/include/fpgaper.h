@@ -18,12 +18,18 @@ public:
 
     void getInOutPos();
 
-    void perYoto(int nExec);
-
     void placeNodes(std::vector<int> &n2c, std::vector<int> &placement, const std::vector<int> &possible_pos,
                     const std::vector<int> &nodes);
 
-    static int choose_position(const std::vector<int> &placement, const std::vector<int> &choices);
+    static int choosePosition(const std::vector<int> &placement, const std::vector<int> &choices);
+
+    int calcTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges);
+
+    std::unordered_map<int, ReportData> FPGAPPeR::perSa(int nExec);
+
+    std::unordered_map<int, ReportData> perYoto(int nExec);
+
+    std::unordered_map<int, ReportData> FPGAPPeR::perYott(int nExec);
 };
 
 

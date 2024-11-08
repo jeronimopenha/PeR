@@ -10,8 +10,74 @@ FPGAPPeR::FPGAPPeR(const Graph &graph): graph(graph) {
     getInOutPos();
 }
 
-void FPGAPPeR::perYoto(int nExec) {
-    std::unordered_map<int, ReportData> report;
+void FPGAPPeR::getInOutPos() {
+    // Append positions in the first range
+    for (int i = 1; i < graph.nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the second range
+    for (int i = 1; i < graph.nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i + graph.nCells - graph.nCellsSqrt);
+    }
+
+    // Append positions in the third range
+    for (int i = graph.nCellsSqrt; i < graph.nCells - graph.nCellsSqrt; i += graph.nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the fourth range
+    for (int i = graph.nCellsSqrt * 2 - 1; i < graph.nCells - 1; i += graph.nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+    int a = 1;
+}
+
+void FPGAPPeR::placeNodes(std::vector<int> &n2c, std::vector<int> &placement, const std::vector<int> &possible_pos,
+                          const std::vector<int> &nodes) {
+    int i = 0;
+    while (i < nodes.size()) {
+        const int n = nodes[i];
+        while (true) {
+            if (const int ch = choosePosition(placement, possible_pos); placement[ch] == -1) {
+                placement[ch] = n;
+                n2c[n] = ch;
+                break;
+            }
+        }
+        i++;
+    }
+}
+
+int FPGAPPeR::choosePosition(const std::vector<int> &placement, const std::vector<int> &choices) {
+    while (true) {
+        auto it = std::next(choices.begin(), rand() % choices.size()); // Randomly select an element from the set
+        if (const int ch = *it; placement[ch] == -1) {
+            return ch;
+        }
+    }
+}
+
+int FPGAPPeR::calcTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges
+) {
+    int distance = -static_cast<int>(edges.size());
+
+    for (const auto &e: edges) {
+        const int dist = get_manhattan_distance(n2c[e.first], n2c[e.second], graph.nCellsSqrt);
+
+        // Acumula a distância total
+        distance += dist;
+    }
+
+    return distance;
+}
+
+//TODO
+std::unordered_map<int, ReportData> FPGAPPeR::perSa(int nExec) {
+}
+
+std::unordered_map<int, ReportData> FPGAPPeR::perYoto(int nExec) {
+    std::unordered_map<int, ReportData> reports;
 
     for (int exec_id = 0; exec_id < nExec; exec_id++) {
         std::vector<int> placement(graph.nCells, -1);
@@ -97,56 +163,24 @@ void FPGAPPeR::perYoto(int nExec) {
                 }
             }
         }
-        //TODO
-        //report[exec_id] = ReportData(exec_id, graph.dotName, graph.dotPath, "yoto", tries, swaps, "DEPTH_FIRST");
+        int tc = calcTotalDistance(n2c, ed);
+
+        reports[exec_id] = ReportData(
+            exec_id,
+            graph.dotName,
+            graph.dotPath,
+            "yoto",
+            tries,
+            swaps,
+            "DEPTH_FIRST",
+            tc,
+            placement,
+            n2c
+        );
     }
+    return reports;
 }
 
-void FPGAPPeR::getInOutPos() {
-    // Append positions in the first range
-    for (int i = 1; i < graph.nCellsSqrt - 1; ++i) {
-        possibleInOut.push_back(i);
-    }
-
-    // Append positions in the second range
-    for (int i = 1; i < graph.nCellsSqrt - 1; ++i) {
-        possibleInOut.push_back(i + graph.nCells - graph.nCellsSqrt);
-    }
-
-    // Append positions in the third range
-    for (int i = graph.nCellsSqrt; i < graph.nCells - graph.nCellsSqrt; i += graph.nCellsSqrt) {
-        possibleInOut.push_back(i);
-    }
-
-    // Append positions in the fourth range
-    for (int i = graph.nCellsSqrt * 2 - 1; i < graph.nCells - 1; i += graph.nCellsSqrt) {
-        possibleInOut.push_back(i);
-    }
-    int a = 1;
-}
-
-
-void FPGAPPeR::placeNodes(std::vector<int> &n2c, std::vector<int> &placement, const std::vector<int> &possible_pos,
-                          const std::vector<int> &nodes) {
-    int i = 0;
-    while (i < nodes.size()) {
-        const int n = nodes[i];
-        while (true) {
-            if (const int ch = choose_position(placement, possible_pos); placement[ch] == -1) {
-                placement[ch] = n;
-                n2c[n] = ch;
-                break;
-            }
-        }
-        i++;
-    }
-}
-
-int FPGAPPeR::choose_position(const std::vector<int> &placement, const std::vector<int> &choices) {
-    while (true) {
-        auto it = std::next(choices.begin(), rand() % choices.size()); // Randomly select an element from the set
-        if (const int ch = *it; placement[ch] == -1) {
-            return ch;
-        }
-    }
+//TODO
+std::unordered_map<int, ReportData> FPGAPPeR::perYott(int nExec) {
 }

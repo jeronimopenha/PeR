@@ -18,13 +18,14 @@ int main() {
         std::cout << fst << std::endl;
         Graph g(fst, snd.substr(0, snd.size() - 4)); // Remove a extensão ".dot"
         FPGAPPeR fpgaPer(g);
-        int nExec = 1;
+        int nExec = 100;
         std::string baseFolder = "reports/fpga/outputs";
         std::vector<std::string> placers = {"yoto"};
 
         for (auto placer : placers) {
+            std::unordered_map<int, ReportData> reports;
             if (placer == "yoto") {
-                fpgaPer.perYoto(nExec);
+                reports = fpgaPer.perYoto(nExec);
             }
 
         }
