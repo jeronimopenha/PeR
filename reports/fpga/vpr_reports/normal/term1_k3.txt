@@ -1,0 +1,751 @@
+
+VPR FPGA Placement and Routing.
+Version: Version 5.0.2
+Compiled: Dec 11 2020.
+Original VPR by V. Betz.
+Timing-driven placement enhancements by A. Marquardt.
+Single-drivers enhancements by Andy Ye with additions by.
+Mark Fang, Jason Luu, Ted Campbell
+Heterogeneous stucture support by Jason Luu and Ted Campbell.
+This code is licensed only for non-commercial use.
+
+Auto-sizing FPGA, try x = 11 y = 11
+Auto-sizing FPGA, try x = 22 y = 22
+Auto-sizing FPGA, try x = 11 y = 11
+Auto-sizing FPGA, try x = 16 y = 16
+Auto-sizing FPGA, try x = 19 y = 19
+Auto-sizing FPGA, try x = 17 y = 17
+Auto-sizing FPGA, try x = 18 y = 18
+Auto-sizing FPGA, try x = 17 y = 17
+FPGA auto-sized to, x = 18 y = 18
+
+Resource Usage:
+Netlist      0	blocks of type <EMPTY>
+Architecture 4	blocks of type <EMPTY>
+Netlist      70	blocks of type .io
+Architecture 72	blocks of type .io
+Netlist      55	blocks of type .clb
+Architecture 324	blocks of type .clb
+
+Timing analysis: ON
+
+Operation:  PLACE_AND_ROUTE
+
+PlacerOpts.place_freq:  PLACE_ONCE
+PlacerOpts.place_algorithm:  PATH_TIMING_DRIVEN_PLACE
+PlacerOpts.place_cost_type:  LINEAR_CONG
+PlacerOpts.pad_loc_type:  FREE
+PlacerOpts.place_cost_exp:  1.000000
+PlacerOpts.place_chan_width:  100
+PlacerOpts.inner_loop_recompute_divider:  0
+PlacerOpts.recompute_crit_iter:  1
+PlacerOpts.timing_tradeoff:  0.500000
+PlacerOpts.td_place_exp_first:  1.000000
+PlacerOpts.td_place_exp_last:  8.000000
+PlaceOpts.seed:  1
+AnnealSched.type:  AUTO_SCHED
+AnnealSched.inner_num:  10.000000
+
+RouterOpts.route_type:  DETAILED
+RouterOpts.router_algorithm:  TIMING_DRIVEN
+RouterOpts.base_cost_type:  DELAY_NORMALIZED
+RouterOpts.fixed_channel_width:  NO_FIXED_CHANNEL_WIDTH
+RouterOpts.acc_fac:  1.000000
+RouterOpts.bb_factor:  3
+RouterOpts.bend_cost:  0.000000
+RouterOpts.first_iter_pres_fac:  0.500000
+RouterOpts.initial_pres_fac:  0.500000
+RouterOpts.pres_fac_mult:  1.300000
+RouterOpts.max_router_iterations:  50
+RouterOpts.astar_fac:  1.200000
+RouterOpts.criticality_exp:  1.000000
+RouterOpts.max_criticality:  0.990000
+
+RoutingArch.directionality:  UNI_DIRECTIONAL
+RoutingArch.switch_block_type:  WILTON
+RoutingArch.Fs:  3
+
+The circuit will be mapped into a 18 x 18 array of clbs.
+
+Netlist num_nets:  82
+Netlist num_blocks:  125
+Netlist inputs pins:  27
+Netlist output pins:  43
+
+Warning (check_all_tracks_reach_pins):  track 18 does not 
+	connect to any FB IPINs.
+Warning (check_all_tracks_reach_pins):  track 19 does not 
+	connect to any FB IPINs.
+Computing delta_io_to_io lookup matrix, may take a few seconds, please wait...
+Computing delta_io_to_fb lookup matrix, may take a few seconds, please wait...
+Computing delta_fb_to_io lookup matrix, may take a few seconds, please wait...
+Computing delta_fb_to_fb lookup matrix, may take a few seconds, please wait...
+
+There are 133 point to point connections in this circuit
+
+Initial Placement Cost: 1.05703 bb_cost: 15.4868 td_cost: 6.94661e-08 delay_cost: 1.33824e-07
+
+          T        Cost Av. BB Cost  Av. TD Cost   Av Tot Del  P to P Del        d_max   Ac Rate  Std Dev  R limit      Exp  Tot. Moves    Alpha
+   --------  ---------- -----------  -----------    ---------  ----------        -----   -------  -------  -------  -------  ----------    -----
+    0.58661    0.972141      15.339  6.14989e-08  1.33613e-07 1.00619e-09   9.117e-09    0.9973   0.0307       18        1        6248      0.5
+    0.29331    0.997934     15.4072  6.20531e-08  1.33565e-07 9.39116e-10   8.696e-09    0.9918   0.0314       18        1       12496      0.5
+    0.14665     1.05715     15.2627  7.00368e-08  1.32476e-07 9.17538e-10   7.562e-09     0.979   0.0383       18        1       18744      0.5
+   0.073327    0.944702     15.1958   7.6479e-08  1.31944e-07 1.04235e-09   7.475e-09    0.9696   0.0314       18        1       24992      0.5
+   0.036663     1.01376     14.7884   6.5236e-08  1.29186e-07 9.50345e-10   8.078e-09    0.9289   0.0365       18        1       31240      0.9
+   0.032997    0.959652     14.8645  6.05224e-08  1.29326e-07 9.58778e-10   8.701e-09    0.9182   0.0313       18        1       37488      0.9
+   0.029697    0.993675     14.9356  5.81203e-08  1.29347e-07 9.54165e-10   8.799e-09    0.9121   0.0364       18        1       43736      0.9
+   0.026728    0.946257     14.8178  6.21341e-08  1.29485e-07 9.77979e-10   8.593e-09     0.908   0.0338       18        1       49984      0.9
+   0.024055    0.939862     14.7635  6.94548e-08  1.28799e-07 1.02408e-09   7.802e-09    0.9059    0.032       18        1       56232      0.9
+   0.021649    0.971623     14.5421  7.30975e-08  1.26782e-07 9.76489e-10   6.936e-09    0.8816   0.0309       18        1       62480      0.9
+   0.019484    0.966455     14.4299  6.29691e-08  1.26254e-07 9.73214e-10   7.971e-09    0.8665   0.0324       18        1       68728      0.9
+   0.017536     1.02614     14.3106  6.65252e-08  1.25481e-07 8.90091e-10    6.96e-09    0.8516   0.0338       18        1       74976      0.9
+   0.015782     1.00265     14.2214  6.93169e-08  1.24902e-07  9.2162e-10   6.852e-09    0.8372   0.0377       18        1       81224      0.9
+   0.014204    0.972055     14.0483  6.76201e-08  1.23249e-07  9.4799e-10   6.835e-09    0.8167   0.0355       18        1       87472      0.9
+   0.012784    0.985815     13.8892  6.40357e-08  1.22262e-07 9.14781e-10   7.352e-09    0.7926   0.0345       18        1       93720     0.95
+   0.012145    0.955821     14.2665  6.37024e-08  1.23992e-07 9.66532e-10   8.072e-09     0.806   0.0353       18        1       99968      0.9
+    0.01093    0.961567     13.8662  6.09782e-08    1.222e-07 9.23412e-10   7.876e-09    0.7743   0.0318       18        1      106216     0.95
+   0.010384    0.953308     13.8723  6.85019e-08   1.2177e-07 9.31673e-10   6.849e-09    0.7569   0.0332       18        1      112464     0.95
+  0.0098644    0.980834     13.6691  5.98516e-08  1.19946e-07 9.11845e-10   7.557e-09    0.7354   0.0408       18        1      118712     0.95
+  0.0093712     1.00788     13.1561  6.17786e-08  1.16943e-07 8.67044e-10   6.846e-09    0.6981   0.0333       18        1      124960     0.95
+  0.0089026     1.03576     13.1199  6.91049e-08  1.16324e-07 8.51659e-10   5.815e-09    0.6897   0.0332       18        1      131208     0.95
+  0.0084575    0.997559     13.1835  6.61888e-08  1.17209e-07 8.91131e-10   6.334e-09    0.6905   0.0308       18        1      137456     0.95
+  0.0080346     1.00817      12.977  6.53154e-08  1.15836e-07 8.81579e-10    6.25e-09     0.656   0.0396       18        1      143704     0.95
+  0.0076329    0.956363     13.1675   6.3853e-08  1.17137e-07 9.11724e-10   6.733e-09    0.6705   0.0296       18        1      149952     0.95
+  0.0072512     1.01336     13.0447  6.29349e-08  1.16355e-07 8.60305e-10   6.436e-09     0.642   0.0323       18        1      156200     0.95
+  0.0068887    0.990377     12.7249  6.23494e-08  1.12766e-07 8.20774e-10   6.333e-09    0.6183   0.0332       18        1      162448     0.95
+  0.0065442    0.980936     12.3603  5.68914e-08  1.11179e-07 8.25638e-10    7.05e-09    0.5891   0.0438       18        1      168696     0.95
+   0.006217    0.970656     12.4848  5.88601e-08  1.11649e-07 8.64927e-10   6.629e-09    0.5875   0.0336       18        1      174944     0.95
+  0.0059062    0.920817     12.3057  6.14691e-08  1.10568e-07   8.773e-10   6.441e-09    0.5863   0.0272       18        1      181192     0.95
+  0.0056109    0.930626     12.1759  5.69884e-08  1.08777e-07 8.42869e-10   6.643e-09    0.5493   0.0325       18        1      187440     0.95
+  0.0053303    0.970181     11.8058  5.87028e-08  1.06847e-07 8.02484e-10   6.014e-09    0.5157   0.0396       18        1      193688     0.95
+  0.0050638    0.940012     11.7692   5.0794e-08  1.06426e-07 8.42209e-10   7.069e-09    0.4968   0.0262       18        1      199936     0.95
+  0.0048106    0.977596     11.6694  5.70507e-08  1.06431e-07 7.98936e-10   6.124e-09    0.4693   0.0329       18        1      206184     0.95
+  0.0045701    0.949217     11.3364  5.80695e-08  1.03882e-07 8.19404e-10   5.837e-09    0.4502   0.0367       18        1      212432     0.95
+  0.0043416     0.93292     11.3324  5.89143e-08  1.01399e-07 8.22515e-10   5.823e-09    0.4309   0.0337       18        1      218680     0.95
+  0.0041245    0.938491     10.4602  5.10675e-08  9.61761e-08 7.43459e-10    5.71e-09    0.4496   0.0362    17.84    1.068      224928     0.95
+  0.0039183    0.936915     10.5947  5.66482e-08  9.80511e-08 7.78109e-10   5.406e-09      0.35   0.0297       18        1      231176     0.95
+  0.0037224     0.96853     9.92505  3.51735e-08  9.24392e-08 6.73789e-10    5.83e-09    0.3955   0.0355    16.38    1.667      237424     0.95
+  0.0035362    0.962552     9.79054  2.66844e-08   9.1318e-08 6.78423e-10   5.931e-09    0.3929   0.0262    15.65    1.967      243672     0.95
+  0.0033594     0.95141     9.93391  2.54517e-08  9.27892e-08 7.07314e-10   5.828e-09    0.4014   0.0265    14.91     2.27      249920     0.95
+  0.0031915     0.94417     9.43706  3.07816e-08  8.83252e-08 7.04748e-10   4.781e-09    0.3755   0.0398    14.34    2.507      256168     0.95
+  0.0030319    0.935023     8.71322  2.36647e-08  8.39547e-08 6.53758e-10   4.772e-09    0.3404   0.0419    13.41    2.888      262416     0.95
+  0.0028803     0.95709      8.4258  2.00186e-08  8.22188e-08 6.01602e-10   4.996e-09    0.3496   0.0317    12.08    3.438      268664     0.95
+  0.0027363    0.985755      7.7371  1.63449e-08  7.66882e-08 5.69117e-10   4.698e-09    0.3358   0.0211    10.99    3.888      274912     0.95
+  0.0025995    0.964885     7.99452  1.79614e-08  7.73587e-08 5.81564e-10   4.286e-09    0.3761   0.0339    9.841     4.36      281160     0.95
+  0.0024695    0.898407     7.30833  1.70401e-08  7.28843e-08 5.82082e-10    4.28e-09    0.3265   0.0408    9.212    4.618      287408     0.95
+   0.002346    0.963935     6.93845  1.50738e-08  7.03465e-08 5.49592e-10   4.065e-09     0.311   0.0182    8.167    5.049      293656     0.95
+  0.0022287    0.988385     6.89739  1.54361e-08   7.0142e-08 5.14331e-10   3.863e-09     0.339   0.0283    7.113    5.483      299904     0.95
+  0.0021173     0.94216     6.17823  1.59673e-08  6.54164e-08 5.09447e-10   3.756e-09    0.3387   0.0197    6.395    5.779      306152     0.95
+  0.0020114    0.974245     6.25795  9.27401e-09  6.57242e-08 5.01218e-10   4.176e-09    0.3812    0.018    5.747    6.046      312400     0.95
+  0.0019108    0.899119     5.96382  9.44609e-09  6.40226e-08 4.91916e-10   4.169e-09    0.3502   0.0337    5.409    6.185      318648     0.95
+  0.0018153    0.965923     5.82788  9.35687e-09  6.28157e-08 4.83274e-10   3.867e-09    0.3734   0.0178    4.923    6.385      324896     0.95
+  0.0017245    0.962306     5.65757  1.11002e-08  6.08268e-08 4.64884e-10   3.662e-09    0.3513   0.0216    4.595     6.52      331144     0.95
+  0.0016383      1.0001      5.4132  1.26515e-08  6.01532e-08 4.53086e-10   3.345e-09    0.3222   0.0181    4.188    6.687      337392     0.95
+  0.0015564     0.92073     5.52187  1.24858e-08   6.2123e-08 4.78966e-10   3.662e-09    0.4113   0.0249    3.694    6.891      343640     0.95
+  0.0014786     0.97829     5.30502  9.31464e-09  5.94277e-08 4.52226e-10    3.55e-09    0.3704   0.0113    3.588    6.934      349888     0.95
+  0.0014046    0.996399     5.11504  1.33841e-08   5.7861e-08 4.49628e-10   3.353e-09     0.344   0.0215    3.339    7.037      356136     0.95
+  0.0013344    0.966889     4.81423  9.21057e-09  5.61084e-08 4.21872e-10   3.557e-09    0.3259    0.011    3.018    7.169      362384     0.95
+  0.0012677    0.956006     4.64235  1.24512e-08  5.62564e-08  4.2591e-10   3.357e-09     0.387   0.0163    2.673    7.311      368632     0.95
+  0.0012043    0.992281     4.80524  1.13101e-08   5.6876e-08 4.16015e-10   3.357e-09    0.3872   0.0144    2.532    7.369      374880     0.95
+  0.0011441    0.961072     4.65629  9.02697e-09  5.53651e-08 4.27202e-10   3.444e-09    0.3488    0.018    2.398    7.424      381128     0.95
+  0.0010869    0.966386     4.53332  1.14811e-08  5.41636e-08 4.16984e-10   3.366e-09    0.3263   0.0204    2.179    7.514      387376     0.95
+  0.0010325      1.0221     4.77873  1.27213e-08  5.53253e-08 4.02171e-10   3.252e-09    0.3979   0.0294    1.931    7.616      393624     0.95
+ 0.00098092      1.0103      5.3983  1.16633e-08  6.00703e-08 4.31565e-10   3.353e-09    0.4326  0.00729     1.85     7.65      399872     0.95
+ 0.00093187    0.991301     5.79029  1.41865e-08  6.24823e-08 4.65204e-10   3.252e-09    0.4363  0.00707    1.836    7.656      406120     0.95
+ 0.00088528    0.998553       5.982  1.30684e-08  6.40722e-08 4.75917e-10   3.252e-09    0.4341  0.00647     1.83    7.658      412368     0.95
+ 0.00084101    0.982406      6.1253   1.2069e-08  6.51836e-08 4.89743e-10   3.355e-09    0.4115  0.00958    1.819    7.663      418616     0.95
+ 0.00079896    0.968821     6.15964  1.48726e-08  6.56967e-08 4.93647e-10   3.252e-09    0.3987   0.0124    1.767    7.684      424864     0.95
+ 0.00075902    0.992917     6.16098  1.35758e-08  6.63625e-08 5.06404e-10   3.252e-09    0.3923  0.00606    1.694    7.714      431112     0.95
+ 0.00072107    0.993527     6.12786  1.46091e-08  6.54425e-08 4.83472e-10   3.252e-09    0.3899  0.00402    1.613    7.748      437360     0.95
+ 0.00068501     1.00405     6.21114  1.25076e-08  6.56948e-08 4.83632e-10   3.253e-09     0.371  0.00513    1.532    7.781      443608     0.95
+ 0.00065076    0.995624      6.2601  9.54015e-09  6.61691e-08 4.89151e-10   3.357e-09    0.3856   0.0054    1.427    7.824      449856     0.95
+ 0.00061822    0.981802     6.18097  1.47853e-08  6.57584e-08  4.9938e-10   3.139e-09    0.3648   0.0043    1.349    7.856      456104     0.95
+ 0.00058731    0.997495     6.21265  1.30554e-08  6.61673e-08 4.99167e-10   3.139e-09    0.3632  0.00303    1.247    7.898      462352     0.95
+ 0.00055795    0.983508     6.17793  1.18854e-08  6.55789e-08 4.92768e-10   3.258e-09    0.3356  0.00552    1.152    7.938      468600     0.95
+ 0.00053005    0.992318     6.11696  1.07024e-08  6.55037e-08 4.91765e-10   3.253e-09    0.3425  0.00448    1.031    7.987      474848     0.95
+ 0.00050355    0.992216     6.18543  1.18652e-08  6.61473e-08 4.94939e-10   3.248e-09     0.343  0.00263        1        8      481096     0.95
+ 0.00047837    0.991128     6.17798  1.13225e-08  6.62448e-08 5.09159e-10   3.258e-09    0.3339   0.0031        1        8      487344     0.95
+ 0.00045445    0.997677      6.2232  1.40592e-08   6.5965e-08 4.93217e-10   3.139e-09    0.3259  0.00415        1        8      493592     0.95
+ 0.00043173    0.998248     6.20655   1.0841e-08  6.58698e-08 4.95457e-10   3.258e-09    0.3233   0.0025        1        8      499840     0.95
+ 0.00041014     0.99655     6.19222  1.33855e-08  6.56649e-08 4.91995e-10   3.251e-09     0.306  0.00302        1        8      506088     0.95
+ 0.00038963    0.986393     6.10414  1.22006e-08  6.48053e-08 4.94193e-10   3.258e-09    0.2907  0.00442        1        8      512336     0.95
+ 0.00037015     1.00045     6.07364  1.55803e-08  6.49235e-08  4.8503e-10   3.149e-09    0.2963  0.00157        1        8      518584     0.95
+ 0.00035165     0.99395     6.10299  1.50629e-08  6.45562e-08  4.9011e-10   3.149e-09    0.2862  0.00187        1        8      524832     0.95
+ 0.00033406    0.995948     6.08721  1.40946e-08  6.48035e-08 4.84262e-10   3.157e-09    0.2847  0.00152        1        8      531080     0.95
+ 0.00031736    0.997463     6.08113  1.45347e-08  6.46211e-08 4.92562e-10   3.147e-09    0.2652  0.00155        1        8      537328     0.95
+ 0.00030149    0.999867     6.08623  1.43181e-08  6.49096e-08 4.88298e-10   3.147e-09    0.2769  0.00175        1        8      543576     0.95
+ 0.00028642    0.996703     6.11632  1.45151e-08  6.53357e-08 4.94432e-10   3.147e-09    0.2646  0.00145        1        8      549824     0.95
+  0.0002721     0.99845     6.12591  1.42644e-08   6.5528e-08 4.90707e-10   3.147e-09    0.2767  0.00129        1        8      556072     0.95
+ 0.00025849    0.996641     6.08338  1.37338e-08  6.52453e-08 4.92963e-10   3.147e-09    0.2719   0.0016        1        8      562320     0.95
+ 0.00024557    0.995205     6.09003  1.49852e-08  6.55322e-08 4.91515e-10   3.147e-09    0.2743  0.00152        1        8      568568     0.95
+ 0.00023329    0.996122     6.09743  1.38668e-08  6.55604e-08 4.92773e-10   3.147e-09    0.2676 0.000968        1        8      574816     0.95
+ 0.00022162    0.996772     6.10729  1.38957e-08  6.54809e-08 4.91785e-10   3.149e-09    0.2449  0.00103        1        8      581064     0.95
+ 0.00021054    0.998563     6.10899  1.36717e-08  6.54396e-08 4.91996e-10   3.149e-09    0.2609 0.000496        1        8      587312     0.95
+ 0.00020002    0.997115     6.10918  1.38541e-08  6.57044e-08 4.92225e-10   3.149e-09    0.2618 0.000751        1        8      593560     0.95
+ 0.00019002    0.998383     6.11857  1.36581e-08  6.53037e-08 4.91533e-10   3.149e-09    0.2508 0.000746        1        8      599808     0.95
+ 0.00018051    0.998225     6.10976   1.3974e-08  6.53899e-08 4.94436e-10   3.149e-09     0.257 0.000638        1        8      606056     0.95
+ 0.00017149    0.997464     6.11036  1.37987e-08  6.54531e-08 4.92896e-10   3.149e-09    0.2521 0.000468        1        8      612304     0.95
+ 0.00016291    0.997732     6.10649  1.38013e-08  6.55144e-08 4.90857e-10   3.149e-09    0.2522 0.000431        1        8      618552     0.95
+ 0.00015477    0.996509     6.11058  1.38248e-08  6.52471e-08 4.94764e-10   3.149e-09    0.2482 0.000858        1        8      624800     0.95
+ 0.00014703    0.996971     6.10493  1.38512e-08  6.53949e-08 4.89751e-10   3.149e-09    0.2426  0.00056        1        8      631048     0.95
+ 0.00013968    0.995954     6.10683  1.38732e-08  6.52745e-08 4.89704e-10   3.149e-09    0.2276  0.00055        1        8      637296     0.95
+ 0.00013269    0.997735     6.10756  1.38043e-08  6.55027e-08 4.90304e-10   3.149e-09    0.2458 0.000331        1        8      643544     0.95
+ 0.00012606    0.997984     6.11119  1.36741e-08  6.51673e-08  4.9057e-10   3.149e-09    0.2386 0.000387        1        8      649792     0.95
+ 0.00011976    0.997475     6.10581  1.38151e-08  6.57418e-08 4.90375e-10   3.149e-09    0.2402 0.000507        1        8      656040     0.95
+ 0.00011377    0.998187     6.10414  1.36754e-08  6.50885e-08 4.92831e-10   3.149e-09    0.2226 0.000357        1        8      662288     0.95
+ 0.00010808    0.996923     6.10586  1.38549e-08  6.54162e-08 4.86087e-10   3.149e-09    0.2276 0.000513        1        8      668536     0.95
+ 0.00010268    0.996733     6.10524  1.38227e-08  6.51703e-08 4.93357e-10   3.149e-09     0.229 0.000501        1        8      674784     0.95
+ 9.7543e-05    0.996355     6.10722  1.38617e-08  6.53568e-08 4.89556e-10   3.149e-09    0.2311 0.000584        1        8      681032     0.95
+ 9.2666e-05    0.997826      6.1065  1.36446e-08  6.52242e-08 4.91658e-10   3.149e-09    0.2257 0.000289        1        8      687280     0.95
+ 8.8032e-05    0.997804     6.10575  1.37909e-08  6.54378e-08 4.88123e-10   3.149e-09     0.205 0.000343        1        8      693528     0.95
+ 8.3631e-05     0.99678     6.10699  1.38352e-08  6.51271e-08 4.92549e-10   3.149e-09    0.2156 0.000505        1        8      699776     0.95
+ 7.9449e-05    0.997411     6.10589   1.3801e-08  6.54525e-08 4.88476e-10   3.149e-09    0.2188  0.00033        1        8      706024     0.95
+ 7.5477e-05    0.998287     6.10455  1.36406e-08  6.50086e-08 4.96057e-10   3.149e-09    0.2231 0.000249        1        8      712272     0.95
+ 7.1703e-05    0.997261     6.10238  1.38427e-08  6.55305e-08  4.8947e-10   3.149e-09    0.2143 0.000492        1        8      718520     0.95
+ 6.8118e-05    0.997834     6.10592  1.36491e-08  6.52248e-08 4.91939e-10   3.149e-09    0.2049 0.000359        1        8      724768     0.95
+ 6.4712e-05    0.997866     6.10248  1.37804e-08  6.52741e-08 4.89669e-10   3.149e-09      0.21 0.000236        1        8      731016     0.95
+ 6.1476e-05    0.997896     6.10558  1.36833e-08  6.50908e-08 4.91876e-10   3.149e-09    0.2084  0.00045        1        8      737264     0.95
+          0    0.995562     6.10683  1.37734e-08   6.4801e-08 4.87413e-10   3.149e-09   0.01392 0.000604        1        8      743512  
+
+BB estimate of min-dist (placement) wirelength is ;610
+bb_cost recomputed from scratch is 6.10158.
+timing_cost recomputed from scratch is 1.37717e-08. 
+delay_cost recomputed from scratch is 6.4751e-08. 
+
+Completed placement consistency check successfully.
+
+Placement Estimated Crit Path Delay: 3.14874e-09
+
+Placement. Cost: 0.995068  bb_cost: 6.10158  td_cost: 1.37717e-08  delay_cost: 6.47511e-08.
+low, high, current -1 -1 6
+Confirming Router Algorithm: TIMING_DRIVEN.
+T_crit: 3.54492e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54618e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54618e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.54492e-09.
+T_crit: 3.56137e-09.
+T_crit: 3.56348e-09.
+T_crit: 3.77403e-09.
+T_crit: 3.77641e-09.
+T_crit: 3.77151e-09.
+T_crit: 3.98066e-09.
+T_crit: 4.37664e-09.
+T_crit: 3.77403e-09.
+Successfully routed after 19 routing iterations.
+Completed net delay value cross check successfully.
+low, high, current -1 6 4
+Confirming Router Algorithm: TIMING_DRIVEN.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.77376e-09.
+T_crit: 3.86236e-09.
+T_crit: 3.86468e-09.
+T_crit: 3.96933e-09.
+T_crit: 3.87055e-09.
+T_crit: 3.86468e-09.
+T_crit: 4.06787e-09.
+T_crit: 3.96933e-09.
+T_crit: 3.96107e-09.
+T_crit: 4.18197e-09.
+T_crit: 3.9752e-09.
+T_crit: 3.9752e-09.
+T_crit: 4.3068e-09.
+T_crit: 4.41144e-09.
+T_crit: 4.41144e-09.
+T_crit: 4.38181e-09.
+T_crit: 4.38181e-09.
+T_crit: 4.38181e-09.
+T_crit: 4.38181e-09.
+T_crit: 4.38181e-09.
+Successfully routed after 32 routing iterations.
+Completed net delay value cross check successfully.
+low, high, current -1 4 2
+Error: in check_node: node 4 has no edges.
+Error: in check_node: node 10 has no edges.
+Error: in check_node: node 16 has no edges.
+Error: in check_node: node 22 has no edges.
+Error: in check_node: node 28 has no edges.
+Error: in check_node: node 34 has no edges.
+Error: in check_node: node 40 has no edges.
+Error: in check_node: node 46 has no edges.
+Error: in check_node: node 52 has no edges.
+Error: in check_node: node 58 has no edges.
+Error: in check_node: node 64 has no edges.
+Error: in check_node: node 70 has no edges.
+Error: in check_node: node 76 has no edges.
+Error: in check_node: node 82 has no edges.
+Error: in check_node: node 88 has no edges.
+Error: in check_node: node 94 has no edges.
+Error: in check_node: node 100 has no edges.
+Error: in check_node: node 106 has no edges.
+Error: in check_node: node 112 has no edges.
+Error: in check_node: node 120 has no edges.
+Error: in check_node: node 136 has no edges.
+Error: in check_node: node 152 has no edges.
+Error: in check_node: node 168 has no edges.
+Error: in check_node: node 184 has no edges.
+Error: in check_node: node 200 has no edges.
+Error: in check_node: node 216 has no edges.
+Error: in check_node: node 232 has no edges.
+Error: in check_node: node 248 has no edges.
+Error: in check_node: node 262 has no edges.
+Error: in check_node: node 268 has no edges.
+Error: in check_node: node 276 has no edges.
+Error: in check_node: node 284 has no edges.
+Error: in check_node: node 292 has no edges.
+Error: in check_node: node 300 has no edges.
+Error: in check_node: node 308 has no edges.
+Error: in check_node: node 316 has no edges.
+Error: in check_node: node 324 has no edges.
+Error: in check_node: node 332 has no edges.
+Error: in check_node: node 340 has no edges.
+Error: in check_node: node 348 has no edges.
+Error: in check_node: node 356 has no edges.
+Error: in check_node: node 364 has no edges.
+Error: in check_node: node 372 has no edges.
+Error: in check_node: node 380 has no edges.
+Error: in check_node: node 388 has no edges.
+Error: in check_node: node 396 has no edges.
+Error: in check_node: node 404 has no edges.
+Error: in check_node: node 412 has no edges.
+Error: in check_node: node 418 has no edges.
+Error: in check_node: node 424 has no edges.
+Error: in check_node: node 432 has no edges.
+Error: in check_node: node 440 has no edges.
+Error: in check_node: node 448 has no edges.
+Error: in check_node: node 456 has no edges.
+Error: in check_node: node 464 has no edges.
+Error: in check_node: node 472 has no edges.
+Error: in check_node: node 480 has no edges.
+Error: in check_node: node 488 has no edges.
+Error: in check_node: node 496 has no edges.
+Error: in check_node: node 504 has no edges.
+Error: in check_node: node 512 has no edges.
+Error: in check_node: node 520 has no edges.
+Error: in check_node: node 528 has no edges.
+Error: in check_node: node 536 has no edges.
+Error: in check_node: node 544 has no edges.
+Error: in check_node: node 552 has no edges.
+Error: in check_node: node 560 has no edges.
+Error: in check_node: node 568 has no edges.
+Error: in check_node: node 574 has no edges.
+Error: in check_node: node 580 has no edges.
+Error: in check_node: node 588 has no edges.
+Error: in check_node: node 596 has no edges.
+Error: in check_node: node 604 has no edges.
+Error: in check_node: node 612 has no edges.
+Error: in check_node: node 620 has no edges.
+Error: in check_node: node 628 has no edges.
+Error: in check_node: node 636 has no edges.
+Error: in check_node: node 644 has no edges.
+Error: in check_node: node 652 has no edges.
+Error: in check_node: node 660 has no edges.
+Error: in check_node: node 668 has no edges.
+Error: in check_node: node 676 has no edges.
+Error: in check_node: node 684 has no edges.
+Error: in check_node: node 692 has no edges.
+Error: in check_node: node 700 has no edges.
+Error: in check_node: node 708 has no edges.
+Error: in check_node: node 716 has no edges.
+Error: in check_node: node 724 has no edges.
+Error: in check_node: node 730 has no edges.
+Error: in check_node: node 736 has no edges.
+Error: in check_node: node 744 has no edges.
+Error: in check_node: node 752 has no edges.
+Error: in check_node: node 760 has no edges.
+Error: in check_node: node 768 has no edges.
+Error: in check_node: node 776 has no edges.
+Error: in check_node: node 784 has no edges.
+Error: in check_node: node 792 has no edges.
+Error: in check_node: node 800 has no edges.
+Error: in check_node: node 808 has no edges.
+Error: in check_node: node 816 has no edges.
+Error: in check_node: node 824 has no edges.
+Error: in check_node: node 832 has no edges.
+Error: in check_node: node 840 has no edges.
+Error: in check_node: node 848 has no edges.
+Error: in check_node: node 856 has no edges.
+Error: in check_node: node 864 has no edges.
+Error: in check_node: node 872 has no edges.
+Error: in check_node: node 880 has no edges.
+Error: in check_node: node 886 has no edges.
+Error: in check_node: node 892 has no edges.
+Error: in check_node: node 900 has no edges.
+Error: in check_node: node 908 has no edges.
+Error: in check_node: node 916 has no edges.
+Error: in check_node: node 924 has no edges.
+Error: in check_node: node 932 has no edges.
+Error: in check_node: node 940 has no edges.
+Error: in check_node: node 948 has no edges.
+Error: in check_node: node 956 has no edges.
+Error: in check_node: node 964 has no edges.
+Error: in check_node: node 972 has no edges.
+Error: in check_node: node 980 has no edges.
+Error: in check_node: node 988 has no edges.
+Error: in check_node: node 996 has no edges.
+Error: in check_node: node 1004 has no edges.
+Error: in check_node: node 1012 has no edges.
+Error: in check_node: node 1020 has no edges.
+Error: in check_node: node 1028 has no edges.
+Error: in check_node: node 1036 has no edges.
+Error: in check_node: node 1042 has no edges.
+Error: in check_node: node 1048 has no edges.
+Error: in check_node: node 1056 has no edges.
+Error: in check_node: node 1064 has no edges.
+Error: in check_node: node 1072 has no edges.
+Error: in check_node: node 1080 has no edges.
+Error: in check_node: node 1088 has no edges.
+Error: in check_node: node 1096 has no edges.
+Error: in check_node: node 1104 has no edges.
+Error: in check_node: node 1112 has no edges.
+Error: in check_node: node 1120 has no edges.
+Error: in check_node: node 1128 has no edges.
+Error: in check_node: node 1136 has no edges.
+Error: in check_node: node 1144 has no edges.
+Error: in check_node: node 1152 has no edges.
+Error: in check_node: node 1160 has no edges.
+Error: in check_node: node 1168 has no edges.
+Error: in check_node: node 1176 has no edges.
+Error: in check_node: node 1184 has no edges.
+Error: in check_node: node 1192 has no edges.
+Error: in check_node: node 1198 has no edges.
+Error: in check_node: node 1204 has no edges.
+Error: in check_node: node 1212 has no edges.
+Error: in check_node: node 1220 has no edges.
+Error: in check_node: node 1228 has no edges.
+Error: in check_node: node 1236 has no edges.
+Error: in check_node: node 1244 has no edges.
+Error: in check_node: node 1252 has no edges.
+Error: in check_node: node 1260 has no edges.
+Error: in check_node: node 1268 has no edges.
+Error: in check_node: node 1276 has no edges.
+Error: in check_node: node 1284 has no edges.
+Error: in check_node: node 1292 has no edges.
+Error: in check_node: node 1300 has no edges.
+Error: in check_node: node 1308 has no edges.
+Error: in check_node: node 1316 has no edges.
+Error: in check_node: node 1324 has no edges.
+Error: in check_node: node 1332 has no edges.
+Error: in check_node: node 1340 has no edges.
+Error: in check_node: node 1348 has no edges.
+Error: in check_node: node 1354 has no edges.
+Error: in check_node: node 1360 has no edges.
+Error: in check_node: node 1368 has no edges.
+Error: in check_node: node 1376 has no edges.
+Error: in check_node: node 1384 has no edges.
+Error: in check_node: node 1392 has no edges.
+Error: in check_node: node 1400 has no edges.
+Error: in check_node: node 1408 has no edges.
+Error: in check_node: node 1416 has no edges.
+Error: in check_node: node 1424 has no edges.
+Error: in check_node: node 1432 has no edges.
+Error: in check_node: node 1440 has no edges.
+Error: in check_node: node 1448 has no edges.
+Error: in check_node: node 1456 has no edges.
+Error: in check_node: node 1464 has no edges.
+Error: in check_node: node 1472 has no edges.
+Error: in check_node: node 1480 has no edges.
+Error: in check_node: node 1488 has no edges.
+Error: in check_node: node 1496 has no edges.
+Error: in check_node: node 1504 has no edges.
+Error: in check_node: node 1510 has no edges.
+Error: in check_node: node 1516 has no edges.
+Error: in check_node: node 1524 has no edges.
+Error: in check_node: node 1532 has no edges.
+Error: in check_node: node 1540 has no edges.
+Error: in check_node: node 1548 has no edges.
+Error: in check_node: node 1556 has no edges.
+Error: in check_node: node 1564 has no edges.
+Error: in check_node: node 1572 has no edges.
+Error: in check_node: node 1580 has no edges.
+Error: in check_node: node 1588 has no edges.
+Error: in check_node: node 1596 has no edges.
+Error: in check_node: node 1604 has no edges.
+Error: in check_node: node 1612 has no edges.
+Error: in check_node: node 1620 has no edges.
+Error: in check_node: node 1628 has no edges.
+Error: in check_node: node 1636 has no edges.
+Error: in check_node: node 1644 has no edges.
+Error: in check_node: node 1652 has no edges.
+Error: in check_node: node 1660 has no edges.
+Error: in check_node: node 1666 has no edges.
+Error: in check_node: node 1672 has no edges.
+Error: in check_node: node 1680 has no edges.
+Error: in check_node: node 1688 has no edges.
+Error: in check_node: node 1696 has no edges.
+Error: in check_node: node 1704 has no edges.
+Error: in check_node: node 1712 has no edges.
+Error: in check_node: node 1720 has no edges.
+Error: in check_node: node 1728 has no edges.
+Error: in check_node: node 1736 has no edges.
+Error: in check_node: node 1744 has no edges.
+Error: in check_node: node 1752 has no edges.
+Error: in check_node: node 1760 has no edges.
+Error: in check_node: node 1768 has no edges.
+Error: in check_node: node 1776 has no edges.
+Error: in check_node: node 1784 has no edges.
+Error: in check_node: node 1792 has no edges.
+Error: in check_node: node 1800 has no edges.
+Error: in check_node: node 1808 has no edges.
+Error: in check_node: node 1816 has no edges.
+Error: in check_node: node 1822 has no edges.
+Error: in check_node: node 1828 has no edges.
+Error: in check_node: node 1836 has no edges.
+Error: in check_node: node 1844 has no edges.
+Error: in check_node: node 1852 has no edges.
+Error: in check_node: node 1860 has no edges.
+Error: in check_node: node 1868 has no edges.
+Error: in check_node: node 1876 has no edges.
+Error: in check_node: node 1884 has no edges.
+Error: in check_node: node 1892 has no edges.
+Error: in check_node: node 1900 has no edges.
+Error: in check_node: node 1908 has no edges.
+Error: in check_node: node 1916 has no edges.
+Error: in check_node: node 1924 has no edges.
+Error: in check_node: node 1932 has no edges.
+Error: in check_node: node 1940 has no edges.
+Error: in check_node: node 1948 has no edges.
+Error: in check_node: node 1956 has no edges.
+Error: in check_node: node 1964 has no edges.
+Error: in check_node: node 1972 has no edges.
+Error: in check_node: node 1978 has no edges.
+Error: in check_node: node 1984 has no edges.
+Error: in check_node: node 1992 has no edges.
+Error: in check_node: node 2000 has no edges.
+Error: in check_node: node 2008 has no edges.
+Error: in check_node: node 2016 has no edges.
+Error: in check_node: node 2024 has no edges.
+Error: in check_node: node 2032 has no edges.
+Error: in check_node: node 2040 has no edges.
+Error: in check_node: node 2048 has no edges.
+Error: in check_node: node 2056 has no edges.
+Error: in check_node: node 2064 has no edges.
+Error: in check_node: node 2072 has no edges.
+Error: in check_node: node 2080 has no edges.
+Error: in check_node: node 2088 has no edges.
+Error: in check_node: node 2096 has no edges.
+Error: in check_node: node 2104 has no edges.
+Error: in check_node: node 2112 has no edges.
+Error: in check_node: node 2120 has no edges.
+Error: in check_node: node 2128 has no edges.
+Error: in check_node: node 2134 has no edges.
+Error: in check_node: node 2140 has no edges.
+Error: in check_node: node 2148 has no edges.
+Error: in check_node: node 2156 has no edges.
+Error: in check_node: node 2164 has no edges.
+Error: in check_node: node 2172 has no edges.
+Error: in check_node: node 2180 has no edges.
+Error: in check_node: node 2188 has no edges.
+Error: in check_node: node 2196 has no edges.
+Error: in check_node: node 2204 has no edges.
+Error: in check_node: node 2212 has no edges.
+Error: in check_node: node 2220 has no edges.
+Error: in check_node: node 2228 has no edges.
+Error: in check_node: node 2236 has no edges.
+Error: in check_node: node 2244 has no edges.
+Error: in check_node: node 2252 has no edges.
+Error: in check_node: node 2260 has no edges.
+Error: in check_node: node 2268 has no edges.
+Error: in check_node: node 2276 has no edges.
+Error: in check_node: node 2284 has no edges.
+Error: in check_node: node 2290 has no edges.
+Error: in check_node: node 2296 has no edges.
+Error: in check_node: node 2304 has no edges.
+Error: in check_node: node 2312 has no edges.
+Error: in check_node: node 2320 has no edges.
+Error: in check_node: node 2328 has no edges.
+Error: in check_node: node 2336 has no edges.
+Error: in check_node: node 2344 has no edges.
+Error: in check_node: node 2352 has no edges.
+Error: in check_node: node 2360 has no edges.
+Error: in check_node: node 2368 has no edges.
+Error: in check_node: node 2376 has no edges.
+Error: in check_node: node 2384 has no edges.
+Error: in check_node: node 2392 has no edges.
+Error: in check_node: node 2400 has no edges.
+Error: in check_node: node 2408 has no edges.
+Error: in check_node: node 2416 has no edges.
+Error: in check_node: node 2424 has no edges.
+Error: in check_node: node 2432 has no edges.
+Error: in check_node: node 2440 has no edges.
+Error: in check_node: node 2446 has no edges.
+Error: in check_node: node 2452 has no edges.
+Error: in check_node: node 2460 has no edges.
+Error: in check_node: node 2468 has no edges.
+Error: in check_node: node 2476 has no edges.
+Error: in check_node: node 2484 has no edges.
+Error: in check_node: node 2492 has no edges.
+Error: in check_node: node 2500 has no edges.
+Error: in check_node: node 2508 has no edges.
+Error: in check_node: node 2516 has no edges.
+Error: in check_node: node 2524 has no edges.
+Error: in check_node: node 2532 has no edges.
+Error: in check_node: node 2540 has no edges.
+Error: in check_node: node 2548 has no edges.
+Error: in check_node: node 2556 has no edges.
+Error: in check_node: node 2564 has no edges.
+Error: in check_node: node 2572 has no edges.
+Error: in check_node: node 2580 has no edges.
+Error: in check_node: node 2588 has no edges.
+Error: in check_node: node 2596 has no edges.
+Error: in check_node: node 2602 has no edges.
+Error: in check_node: node 2608 has no edges.
+Error: in check_node: node 2616 has no edges.
+Error: in check_node: node 2624 has no edges.
+Error: in check_node: node 2632 has no edges.
+Error: in check_node: node 2640 has no edges.
+Error: in check_node: node 2648 has no edges.
+Error: in check_node: node 2656 has no edges.
+Error: in check_node: node 2664 has no edges.
+Error: in check_node: node 2672 has no edges.
+Error: in check_node: node 2680 has no edges.
+Error: in check_node: node 2688 has no edges.
+Error: in check_node: node 2696 has no edges.
+Error: in check_node: node 2704 has no edges.
+Error: in check_node: node 2712 has no edges.
+Error: in check_node: node 2720 has no edges.
+Error: in check_node: node 2728 has no edges.
+Error: in check_node: node 2736 has no edges.
+Error: in check_node: node 2744 has no edges.
+Error: in check_node: node 2752 has no edges.
+Error: in check_node: node 2758 has no edges.
+Error: in check_node: node 2764 has no edges.
+Error: in check_node: node 2772 has no edges.
+Error: in check_node: node 2788 has no edges.
+Error: in check_node: node 2804 has no edges.
+Error: in check_node: node 2820 has no edges.
+Error: in check_node: node 2836 has no edges.
+Error: in check_node: node 2852 has no edges.
+Error: in check_node: node 2868 has no edges.
+Error: in check_node: node 2884 has no edges.
+Error: in check_node: node 2900 has no edges.
+Error: in check_node: node 2914 has no edges.
+Error: in check_node: node 2920 has no edges.
+Error: in check_node: node 2926 has no edges.
+Error: in check_node: node 2932 has no edges.
+Error: in check_node: node 2938 has no edges.
+Error: in check_node: node 2944 has no edges.
+Error: in check_node: node 2950 has no edges.
+Error: in check_node: node 2956 has no edges.
+Error: in check_node: node 2962 has no edges.
+Error: in check_node: node 2968 has no edges.
+Error: in check_node: node 2974 has no edges.
+Error: in check_node: node 2980 has no edges.
+Error: in check_node: node 2986 has no edges.
+Error: in check_node: node 2992 has no edges.
+Error: in check_node: node 2998 has no edges.
+Error: in check_node: node 3004 has no edges.
+Error: in check_node: node 3010 has no edges.
+Error: in check_node: node 3016 has no edges.
+Error: in check_node: node 3022 has no edges.
+Confirming Router Algorithm: TIMING_DRIVEN.
+Empty heap occurred in get_heap_head.
+Some blocks are impossible to connect in this architecture.
+Routing failed.
+
+Checking to ensure routing is legal ...
+Completed routing consistency check successfully.
+
+Serial number (magic cookie) for the routing is: -8446943
+Best routing used a channel width factor of 4.
+
+
+Average number of bends per net: 3.08537  Maximum # of bends: 15
+
+
+The number of routed nets (nonglobal): 82
+Wirelength results (all in units of 1 clb segments):
+	Total wirelength: 887   Average net length: 10.8171
+	Maximum net length: 50
+
+Wirelength results in terms of physical segments:
+	Total wiring segments used: 478   Av. wire segments per net: 5.82927
+	Maximum segments used by a net: 26
+
+
+X - Directed channels:
+
+j	max occ	av_occ		capacity
+0	4	3.44444  	4
+1	4	3.22222  	4
+2	4	2.94444  	4
+3	4	2.38889  	4
+4	4	1.44444  	4
+5	4	1.16667  	4
+6	3	0.722222 	4
+7	2	0.500000 	4
+8	2	0.222222 	4
+9	2	0.611111 	4
+10	2	0.388889 	4
+11	2	0.500000 	4
+12	1	0.0555556	4
+13	1	0.111111 	4
+14	1	0.0555556	4
+15	2	0.222222 	4
+16	1	0.111111 	4
+17	1	0.611111 	4
+18	3	1.83333  	4
+
+Y - Directed channels:
+
+i	max occ	av_occ		capacity
+0	4	2.61111  	4
+1	4	2.44444  	4
+2	4	1.66667  	4
+3	4	2.00000  	4
+4	4	1.72222  	4
+5	2	0.944444 	4
+6	3	0.611111 	4
+7	2	0.388889 	4
+8	3	0.555556 	4
+9	4	1.50000  	4
+10	3	0.277778 	4
+11	3	0.500000 	4
+12	3	0.666667 	4
+13	4	1.94444  	4
+14	4	2.61111  	4
+15	3	2.05556  	4
+16	4	1.16667  	4
+17	4	2.27778  	4
+18	4	2.77778  	4
+
+Total Tracks in X-direction: 76  in Y-direction: 76
+
+Logic Area (in minimum width transistor areas):
+Total Logic Area: 9.72e+06  Per 1x1 logic tile: 30000
+
+Routing area (in minimum width transistor areas):
+Total Routing Area: 173378.  Per logic tile: 535.116
+
+Segment usage by type (index):
+Segment type       Fractional utilization
+------------       ----------------------
+       0                  0.331
+
+Segment usage by length:
+Segment length       Fractional utilization
+--------------       ----------------------
+        2                   0.331
+
+Critical Path: 4.38181e-09 (s)
+
+Time elapsed (PLACE&ROUTE): 361.593000 ms
+
+
+Time elapsed (Fernando): 361.600000 ms
+

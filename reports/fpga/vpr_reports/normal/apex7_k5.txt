@@ -1,0 +1,2177 @@
+
+VPR FPGA Placement and Routing.
+Version: Version 5.0.2
+Compiled: Dec 11 2020.
+Original VPR by V. Betz.
+Timing-driven placement enhancements by A. Marquardt.
+Single-drivers enhancements by Andy Ye with additions by.
+Mark Fang, Jason Luu, Ted Campbell
+Heterogeneous stucture support by Jason Luu and Ted Campbell.
+This code is licensed only for non-commercial use.
+
+Auto-sizing FPGA, try x = 14 y = 14
+Auto-sizing FPGA, try x = 28 y = 28
+Auto-sizing FPGA, try x = 56 y = 56
+Auto-sizing FPGA, try x = 28 y = 28
+Auto-sizing FPGA, try x = 42 y = 42
+Auto-sizing FPGA, try x = 35 y = 35
+Auto-sizing FPGA, try x = 38 y = 38
+Auto-sizing FPGA, try x = 40 y = 40
+Auto-sizing FPGA, try x = 41 y = 41
+Auto-sizing FPGA, try x = 40 y = 40
+FPGA auto-sized to, x = 41 y = 41
+
+Resource Usage:
+Netlist      0	blocks of type <EMPTY>
+Architecture 4	blocks of type <EMPTY>
+Netlist      161	blocks of type .io
+Architecture 164	blocks of type .io
+Netlist      29	blocks of type .clb
+Architecture 1681	blocks of type .clb
+
+Timing analysis: ON
+
+Operation:  PLACE_AND_ROUTE
+
+PlacerOpts.place_freq:  PLACE_ONCE
+PlacerOpts.place_algorithm:  PATH_TIMING_DRIVEN_PLACE
+PlacerOpts.place_cost_type:  LINEAR_CONG
+PlacerOpts.pad_loc_type:  FREE
+PlacerOpts.place_cost_exp:  1.000000
+PlacerOpts.place_chan_width:  100
+PlacerOpts.inner_loop_recompute_divider:  0
+PlacerOpts.recompute_crit_iter:  1
+PlacerOpts.timing_tradeoff:  0.500000
+PlacerOpts.td_place_exp_first:  1.000000
+PlacerOpts.td_place_exp_last:  8.000000
+PlaceOpts.seed:  1
+AnnealSched.type:  AUTO_SCHED
+AnnealSched.inner_num:  10.000000
+
+RouterOpts.route_type:  DETAILED
+RouterOpts.router_algorithm:  TIMING_DRIVEN
+RouterOpts.base_cost_type:  DELAY_NORMALIZED
+RouterOpts.fixed_channel_width:  NO_FIXED_CHANNEL_WIDTH
+RouterOpts.acc_fac:  1.000000
+RouterOpts.bb_factor:  3
+RouterOpts.bend_cost:  0.000000
+RouterOpts.first_iter_pres_fac:  0.500000
+RouterOpts.initial_pres_fac:  0.500000
+RouterOpts.pres_fac_mult:  1.300000
+RouterOpts.max_router_iterations:  50
+RouterOpts.astar_fac:  1.200000
+RouterOpts.criticality_exp:  1.000000
+RouterOpts.max_criticality:  0.990000
+
+RoutingArch.directionality:  UNI_DIRECTIONAL
+RoutingArch.switch_block_type:  WILTON
+RoutingArch.Fs:  3
+
+The circuit will be mapped into a 41 x 41 array of clbs.
+
+Netlist num_nets:  69
+Netlist num_blocks:  190
+Netlist inputs pins:  40
+Netlist output pins:  121
+
+Computing delta_io_to_io lookup matrix, may take a few seconds, please wait...
+Computing delta_io_to_fb lookup matrix, may take a few seconds, please wait...
+Computing delta_fb_to_io lookup matrix, may take a few seconds, please wait...
+Computing delta_fb_to_fb lookup matrix, may take a few seconds, please wait...
+
+There are 185 point to point connections in this circuit
+
+Initial Placement Cost: 1.06374 bb_cost: 38.6096 td_cost: 1.22386e-07 delay_cost: 3.90447e-07
+
+          T        Cost Av. BB Cost  Av. TD Cost   Av Tot Del  P to P Del        d_max   Ac Rate  Std Dev  R limit      Exp  Tot. Moves    Alpha
+   --------  ---------- -----------  -----------    ---------  ----------        -----   -------  -------  -------  -------  ----------    -----
+    0.46138    0.942112     37.4574   1.5936e-07  3.95568e-07 2.11053e-09   1.107e-08    0.9961   0.0266       41        1       10920      0.5
+    0.23069    0.949934     37.1468  1.51599e-07  3.94333e-07   2.097e-09   1.129e-08    0.9907   0.0332       41        1       21840      0.5
+    0.11535    0.944606     37.1617  1.56554e-07  3.92595e-07 2.11743e-09   1.121e-08    0.9832   0.0313       41        1       32760      0.5
+   0.057673    0.979932     36.7156   1.5816e-07  3.88863e-07 2.09034e-09   1.001e-08    0.9636   0.0321       41        1       43680      0.5
+   0.028836     0.95437     35.9331  1.37489e-07  3.81021e-07 2.10486e-09   1.192e-08    0.9318   0.0288       41        1       54600      0.9
+   0.025953    0.986252     36.1075  1.30865e-07  3.81627e-07 2.00412e-09   1.275e-08    0.9247   0.0326       41        1       65520      0.9
+   0.023358    0.932861     35.7079  1.46978e-07  3.81203e-07 2.00709e-09   1.093e-08    0.9171   0.0281       41        1       76440      0.9
+   0.021022    0.975038     35.4656  1.26698e-07  3.76783e-07 1.94001e-09   1.202e-08    0.9009   0.0309       41        1       87360      0.9
+    0.01892    0.954351     35.7247   1.6949e-07  3.78868e-07 2.10028e-09   9.236e-09    0.9001   0.0273       41        1       98280      0.9
+   0.017028    0.955827     35.7372  1.48055e-07  3.79269e-07 1.92744e-09   1.026e-08    0.8866   0.0287       41        1      109200      0.9
+   0.015325    0.908657     35.3224  1.44828e-07  3.75872e-07 2.09576e-09   1.082e-08     0.879   0.0317       41        1      120120      0.9
+   0.013792    0.962714     34.6549  1.47093e-07  3.68161e-07 1.98695e-09   9.872e-09     0.851   0.0281       41        1      131040      0.9
+   0.012413    0.915597     34.5902  1.61961e-07  3.68771e-07 2.07108e-09   9.544e-09    0.8549   0.0295       41        1      141960      0.9
+   0.011172     0.93504     34.1316  1.27221e-07   3.6185e-07 1.98675e-09    1.11e-08    0.8137   0.0278       41        1      152880      0.9
+   0.010055    0.962639     33.1884  1.40753e-07  3.54893e-07 1.90714e-09    9.54e-09    0.7895   0.0331       41        1      163800     0.95
+  0.0095519    0.897923     33.7383  1.36865e-07  3.60526e-07 2.07818e-09   1.117e-08    0.7955   0.0321       41        1      174720     0.95
+  0.0090743    0.933209     33.5308  1.39304e-07   3.5669e-07 1.91262e-09   1.018e-08    0.7835   0.0328       41        1      185640     0.95
+  0.0086206    0.902257     33.0589  1.36521e-07  3.55323e-07 1.96202e-09   1.038e-08    0.7693    0.032       41        1      196560     0.95
+  0.0081896    0.957925     33.0813  1.35734e-07  3.52952e-07 1.88537e-09   9.507e-09    0.7614   0.0281       41        1      207480     0.95
+  0.0077801    0.945553     32.8273  1.28259e-07  3.51959e-07 1.90662e-09   1.035e-08     0.746    0.033       41        1      218400     0.95
+  0.0073911    0.925492     32.0389  1.21387e-07  3.42828e-07 1.91794e-09   1.056e-08    0.7084   0.0301       41        1      229320     0.95
+  0.0070215    0.920064     32.3467  1.42069e-07   3.4361e-07 1.95034e-09   9.317e-09    0.7092   0.0288       41        1      240240     0.95
+  0.0066705    0.929296     31.4091  1.28115e-07  3.40043e-07 1.85771e-09    9.73e-09    0.6818   0.0326       41        1      251160     0.95
+  0.0063369    0.937421     31.4927  1.48063e-07  3.38617e-07 1.79144e-09   7.879e-09    0.6732   0.0294       41        1      262080     0.95
+  0.0060201    0.930178      31.251  1.34198e-07  3.37507e-07 1.83423e-09   8.922e-09    0.6596   0.0283       41        1      273000     0.95
+  0.0057191    0.923119     30.5067  1.28975e-07  3.28823e-07 1.72032e-09   9.014e-09    0.6329   0.0377       41        1      283920     0.95
+  0.0054331    0.910106     30.5507  1.20591e-07  3.30018e-07 1.77868e-09   1.015e-08    0.6205   0.0267       41        1      294840     0.95
+  0.0051615    0.900579     30.2452  1.35316e-07  3.27091e-07 1.90853e-09   9.116e-09    0.6199    0.031       41        1      305760     0.95
+  0.0049034    0.916167     29.9227  1.23533e-07  3.21773e-07 1.76917e-09   8.901e-09     0.581   0.0311       41        1      316680     0.95
+  0.0046582    0.903233     29.8302  1.14522e-07  3.20496e-07  1.8376e-09   1.031e-08    0.5764   0.0345       41        1      327600     0.95
+  0.0044253    0.898806     29.5626  1.36482e-07  3.14403e-07   1.804e-09   7.884e-09    0.5585   0.0352       41        1      338520     0.95
+  0.0042041    0.897625     28.4377  1.09363e-07  3.08602e-07 1.73278e-09   9.751e-09    0.5266   0.0364       41        1      349440     0.95
+  0.0039938    0.876521     27.7976  1.11386e-07  3.03171e-07 1.75045e-09   9.443e-09    0.4939   0.0307       41        1      360360     0.95
+  0.0037942    0.882091     26.8855  1.12892e-07  2.96093e-07  1.6331e-09   8.343e-09     0.463   0.0418       41        1      371280     0.95
+  0.0036044    0.846467     27.2374  1.25984e-07  2.96285e-07 1.81837e-09   7.989e-09    0.4703   0.0358       41        1      382200     0.95
+  0.0034242    0.869217     25.1131   1.0523e-07  2.80067e-07 1.55299e-09   7.878e-09    0.3908   0.0444       41        1      393120     0.95
+   0.003253    0.891287     24.3485  5.78253e-08  2.77557e-07 1.42293e-09   9.326e-09    0.5092   0.0382    38.98    1.353      404040     0.95
+  0.0030904     0.85425     23.5143  1.02472e-07  2.63081e-07 1.63607e-09   7.875e-09     0.334   0.0351       41        1      414960     0.95
+  0.0029358    0.827971     22.7824  4.70795e-08   2.6805e-07 1.47246e-09   8.826e-09    0.4822   0.0367    36.65    1.761      425880     0.95
+  0.0027891    0.820258     21.1967  5.89473e-08  2.46599e-07 1.40487e-09   7.997e-09    0.4214   0.0565     38.2     1.49      436800     0.95
+  0.0026496    0.775193     18.7932  5.35475e-08  2.21629e-07 1.37571e-09   6.858e-09    0.3678   0.0477    37.49    1.614      447720     0.95
+  0.0025171    0.858116     17.7343  4.03239e-08  2.22157e-07 1.20715e-09   6.329e-09    0.3495   0.0377    34.78    2.088      458640     0.95
+  0.0023913    0.855806     16.2668  2.73487e-08  2.10419e-07  1.1249e-09   6.041e-09    0.3401   0.0395    31.64    2.639      469560     0.95
+  0.0022717    0.804517     15.6617  3.07601e-08  1.97308e-07 1.10055e-09   5.309e-09    0.3499   0.0486    28.48    3.192      480480     0.95
+  0.0021581    0.840014     15.3923  2.14927e-08  2.04947e-07 1.04941e-09   5.221e-09    0.3592   0.0418    25.91    3.641      491400     0.95
+  0.0020502    0.781944     15.6723  1.44744e-08  2.13194e-07 1.14312e-09   6.244e-09    0.3902   0.0414    23.82    4.007      502320     0.95
+  0.0019477    0.807504     14.5473  1.40455e-08  2.01095e-07 1.11947e-09   5.842e-09    0.3689   0.0399    22.63    4.214      513240     0.95
+  0.0018503    0.785972     14.0022  1.51397e-08  1.94537e-07 1.10145e-09   5.619e-09    0.3659   0.0541    21.02    4.496      524160     0.95
+  0.0017578     0.79262     13.7802  1.03169e-08  2.04345e-07  1.0489e-09   5.735e-09    0.3727   0.0668    19.47    4.769      535080     0.95
+  0.0016699    0.754175     12.8829  1.68908e-08  1.84505e-07  1.0752e-09   4.787e-09    0.3634   0.0601    18.16    4.998      546000     0.95
+  0.0015864    0.754124     11.8662  9.02638e-09  1.83317e-07 9.12112e-10   5.602e-09    0.3614   0.0605    16.76    5.241      556920     0.95
+  0.0015071    0.707772     10.9158  9.88188e-09  1.73932e-07 9.64569e-10   5.721e-09    0.3514   0.0563    15.45    5.472      567840     0.95
+  0.0014317    0.751369     10.6972  9.86443e-09  1.68213e-07 9.37077e-10   5.185e-09     0.346   0.0701    14.08    5.711      578760     0.95
+  0.0013602    0.778802     10.8981  1.51051e-08  1.76951e-07 9.31425e-10   4.583e-09    0.3655   0.0745    12.75    5.943      589680     0.95
+  0.0012921    0.759299     10.2511  8.22239e-09  1.66214e-07 9.42231e-10   4.808e-09    0.3712   0.0587     11.8    6.109      600600     0.95
+  0.0012275    0.735674     9.85965  9.78186e-09  1.65511e-07 8.51555e-10   4.673e-09    0.3711   0.0608    10.99    6.251      611520     0.95
+  0.0011662    0.691562     9.44009  1.15735e-08  1.53287e-07 9.02481e-10   4.491e-09    0.3541   0.0587    10.23    6.384      622440     0.95
+  0.0011079    0.805222     9.20159  1.11015e-08  1.56964e-07 7.39477e-10   4.781e-09    0.3582   0.0809    9.356    6.538      633360     0.95
+  0.0010525    0.740934     9.10919  9.50796e-09  1.59026e-07 9.53226e-10   4.695e-09    0.3799   0.0785     8.59    6.672      644280     0.95
+ 0.00099984     0.65721     8.65078  7.06913e-09  1.67965e-07 8.37244e-10   4.784e-09    0.3634   0.0841    8.073    6.762      655200     0.95
+ 0.00094984    0.797308     8.48588  1.55247e-08  1.55636e-07 8.90358e-10   4.703e-09    0.3877   0.0708    7.455     6.87      666120     0.95
+ 0.00090235    0.830007     8.23348  1.08283e-08   1.5446e-07 8.21462e-10   4.568e-09    0.3696   0.0485    7.065    6.939      677040     0.95
+ 0.00085723    0.815979     7.97472  5.93129e-09   1.5005e-07 8.04972e-10   4.695e-09     0.391   0.0517    6.568    7.026      687960     0.95
+ 0.00081437    0.690283     7.85482  6.33597e-09  1.48924e-07 8.31539e-10   4.991e-09    0.3724    0.105    6.246    7.082      698880     0.95
+ 0.00077365    0.874172      7.5975  8.92349e-09  1.53342e-07 7.68548e-10   5.002e-09     0.384   0.0465    5.824    7.156      709800     0.95
+ 0.00073497    0.810994     7.69955  1.12631e-08  1.47603e-07 8.12434e-10   4.476e-09    0.3749   0.0789    5.498    7.213      720720     0.95
+ 0.00069822    0.761522     7.59777  1.30654e-08  1.50547e-07 7.82119e-10   4.472e-09    0.3693    0.062     5.14    7.276      731640     0.95
+ 0.00066331    0.812107     7.51439  1.11559e-08  1.43171e-07 7.92901e-10   4.363e-09    0.3948    0.066    4.777    7.339      742560     0.95
+ 0.00063015    0.823816     7.39133   1.4406e-08  1.43792e-07 7.77974e-10   4.373e-09    0.3931   0.0708    4.561    7.377      753480     0.95
+ 0.00059864    0.807841     7.40925  1.18814e-08  1.36675e-07 8.01527e-10   4.363e-09    0.3745   0.0636    4.347    7.414      764400     0.95
+ 0.00056871    0.820811     7.46602  1.10668e-08  1.45472e-07 7.10906e-10    4.37e-09    0.3811   0.0581    4.062    7.464      775320     0.95
+ 0.00054027    0.886985     7.54022  2.09178e-08  1.42187e-07 8.00158e-10   4.171e-09    0.4269     0.04    3.823    7.506      786240     0.95
+ 0.00051326    0.889295     7.33368  1.00932e-08  1.49327e-07 7.73288e-10   4.477e-09    0.4255   0.0502    3.773    7.515      797160     0.95
+ 0.00048759    0.966968     7.09781  1.21586e-08  1.36473e-07 7.64296e-10   4.363e-09     0.385    0.014    3.718    7.524      808080     0.95
+ 0.00046322    0.977175     7.03307  9.93233e-09  1.30537e-07   7.132e-10   4.363e-09    0.3788   0.0109    3.514     7.56      819000     0.95
+ 0.00044005    0.974357     6.97629  1.26185e-08  1.27454e-07 7.08234e-10   4.068e-09     0.359   0.0128    3.299    7.598      829920     0.95
+ 0.00041805    0.881917     6.95181  1.12002e-08  1.42463e-07 6.76912e-10   4.078e-09    0.3532   0.0545    3.031    7.645      840840     0.95
+ 0.00039715    0.871972     6.88685  2.05426e-08  1.40266e-07  8.5899e-10   4.403e-09    0.4416   0.0482    2.768    7.691      851760     0.95
+ 0.00037729    0.898517     6.89606  1.35261e-08  1.48142e-07 7.39227e-10   4.483e-09    0.4367   0.0305    2.773     7.69      862680     0.95
+ 0.00035843    0.842716     6.82446   1.9773e-08  1.36002e-07 8.16879e-10   4.379e-09    0.4274   0.0819    2.763    7.691      873600     0.95
+ 0.00034051    0.941004     6.79275  1.06801e-08  1.34564e-07 6.55307e-10   4.363e-09    0.4087   0.0162    2.729    7.698      884520     0.95
+ 0.00032348    0.925224     6.81027   1.3345e-08  1.43503e-07 7.34307e-10   4.363e-09    0.4115    0.023    2.643    7.712      895440     0.95
+ 0.00030731    0.904529     6.74502  1.27516e-08  1.34879e-07 7.95681e-10   4.363e-09    0.4034    0.036    2.568    7.726      906360     0.95
+ 0.00029194    0.886044     6.70909   1.2111e-08  1.48903e-07 7.12484e-10   4.363e-09     0.416   0.0529    2.474    7.742      917280     0.95
+ 0.00027734    0.983462     6.69985  1.11362e-08  1.41889e-07 7.72773e-10   4.363e-09    0.3916  0.00349    2.415    7.752      928200     0.95
+ 0.00026348    0.995051     6.67316  1.06224e-08  1.41269e-07 7.61022e-10   4.267e-09    0.3918   0.0023    2.298    7.773      939120     0.95
+  0.0002503    0.989064     6.66139  1.05979e-08  1.40486e-07 7.69237e-10   4.267e-09    0.3924  0.00576    2.187    7.792      950040     0.95
+ 0.00023779    0.984129     6.63748  1.01313e-08   1.4017e-07 7.59148e-10   4.259e-09    0.3923   0.0044    2.083     7.81      960960     0.95
+  0.0002259    0.996591     6.63375  9.41467e-09  1.37675e-07 7.47101e-10   4.259e-09    0.4704  0.00193    1.984    7.828      971880     0.95
+  0.0002146    0.995078     6.62127  9.43605e-09  1.38192e-07 7.44008e-10   4.259e-09    0.3815  0.00196    2.044    7.817      982800     0.95
+ 0.00020387    0.998482     6.59664  9.56761e-09  1.37692e-07 7.44177e-10   4.259e-09    0.4738 0.000746    1.924    7.838      993720     0.95
+ 0.00019368    0.997785     6.60687  9.43145e-09  1.37338e-07 7.43983e-10   4.259e-09     0.482  0.00113    1.989    7.827     1004640     0.95
+   0.000184     0.99662     6.61336  9.33514e-09  1.37924e-07 7.40081e-10   4.259e-09    0.3896  0.00138    2.073    7.812     1015560     0.95
+  0.0001748    0.998308     6.61895    9.169e-09  1.37985e-07 7.43376e-10   4.259e-09    0.4637 0.000778    1.968    7.831     1026480     0.95
+ 0.00016606    0.994952     6.60829  9.30121e-09  1.37792e-07 7.45616e-10   4.259e-09    0.3728  0.00162    2.015    7.822     1037400     0.95
+ 0.00015775    0.998187     6.59826  9.26738e-09   1.3698e-07 7.36866e-10   4.259e-09    0.4512 0.000935     1.88    7.846     1048320     0.95
+ 0.00014987    0.995967     6.61632  9.20102e-09  1.37949e-07 7.44466e-10   4.259e-09    0.4727  0.00101    1.901    7.842     1059240     0.95
+ 0.00014237    0.998527     6.61716   9.1319e-09  1.37322e-07 7.40432e-10   4.259e-09    0.4623 0.000732    1.963    7.831     1070160     0.95
+ 0.00013525    0.997513     6.61306  9.18218e-09  1.38067e-07 7.38697e-10   4.259e-09    0.3633  0.00108    2.007    7.824     1081080     0.95
+ 0.00012849    0.997197     6.59368   9.0427e-09  1.37657e-07 7.53899e-10   4.259e-09    0.4636 0.000565    1.853    7.851     1092000     0.95
+ 0.00012207    0.998214     6.59705  9.12986e-09  1.37015e-07 7.47557e-10   4.259e-09     0.457 0.000444    1.896    7.843     1102920     0.95
+ 0.00011596    0.997576     6.60031  9.11686e-09  1.37414e-07 7.42423e-10   4.259e-09    0.4653  0.00068    1.929    7.837     1113840     0.95
+ 0.00011017    0.998012     6.60778  9.26231e-09  1.37805e-07 7.39925e-10   4.259e-09    0.4549 0.000421    1.977    7.829     1124760     0.95
+ 0.00010466    0.995084     6.61308  9.17687e-09  1.36159e-07 7.47789e-10   4.259e-09    0.3645  0.00111    2.007    7.824     1135680     0.95
+ 9.9424e-05    0.998258     6.61374  9.03496e-09  1.36282e-07 7.38416e-10   4.259e-09    0.4572 0.000366    1.855     7.85     1146600     0.95
+ 9.4453e-05    0.998185     6.60645  9.05627e-09  1.36827e-07 7.39653e-10   4.259e-09    0.4574 0.000461    1.887    7.845     1157520     0.95
+  8.973e-05    0.997831     6.59955  9.09958e-09  1.36878e-07 7.42263e-10   4.259e-09     0.444 0.000385     1.92    7.839     1168440     0.95
+ 8.5244e-05    0.998269     6.60198  9.07757e-09  1.36846e-07 7.39963e-10   4.259e-09    0.4484 0.000334    1.928    7.838     1179360     0.95
+ 8.0981e-05    0.997962     6.59951  9.00019e-09  1.37029e-07 7.38975e-10   4.259e-09    0.4572 0.000458    1.944    7.835     1190280     0.95
+ 7.6932e-05    0.998403     6.60117  9.08873e-09  1.36966e-07 7.39571e-10   4.259e-09    0.4625 0.000374    1.978    7.829     1201200     0.95
+ 7.3086e-05    0.997307     6.60351  9.07353e-09  1.36012e-07 7.37603e-10   4.259e-09    0.3647 0.000418    2.022    7.821     1212120     0.95
+          0    0.995791     6.61057  9.05243e-09  1.34617e-07 7.37778e-10   4.259e-09    0.1008 0.000335     1.87    7.848     1223040  
+
+BB estimate of min-dist (placement) wirelength is ;661
+bb_cost recomputed from scratch is 6.61057.
+timing_cost recomputed from scratch is 9.05057e-09. 
+delay_cost recomputed from scratch is 1.34513e-07. 
+
+Completed placement consistency check successfully.
+
+Placement Estimated Crit Path Delay: 4.25874e-09
+
+Placement. Cost: 0.995689  bb_cost: 6.61057  td_cost: 9.05058e-09  delay_cost: 1.34513e-07.
+low, high, current -1 -1 8
+Confirming Router Algorithm: TIMING_DRIVEN.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+T_crit: 4.37354e-09.
+Successfully routed after 8 routing iterations.
+Completed net delay value cross check successfully.
+low, high, current -1 8 4
+Confirming Router Algorithm: TIMING_DRIVEN.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+T_crit: 4.48009e-09.
+Successfully routed after 10 routing iterations.
+Completed net delay value cross check successfully.
+low, high, current -1 4 2
+Error: in check_node: node 4 has no edges.
+Error: in check_node: node 10 has no edges.
+Error: in check_node: node 16 has no edges.
+Error: in check_node: node 22 has no edges.
+Error: in check_node: node 28 has no edges.
+Error: in check_node: node 34 has no edges.
+Error: in check_node: node 40 has no edges.
+Error: in check_node: node 46 has no edges.
+Error: in check_node: node 52 has no edges.
+Error: in check_node: node 58 has no edges.
+Error: in check_node: node 64 has no edges.
+Error: in check_node: node 70 has no edges.
+Error: in check_node: node 76 has no edges.
+Error: in check_node: node 82 has no edges.
+Error: in check_node: node 88 has no edges.
+Error: in check_node: node 94 has no edges.
+Error: in check_node: node 100 has no edges.
+Error: in check_node: node 106 has no edges.
+Error: in check_node: node 112 has no edges.
+Error: in check_node: node 118 has no edges.
+Error: in check_node: node 124 has no edges.
+Error: in check_node: node 130 has no edges.
+Error: in check_node: node 136 has no edges.
+Error: in check_node: node 142 has no edges.
+Error: in check_node: node 148 has no edges.
+Error: in check_node: node 154 has no edges.
+Error: in check_node: node 160 has no edges.
+Error: in check_node: node 166 has no edges.
+Error: in check_node: node 172 has no edges.
+Error: in check_node: node 178 has no edges.
+Error: in check_node: node 184 has no edges.
+Error: in check_node: node 190 has no edges.
+Error: in check_node: node 196 has no edges.
+Error: in check_node: node 202 has no edges.
+Error: in check_node: node 208 has no edges.
+Error: in check_node: node 214 has no edges.
+Error: in check_node: node 220 has no edges.
+Error: in check_node: node 226 has no edges.
+Error: in check_node: node 232 has no edges.
+Error: in check_node: node 238 has no edges.
+Error: in check_node: node 250 has no edges.
+Error: in check_node: node 260 has no edges.
+Error: in check_node: node 280 has no edges.
+Error: in check_node: node 300 has no edges.
+Error: in check_node: node 320 has no edges.
+Error: in check_node: node 340 has no edges.
+Error: in check_node: node 360 has no edges.
+Error: in check_node: node 380 has no edges.
+Error: in check_node: node 400 has no edges.
+Error: in check_node: node 420 has no edges.
+Error: in check_node: node 440 has no edges.
+Error: in check_node: node 460 has no edges.
+Error: in check_node: node 480 has no edges.
+Error: in check_node: node 500 has no edges.
+Error: in check_node: node 520 has no edges.
+Error: in check_node: node 540 has no edges.
+Error: in check_node: node 560 has no edges.
+Error: in check_node: node 580 has no edges.
+Error: in check_node: node 600 has no edges.
+Error: in check_node: node 620 has no edges.
+Error: in check_node: node 640 has no edges.
+Error: in check_node: node 660 has no edges.
+Error: in check_node: node 672 has no edges.
+Error: in check_node: node 682 has no edges.
+Error: in check_node: node 692 has no edges.
+Error: in check_node: node 702 has no edges.
+Error: in check_node: node 712 has no edges.
+Error: in check_node: node 722 has no edges.
+Error: in check_node: node 732 has no edges.
+Error: in check_node: node 742 has no edges.
+Error: in check_node: node 752 has no edges.
+Error: in check_node: node 762 has no edges.
+Error: in check_node: node 772 has no edges.
+Error: in check_node: node 782 has no edges.
+Error: in check_node: node 792 has no edges.
+Error: in check_node: node 802 has no edges.
+Error: in check_node: node 812 has no edges.
+Error: in check_node: node 822 has no edges.
+Error: in check_node: node 832 has no edges.
+Error: in check_node: node 842 has no edges.
+Error: in check_node: node 852 has no edges.
+Error: in check_node: node 862 has no edges.
+Error: in check_node: node 872 has no edges.
+Error: in check_node: node 882 has no edges.
+Error: in check_node: node 892 has no edges.
+Error: in check_node: node 902 has no edges.
+Error: in check_node: node 912 has no edges.
+Error: in check_node: node 922 has no edges.
+Error: in check_node: node 932 has no edges.
+Error: in check_node: node 942 has no edges.
+Error: in check_node: node 952 has no edges.
+Error: in check_node: node 962 has no edges.
+Error: in check_node: node 972 has no edges.
+Error: in check_node: node 982 has no edges.
+Error: in check_node: node 992 has no edges.
+Error: in check_node: node 1002 has no edges.
+Error: in check_node: node 1012 has no edges.
+Error: in check_node: node 1022 has no edges.
+Error: in check_node: node 1032 has no edges.
+Error: in check_node: node 1042 has no edges.
+Error: in check_node: node 1052 has no edges.
+Error: in check_node: node 1062 has no edges.
+Error: in check_node: node 1072 has no edges.
+Error: in check_node: node 1082 has no edges.
+Error: in check_node: node 1088 has no edges.
+Error: in check_node: node 1094 has no edges.
+Error: in check_node: node 1104 has no edges.
+Error: in check_node: node 1114 has no edges.
+Error: in check_node: node 1124 has no edges.
+Error: in check_node: node 1134 has no edges.
+Error: in check_node: node 1144 has no edges.
+Error: in check_node: node 1154 has no edges.
+Error: in check_node: node 1164 has no edges.
+Error: in check_node: node 1174 has no edges.
+Error: in check_node: node 1184 has no edges.
+Error: in check_node: node 1194 has no edges.
+Error: in check_node: node 1204 has no edges.
+Error: in check_node: node 1214 has no edges.
+Error: in check_node: node 1224 has no edges.
+Error: in check_node: node 1234 has no edges.
+Error: in check_node: node 1244 has no edges.
+Error: in check_node: node 1254 has no edges.
+Error: in check_node: node 1264 has no edges.
+Error: in check_node: node 1274 has no edges.
+Error: in check_node: node 1284 has no edges.
+Error: in check_node: node 1294 has no edges.
+Error: in check_node: node 1304 has no edges.
+Error: in check_node: node 1314 has no edges.
+Error: in check_node: node 1324 has no edges.
+Error: in check_node: node 1334 has no edges.
+Error: in check_node: node 1344 has no edges.
+Error: in check_node: node 1354 has no edges.
+Error: in check_node: node 1364 has no edges.
+Error: in check_node: node 1374 has no edges.
+Error: in check_node: node 1384 has no edges.
+Error: in check_node: node 1394 has no edges.
+Error: in check_node: node 1404 has no edges.
+Error: in check_node: node 1414 has no edges.
+Error: in check_node: node 1424 has no edges.
+Error: in check_node: node 1434 has no edges.
+Error: in check_node: node 1444 has no edges.
+Error: in check_node: node 1454 has no edges.
+Error: in check_node: node 1464 has no edges.
+Error: in check_node: node 1474 has no edges.
+Error: in check_node: node 1484 has no edges.
+Error: in check_node: node 1494 has no edges.
+Error: in check_node: node 1504 has no edges.
+Error: in check_node: node 1510 has no edges.
+Error: in check_node: node 1516 has no edges.
+Error: in check_node: node 1526 has no edges.
+Error: in check_node: node 1536 has no edges.
+Error: in check_node: node 1546 has no edges.
+Error: in check_node: node 1556 has no edges.
+Error: in check_node: node 1566 has no edges.
+Error: in check_node: node 1576 has no edges.
+Error: in check_node: node 1586 has no edges.
+Error: in check_node: node 1596 has no edges.
+Error: in check_node: node 1606 has no edges.
+Error: in check_node: node 1616 has no edges.
+Error: in check_node: node 1626 has no edges.
+Error: in check_node: node 1636 has no edges.
+Error: in check_node: node 1646 has no edges.
+Error: in check_node: node 1656 has no edges.
+Error: in check_node: node 1666 has no edges.
+Error: in check_node: node 1676 has no edges.
+Error: in check_node: node 1686 has no edges.
+Error: in check_node: node 1696 has no edges.
+Error: in check_node: node 1706 has no edges.
+Error: in check_node: node 1716 has no edges.
+Error: in check_node: node 1726 has no edges.
+Error: in check_node: node 1736 has no edges.
+Error: in check_node: node 1746 has no edges.
+Error: in check_node: node 1756 has no edges.
+Error: in check_node: node 1766 has no edges.
+Error: in check_node: node 1776 has no edges.
+Error: in check_node: node 1786 has no edges.
+Error: in check_node: node 1796 has no edges.
+Error: in check_node: node 1806 has no edges.
+Error: in check_node: node 1816 has no edges.
+Error: in check_node: node 1826 has no edges.
+Error: in check_node: node 1836 has no edges.
+Error: in check_node: node 1846 has no edges.
+Error: in check_node: node 1856 has no edges.
+Error: in check_node: node 1866 has no edges.
+Error: in check_node: node 1876 has no edges.
+Error: in check_node: node 1886 has no edges.
+Error: in check_node: node 1896 has no edges.
+Error: in check_node: node 1906 has no edges.
+Error: in check_node: node 1916 has no edges.
+Error: in check_node: node 1926 has no edges.
+Error: in check_node: node 1932 has no edges.
+Error: in check_node: node 1938 has no edges.
+Error: in check_node: node 1948 has no edges.
+Error: in check_node: node 1958 has no edges.
+Error: in check_node: node 1968 has no edges.
+Error: in check_node: node 1978 has no edges.
+Error: in check_node: node 1988 has no edges.
+Error: in check_node: node 1998 has no edges.
+Error: in check_node: node 2008 has no edges.
+Error: in check_node: node 2018 has no edges.
+Error: in check_node: node 2028 has no edges.
+Error: in check_node: node 2038 has no edges.
+Error: in check_node: node 2048 has no edges.
+Error: in check_node: node 2058 has no edges.
+Error: in check_node: node 2068 has no edges.
+Error: in check_node: node 2078 has no edges.
+Error: in check_node: node 2088 has no edges.
+Error: in check_node: node 2098 has no edges.
+Error: in check_node: node 2108 has no edges.
+Error: in check_node: node 2118 has no edges.
+Error: in check_node: node 2128 has no edges.
+Error: in check_node: node 2138 has no edges.
+Error: in check_node: node 2148 has no edges.
+Error: in check_node: node 2158 has no edges.
+Error: in check_node: node 2168 has no edges.
+Error: in check_node: node 2178 has no edges.
+Error: in check_node: node 2188 has no edges.
+Error: in check_node: node 2198 has no edges.
+Error: in check_node: node 2208 has no edges.
+Error: in check_node: node 2218 has no edges.
+Error: in check_node: node 2228 has no edges.
+Error: in check_node: node 2238 has no edges.
+Error: in check_node: node 2248 has no edges.
+Error: in check_node: node 2258 has no edges.
+Error: in check_node: node 2268 has no edges.
+Error: in check_node: node 2278 has no edges.
+Error: in check_node: node 2288 has no edges.
+Error: in check_node: node 2298 has no edges.
+Error: in check_node: node 2308 has no edges.
+Error: in check_node: node 2318 has no edges.
+Error: in check_node: node 2328 has no edges.
+Error: in check_node: node 2338 has no edges.
+Error: in check_node: node 2348 has no edges.
+Error: in check_node: node 2354 has no edges.
+Error: in check_node: node 2360 has no edges.
+Error: in check_node: node 2370 has no edges.
+Error: in check_node: node 2380 has no edges.
+Error: in check_node: node 2390 has no edges.
+Error: in check_node: node 2400 has no edges.
+Error: in check_node: node 2410 has no edges.
+Error: in check_node: node 2420 has no edges.
+Error: in check_node: node 2430 has no edges.
+Error: in check_node: node 2440 has no edges.
+Error: in check_node: node 2450 has no edges.
+Error: in check_node: node 2460 has no edges.
+Error: in check_node: node 2470 has no edges.
+Error: in check_node: node 2480 has no edges.
+Error: in check_node: node 2490 has no edges.
+Error: in check_node: node 2500 has no edges.
+Error: in check_node: node 2510 has no edges.
+Error: in check_node: node 2520 has no edges.
+Error: in check_node: node 2530 has no edges.
+Error: in check_node: node 2540 has no edges.
+Error: in check_node: node 2550 has no edges.
+Error: in check_node: node 2560 has no edges.
+Error: in check_node: node 2570 has no edges.
+Error: in check_node: node 2580 has no edges.
+Error: in check_node: node 2590 has no edges.
+Error: in check_node: node 2600 has no edges.
+Error: in check_node: node 2610 has no edges.
+Error: in check_node: node 2620 has no edges.
+Error: in check_node: node 2630 has no edges.
+Error: in check_node: node 2640 has no edges.
+Error: in check_node: node 2650 has no edges.
+Error: in check_node: node 2660 has no edges.
+Error: in check_node: node 2670 has no edges.
+Error: in check_node: node 2680 has no edges.
+Error: in check_node: node 2690 has no edges.
+Error: in check_node: node 2700 has no edges.
+Error: in check_node: node 2710 has no edges.
+Error: in check_node: node 2720 has no edges.
+Error: in check_node: node 2730 has no edges.
+Error: in check_node: node 2740 has no edges.
+Error: in check_node: node 2750 has no edges.
+Error: in check_node: node 2760 has no edges.
+Error: in check_node: node 2770 has no edges.
+Error: in check_node: node 2776 has no edges.
+Error: in check_node: node 2782 has no edges.
+Error: in check_node: node 2792 has no edges.
+Error: in check_node: node 2802 has no edges.
+Error: in check_node: node 2812 has no edges.
+Error: in check_node: node 2822 has no edges.
+Error: in check_node: node 2832 has no edges.
+Error: in check_node: node 2842 has no edges.
+Error: in check_node: node 2852 has no edges.
+Error: in check_node: node 2862 has no edges.
+Error: in check_node: node 2872 has no edges.
+Error: in check_node: node 2882 has no edges.
+Error: in check_node: node 2892 has no edges.
+Error: in check_node: node 2902 has no edges.
+Error: in check_node: node 2912 has no edges.
+Error: in check_node: node 2922 has no edges.
+Error: in check_node: node 2932 has no edges.
+Error: in check_node: node 2942 has no edges.
+Error: in check_node: node 2952 has no edges.
+Error: in check_node: node 2962 has no edges.
+Error: in check_node: node 2972 has no edges.
+Error: in check_node: node 2982 has no edges.
+Error: in check_node: node 2992 has no edges.
+Error: in check_node: node 3002 has no edges.
+Error: in check_node: node 3012 has no edges.
+Error: in check_node: node 3022 has no edges.
+Error: in check_node: node 3032 has no edges.
+Error: in check_node: node 3042 has no edges.
+Error: in check_node: node 3052 has no edges.
+Error: in check_node: node 3062 has no edges.
+Error: in check_node: node 3072 has no edges.
+Error: in check_node: node 3082 has no edges.
+Error: in check_node: node 3092 has no edges.
+Error: in check_node: node 3102 has no edges.
+Error: in check_node: node 3112 has no edges.
+Error: in check_node: node 3122 has no edges.
+Error: in check_node: node 3132 has no edges.
+Error: in check_node: node 3142 has no edges.
+Error: in check_node: node 3152 has no edges.
+Error: in check_node: node 3162 has no edges.
+Error: in check_node: node 3172 has no edges.
+Error: in check_node: node 3182 has no edges.
+Error: in check_node: node 3192 has no edges.
+Error: in check_node: node 3198 has no edges.
+Error: in check_node: node 3204 has no edges.
+Error: in check_node: node 3214 has no edges.
+Error: in check_node: node 3224 has no edges.
+Error: in check_node: node 3234 has no edges.
+Error: in check_node: node 3244 has no edges.
+Error: in check_node: node 3254 has no edges.
+Error: in check_node: node 3264 has no edges.
+Error: in check_node: node 3274 has no edges.
+Error: in check_node: node 3284 has no edges.
+Error: in check_node: node 3294 has no edges.
+Error: in check_node: node 3304 has no edges.
+Error: in check_node: node 3314 has no edges.
+Error: in check_node: node 3324 has no edges.
+Error: in check_node: node 3334 has no edges.
+Error: in check_node: node 3344 has no edges.
+Error: in check_node: node 3354 has no edges.
+Error: in check_node: node 3364 has no edges.
+Error: in check_node: node 3374 has no edges.
+Error: in check_node: node 3384 has no edges.
+Error: in check_node: node 3394 has no edges.
+Error: in check_node: node 3404 has no edges.
+Error: in check_node: node 3414 has no edges.
+Error: in check_node: node 3424 has no edges.
+Error: in check_node: node 3434 has no edges.
+Error: in check_node: node 3444 has no edges.
+Error: in check_node: node 3454 has no edges.
+Error: in check_node: node 3464 has no edges.
+Error: in check_node: node 3474 has no edges.
+Error: in check_node: node 3484 has no edges.
+Error: in check_node: node 3494 has no edges.
+Error: in check_node: node 3504 has no edges.
+Error: in check_node: node 3514 has no edges.
+Error: in check_node: node 3524 has no edges.
+Error: in check_node: node 3534 has no edges.
+Error: in check_node: node 3544 has no edges.
+Error: in check_node: node 3554 has no edges.
+Error: in check_node: node 3564 has no edges.
+Error: in check_node: node 3574 has no edges.
+Error: in check_node: node 3584 has no edges.
+Error: in check_node: node 3594 has no edges.
+Error: in check_node: node 3604 has no edges.
+Error: in check_node: node 3614 has no edges.
+Error: in check_node: node 3620 has no edges.
+Error: in check_node: node 3626 has no edges.
+Error: in check_node: node 3636 has no edges.
+Error: in check_node: node 3646 has no edges.
+Error: in check_node: node 3656 has no edges.
+Error: in check_node: node 3666 has no edges.
+Error: in check_node: node 3676 has no edges.
+Error: in check_node: node 3686 has no edges.
+Error: in check_node: node 3696 has no edges.
+Error: in check_node: node 3706 has no edges.
+Error: in check_node: node 3716 has no edges.
+Error: in check_node: node 3726 has no edges.
+Error: in check_node: node 3736 has no edges.
+Error: in check_node: node 3746 has no edges.
+Error: in check_node: node 3756 has no edges.
+Error: in check_node: node 3766 has no edges.
+Error: in check_node: node 3776 has no edges.
+Error: in check_node: node 3786 has no edges.
+Error: in check_node: node 3796 has no edges.
+Error: in check_node: node 3806 has no edges.
+Error: in check_node: node 3816 has no edges.
+Error: in check_node: node 3826 has no edges.
+Error: in check_node: node 3836 has no edges.
+Error: in check_node: node 3846 has no edges.
+Error: in check_node: node 3856 has no edges.
+Error: in check_node: node 3866 has no edges.
+Error: in check_node: node 3876 has no edges.
+Error: in check_node: node 3886 has no edges.
+Error: in check_node: node 3896 has no edges.
+Error: in check_node: node 3906 has no edges.
+Error: in check_node: node 3916 has no edges.
+Error: in check_node: node 3926 has no edges.
+Error: in check_node: node 3936 has no edges.
+Error: in check_node: node 3946 has no edges.
+Error: in check_node: node 3956 has no edges.
+Error: in check_node: node 3966 has no edges.
+Error: in check_node: node 3976 has no edges.
+Error: in check_node: node 3986 has no edges.
+Error: in check_node: node 3996 has no edges.
+Error: in check_node: node 4006 has no edges.
+Error: in check_node: node 4016 has no edges.
+Error: in check_node: node 4026 has no edges.
+Error: in check_node: node 4036 has no edges.
+Error: in check_node: node 4042 has no edges.
+Error: in check_node: node 4048 has no edges.
+Error: in check_node: node 4058 has no edges.
+Error: in check_node: node 4068 has no edges.
+Error: in check_node: node 4078 has no edges.
+Error: in check_node: node 4088 has no edges.
+Error: in check_node: node 4098 has no edges.
+Error: in check_node: node 4108 has no edges.
+Error: in check_node: node 4118 has no edges.
+Error: in check_node: node 4128 has no edges.
+Error: in check_node: node 4138 has no edges.
+Error: in check_node: node 4148 has no edges.
+Error: in check_node: node 4158 has no edges.
+Error: in check_node: node 4168 has no edges.
+Error: in check_node: node 4178 has no edges.
+Error: in check_node: node 4188 has no edges.
+Error: in check_node: node 4198 has no edges.
+Error: in check_node: node 4208 has no edges.
+Error: in check_node: node 4218 has no edges.
+Error: in check_node: node 4228 has no edges.
+Error: in check_node: node 4238 has no edges.
+Error: in check_node: node 4248 has no edges.
+Error: in check_node: node 4258 has no edges.
+Error: in check_node: node 4268 has no edges.
+Error: in check_node: node 4278 has no edges.
+Error: in check_node: node 4288 has no edges.
+Error: in check_node: node 4298 has no edges.
+Error: in check_node: node 4308 has no edges.
+Error: in check_node: node 4318 has no edges.
+Error: in check_node: node 4328 has no edges.
+Error: in check_node: node 4338 has no edges.
+Error: in check_node: node 4348 has no edges.
+Error: in check_node: node 4358 has no edges.
+Error: in check_node: node 4368 has no edges.
+Error: in check_node: node 4378 has no edges.
+Error: in check_node: node 4388 has no edges.
+Error: in check_node: node 4398 has no edges.
+Error: in check_node: node 4408 has no edges.
+Error: in check_node: node 4418 has no edges.
+Error: in check_node: node 4428 has no edges.
+Error: in check_node: node 4438 has no edges.
+Error: in check_node: node 4448 has no edges.
+Error: in check_node: node 4458 has no edges.
+Error: in check_node: node 4464 has no edges.
+Error: in check_node: node 4470 has no edges.
+Error: in check_node: node 4480 has no edges.
+Error: in check_node: node 4490 has no edges.
+Error: in check_node: node 4500 has no edges.
+Error: in check_node: node 4510 has no edges.
+Error: in check_node: node 4520 has no edges.
+Error: in check_node: node 4530 has no edges.
+Error: in check_node: node 4540 has no edges.
+Error: in check_node: node 4550 has no edges.
+Error: in check_node: node 4560 has no edges.
+Error: in check_node: node 4570 has no edges.
+Error: in check_node: node 4580 has no edges.
+Error: in check_node: node 4590 has no edges.
+Error: in check_node: node 4600 has no edges.
+Error: in check_node: node 4610 has no edges.
+Error: in check_node: node 4620 has no edges.
+Error: in check_node: node 4630 has no edges.
+Error: in check_node: node 4640 has no edges.
+Error: in check_node: node 4650 has no edges.
+Error: in check_node: node 4660 has no edges.
+Error: in check_node: node 4670 has no edges.
+Error: in check_node: node 4680 has no edges.
+Error: in check_node: node 4690 has no edges.
+Error: in check_node: node 4700 has no edges.
+Error: in check_node: node 4710 has no edges.
+Error: in check_node: node 4720 has no edges.
+Error: in check_node: node 4730 has no edges.
+Error: in check_node: node 4740 has no edges.
+Error: in check_node: node 4750 has no edges.
+Error: in check_node: node 4760 has no edges.
+Error: in check_node: node 4770 has no edges.
+Error: in check_node: node 4780 has no edges.
+Error: in check_node: node 4790 has no edges.
+Error: in check_node: node 4800 has no edges.
+Error: in check_node: node 4810 has no edges.
+Error: in check_node: node 4820 has no edges.
+Error: in check_node: node 4830 has no edges.
+Error: in check_node: node 4840 has no edges.
+Error: in check_node: node 4850 has no edges.
+Error: in check_node: node 4860 has no edges.
+Error: in check_node: node 4870 has no edges.
+Error: in check_node: node 4880 has no edges.
+Error: in check_node: node 4886 has no edges.
+Error: in check_node: node 4892 has no edges.
+Error: in check_node: node 4902 has no edges.
+Error: in check_node: node 4912 has no edges.
+Error: in check_node: node 4922 has no edges.
+Error: in check_node: node 4932 has no edges.
+Error: in check_node: node 4942 has no edges.
+Error: in check_node: node 4952 has no edges.
+Error: in check_node: node 4962 has no edges.
+Error: in check_node: node 4972 has no edges.
+Error: in check_node: node 4982 has no edges.
+Error: in check_node: node 4992 has no edges.
+Error: in check_node: node 5002 has no edges.
+Error: in check_node: node 5012 has no edges.
+Error: in check_node: node 5022 has no edges.
+Error: in check_node: node 5032 has no edges.
+Error: in check_node: node 5042 has no edges.
+Error: in check_node: node 5052 has no edges.
+Error: in check_node: node 5062 has no edges.
+Error: in check_node: node 5072 has no edges.
+Error: in check_node: node 5082 has no edges.
+Error: in check_node: node 5092 has no edges.
+Error: in check_node: node 5102 has no edges.
+Error: in check_node: node 5112 has no edges.
+Error: in check_node: node 5122 has no edges.
+Error: in check_node: node 5132 has no edges.
+Error: in check_node: node 5142 has no edges.
+Error: in check_node: node 5152 has no edges.
+Error: in check_node: node 5162 has no edges.
+Error: in check_node: node 5172 has no edges.
+Error: in check_node: node 5182 has no edges.
+Error: in check_node: node 5192 has no edges.
+Error: in check_node: node 5202 has no edges.
+Error: in check_node: node 5212 has no edges.
+Error: in check_node: node 5222 has no edges.
+Error: in check_node: node 5232 has no edges.
+Error: in check_node: node 5242 has no edges.
+Error: in check_node: node 5252 has no edges.
+Error: in check_node: node 5262 has no edges.
+Error: in check_node: node 5272 has no edges.
+Error: in check_node: node 5282 has no edges.
+Error: in check_node: node 5292 has no edges.
+Error: in check_node: node 5302 has no edges.
+Error: in check_node: node 5308 has no edges.
+Error: in check_node: node 5314 has no edges.
+Error: in check_node: node 5324 has no edges.
+Error: in check_node: node 5334 has no edges.
+Error: in check_node: node 5344 has no edges.
+Error: in check_node: node 5354 has no edges.
+Error: in check_node: node 5364 has no edges.
+Error: in check_node: node 5374 has no edges.
+Error: in check_node: node 5384 has no edges.
+Error: in check_node: node 5394 has no edges.
+Error: in check_node: node 5404 has no edges.
+Error: in check_node: node 5414 has no edges.
+Error: in check_node: node 5424 has no edges.
+Error: in check_node: node 5434 has no edges.
+Error: in check_node: node 5444 has no edges.
+Error: in check_node: node 5454 has no edges.
+Error: in check_node: node 5464 has no edges.
+Error: in check_node: node 5474 has no edges.
+Error: in check_node: node 5484 has no edges.
+Error: in check_node: node 5494 has no edges.
+Error: in check_node: node 5504 has no edges.
+Error: in check_node: node 5514 has no edges.
+Error: in check_node: node 5524 has no edges.
+Error: in check_node: node 5534 has no edges.
+Error: in check_node: node 5544 has no edges.
+Error: in check_node: node 5554 has no edges.
+Error: in check_node: node 5564 has no edges.
+Error: in check_node: node 5574 has no edges.
+Error: in check_node: node 5584 has no edges.
+Error: in check_node: node 5594 has no edges.
+Error: in check_node: node 5604 has no edges.
+Error: in check_node: node 5614 has no edges.
+Error: in check_node: node 5624 has no edges.
+Error: in check_node: node 5634 has no edges.
+Error: in check_node: node 5644 has no edges.
+Error: in check_node: node 5654 has no edges.
+Error: in check_node: node 5664 has no edges.
+Error: in check_node: node 5674 has no edges.
+Error: in check_node: node 5684 has no edges.
+Error: in check_node: node 5694 has no edges.
+Error: in check_node: node 5704 has no edges.
+Error: in check_node: node 5714 has no edges.
+Error: in check_node: node 5724 has no edges.
+Error: in check_node: node 5730 has no edges.
+Error: in check_node: node 5736 has no edges.
+Error: in check_node: node 5746 has no edges.
+Error: in check_node: node 5756 has no edges.
+Error: in check_node: node 5766 has no edges.
+Error: in check_node: node 5776 has no edges.
+Error: in check_node: node 5786 has no edges.
+Error: in check_node: node 5796 has no edges.
+Error: in check_node: node 5806 has no edges.
+Error: in check_node: node 5816 has no edges.
+Error: in check_node: node 5826 has no edges.
+Error: in check_node: node 5836 has no edges.
+Error: in check_node: node 5846 has no edges.
+Error: in check_node: node 5856 has no edges.
+Error: in check_node: node 5866 has no edges.
+Error: in check_node: node 5876 has no edges.
+Error: in check_node: node 5886 has no edges.
+Error: in check_node: node 5896 has no edges.
+Error: in check_node: node 5906 has no edges.
+Error: in check_node: node 5916 has no edges.
+Error: in check_node: node 5926 has no edges.
+Error: in check_node: node 5936 has no edges.
+Error: in check_node: node 5946 has no edges.
+Error: in check_node: node 5956 has no edges.
+Error: in check_node: node 5966 has no edges.
+Error: in check_node: node 5976 has no edges.
+Error: in check_node: node 5986 has no edges.
+Error: in check_node: node 5996 has no edges.
+Error: in check_node: node 6006 has no edges.
+Error: in check_node: node 6016 has no edges.
+Error: in check_node: node 6026 has no edges.
+Error: in check_node: node 6036 has no edges.
+Error: in check_node: node 6046 has no edges.
+Error: in check_node: node 6056 has no edges.
+Error: in check_node: node 6066 has no edges.
+Error: in check_node: node 6076 has no edges.
+Error: in check_node: node 6086 has no edges.
+Error: in check_node: node 6096 has no edges.
+Error: in check_node: node 6106 has no edges.
+Error: in check_node: node 6116 has no edges.
+Error: in check_node: node 6126 has no edges.
+Error: in check_node: node 6136 has no edges.
+Error: in check_node: node 6146 has no edges.
+Error: in check_node: node 6152 has no edges.
+Error: in check_node: node 6158 has no edges.
+Error: in check_node: node 6168 has no edges.
+Error: in check_node: node 6178 has no edges.
+Error: in check_node: node 6188 has no edges.
+Error: in check_node: node 6198 has no edges.
+Error: in check_node: node 6208 has no edges.
+Error: in check_node: node 6218 has no edges.
+Error: in check_node: node 6228 has no edges.
+Error: in check_node: node 6238 has no edges.
+Error: in check_node: node 6248 has no edges.
+Error: in check_node: node 6258 has no edges.
+Error: in check_node: node 6268 has no edges.
+Error: in check_node: node 6278 has no edges.
+Error: in check_node: node 6288 has no edges.
+Error: in check_node: node 6298 has no edges.
+Error: in check_node: node 6308 has no edges.
+Error: in check_node: node 6318 has no edges.
+Error: in check_node: node 6328 has no edges.
+Error: in check_node: node 6338 has no edges.
+Error: in check_node: node 6348 has no edges.
+Error: in check_node: node 6358 has no edges.
+Error: in check_node: node 6368 has no edges.
+Error: in check_node: node 6378 has no edges.
+Error: in check_node: node 6388 has no edges.
+Error: in check_node: node 6398 has no edges.
+Error: in check_node: node 6408 has no edges.
+Error: in check_node: node 6418 has no edges.
+Error: in check_node: node 6428 has no edges.
+Error: in check_node: node 6438 has no edges.
+Error: in check_node: node 6448 has no edges.
+Error: in check_node: node 6458 has no edges.
+Error: in check_node: node 6468 has no edges.
+Error: in check_node: node 6478 has no edges.
+Error: in check_node: node 6488 has no edges.
+Error: in check_node: node 6498 has no edges.
+Error: in check_node: node 6508 has no edges.
+Error: in check_node: node 6518 has no edges.
+Error: in check_node: node 6528 has no edges.
+Error: in check_node: node 6538 has no edges.
+Error: in check_node: node 6548 has no edges.
+Error: in check_node: node 6558 has no edges.
+Error: in check_node: node 6568 has no edges.
+Error: in check_node: node 6574 has no edges.
+Error: in check_node: node 6580 has no edges.
+Error: in check_node: node 6590 has no edges.
+Error: in check_node: node 6600 has no edges.
+Error: in check_node: node 6610 has no edges.
+Error: in check_node: node 6620 has no edges.
+Error: in check_node: node 6630 has no edges.
+Error: in check_node: node 6640 has no edges.
+Error: in check_node: node 6650 has no edges.
+Error: in check_node: node 6660 has no edges.
+Error: in check_node: node 6670 has no edges.
+Error: in check_node: node 6680 has no edges.
+Error: in check_node: node 6690 has no edges.
+Error: in check_node: node 6700 has no edges.
+Error: in check_node: node 6710 has no edges.
+Error: in check_node: node 6720 has no edges.
+Error: in check_node: node 6730 has no edges.
+Error: in check_node: node 6740 has no edges.
+Error: in check_node: node 6750 has no edges.
+Error: in check_node: node 6760 has no edges.
+Error: in check_node: node 6770 has no edges.
+Error: in check_node: node 6780 has no edges.
+Error: in check_node: node 6790 has no edges.
+Error: in check_node: node 6800 has no edges.
+Error: in check_node: node 6810 has no edges.
+Error: in check_node: node 6820 has no edges.
+Error: in check_node: node 6830 has no edges.
+Error: in check_node: node 6840 has no edges.
+Error: in check_node: node 6850 has no edges.
+Error: in check_node: node 6860 has no edges.
+Error: in check_node: node 6870 has no edges.
+Error: in check_node: node 6880 has no edges.
+Error: in check_node: node 6890 has no edges.
+Error: in check_node: node 6900 has no edges.
+Error: in check_node: node 6910 has no edges.
+Error: in check_node: node 6920 has no edges.
+Error: in check_node: node 6930 has no edges.
+Error: in check_node: node 6940 has no edges.
+Error: in check_node: node 6950 has no edges.
+Error: in check_node: node 6960 has no edges.
+Error: in check_node: node 6970 has no edges.
+Error: in check_node: node 6980 has no edges.
+Error: in check_node: node 6990 has no edges.
+Error: in check_node: node 6996 has no edges.
+Error: in check_node: node 7002 has no edges.
+Error: in check_node: node 7012 has no edges.
+Error: in check_node: node 7022 has no edges.
+Error: in check_node: node 7032 has no edges.
+Error: in check_node: node 7042 has no edges.
+Error: in check_node: node 7052 has no edges.
+Error: in check_node: node 7062 has no edges.
+Error: in check_node: node 7072 has no edges.
+Error: in check_node: node 7082 has no edges.
+Error: in check_node: node 7092 has no edges.
+Error: in check_node: node 7102 has no edges.
+Error: in check_node: node 7112 has no edges.
+Error: in check_node: node 7122 has no edges.
+Error: in check_node: node 7132 has no edges.
+Error: in check_node: node 7142 has no edges.
+Error: in check_node: node 7152 has no edges.
+Error: in check_node: node 7162 has no edges.
+Error: in check_node: node 7172 has no edges.
+Error: in check_node: node 7182 has no edges.
+Error: in check_node: node 7192 has no edges.
+Error: in check_node: node 7202 has no edges.
+Error: in check_node: node 7212 has no edges.
+Error: in check_node: node 7222 has no edges.
+Error: in check_node: node 7232 has no edges.
+Error: in check_node: node 7242 has no edges.
+Error: in check_node: node 7252 has no edges.
+Error: in check_node: node 7262 has no edges.
+Error: in check_node: node 7272 has no edges.
+Error: in check_node: node 7282 has no edges.
+Error: in check_node: node 7292 has no edges.
+Error: in check_node: node 7302 has no edges.
+Error: in check_node: node 7312 has no edges.
+Error: in check_node: node 7322 has no edges.
+Error: in check_node: node 7332 has no edges.
+Error: in check_node: node 7342 has no edges.
+Error: in check_node: node 7352 has no edges.
+Error: in check_node: node 7362 has no edges.
+Error: in check_node: node 7372 has no edges.
+Error: in check_node: node 7382 has no edges.
+Error: in check_node: node 7392 has no edges.
+Error: in check_node: node 7402 has no edges.
+Error: in check_node: node 7412 has no edges.
+Error: in check_node: node 7418 has no edges.
+Error: in check_node: node 7424 has no edges.
+Error: in check_node: node 7434 has no edges.
+Error: in check_node: node 7444 has no edges.
+Error: in check_node: node 7454 has no edges.
+Error: in check_node: node 7464 has no edges.
+Error: in check_node: node 7474 has no edges.
+Error: in check_node: node 7484 has no edges.
+Error: in check_node: node 7494 has no edges.
+Error: in check_node: node 7504 has no edges.
+Error: in check_node: node 7514 has no edges.
+Error: in check_node: node 7524 has no edges.
+Error: in check_node: node 7534 has no edges.
+Error: in check_node: node 7544 has no edges.
+Error: in check_node: node 7554 has no edges.
+Error: in check_node: node 7564 has no edges.
+Error: in check_node: node 7574 has no edges.
+Error: in check_node: node 7584 has no edges.
+Error: in check_node: node 7594 has no edges.
+Error: in check_node: node 7604 has no edges.
+Error: in check_node: node 7614 has no edges.
+Error: in check_node: node 7624 has no edges.
+Error: in check_node: node 7634 has no edges.
+Error: in check_node: node 7644 has no edges.
+Error: in check_node: node 7654 has no edges.
+Error: in check_node: node 7664 has no edges.
+Error: in check_node: node 7674 has no edges.
+Error: in check_node: node 7684 has no edges.
+Error: in check_node: node 7694 has no edges.
+Error: in check_node: node 7704 has no edges.
+Error: in check_node: node 7714 has no edges.
+Error: in check_node: node 7724 has no edges.
+Error: in check_node: node 7734 has no edges.
+Error: in check_node: node 7744 has no edges.
+Error: in check_node: node 7754 has no edges.
+Error: in check_node: node 7764 has no edges.
+Error: in check_node: node 7774 has no edges.
+Error: in check_node: node 7784 has no edges.
+Error: in check_node: node 7794 has no edges.
+Error: in check_node: node 7804 has no edges.
+Error: in check_node: node 7814 has no edges.
+Error: in check_node: node 7824 has no edges.
+Error: in check_node: node 7834 has no edges.
+Error: in check_node: node 7840 has no edges.
+Error: in check_node: node 7846 has no edges.
+Error: in check_node: node 7856 has no edges.
+Error: in check_node: node 7866 has no edges.
+Error: in check_node: node 7876 has no edges.
+Error: in check_node: node 7886 has no edges.
+Error: in check_node: node 7896 has no edges.
+Error: in check_node: node 7906 has no edges.
+Error: in check_node: node 7916 has no edges.
+Error: in check_node: node 7926 has no edges.
+Error: in check_node: node 7936 has no edges.
+Error: in check_node: node 7946 has no edges.
+Error: in check_node: node 7956 has no edges.
+Error: in check_node: node 7966 has no edges.
+Error: in check_node: node 7976 has no edges.
+Error: in check_node: node 7986 has no edges.
+Error: in check_node: node 7996 has no edges.
+Error: in check_node: node 8006 has no edges.
+Error: in check_node: node 8016 has no edges.
+Error: in check_node: node 8026 has no edges.
+Error: in check_node: node 8036 has no edges.
+Error: in check_node: node 8046 has no edges.
+Error: in check_node: node 8056 has no edges.
+Error: in check_node: node 8066 has no edges.
+Error: in check_node: node 8076 has no edges.
+Error: in check_node: node 8086 has no edges.
+Error: in check_node: node 8096 has no edges.
+Error: in check_node: node 8106 has no edges.
+Error: in check_node: node 8116 has no edges.
+Error: in check_node: node 8126 has no edges.
+Error: in check_node: node 8136 has no edges.
+Error: in check_node: node 8146 has no edges.
+Error: in check_node: node 8156 has no edges.
+Error: in check_node: node 8166 has no edges.
+Error: in check_node: node 8176 has no edges.
+Error: in check_node: node 8186 has no edges.
+Error: in check_node: node 8196 has no edges.
+Error: in check_node: node 8206 has no edges.
+Error: in check_node: node 8216 has no edges.
+Error: in check_node: node 8226 has no edges.
+Error: in check_node: node 8236 has no edges.
+Error: in check_node: node 8246 has no edges.
+Error: in check_node: node 8256 has no edges.
+Error: in check_node: node 8262 has no edges.
+Error: in check_node: node 8268 has no edges.
+Error: in check_node: node 8278 has no edges.
+Error: in check_node: node 8288 has no edges.
+Error: in check_node: node 8298 has no edges.
+Error: in check_node: node 8308 has no edges.
+Error: in check_node: node 8318 has no edges.
+Error: in check_node: node 8328 has no edges.
+Error: in check_node: node 8338 has no edges.
+Error: in check_node: node 8348 has no edges.
+Error: in check_node: node 8358 has no edges.
+Error: in check_node: node 8368 has no edges.
+Error: in check_node: node 8378 has no edges.
+Error: in check_node: node 8388 has no edges.
+Error: in check_node: node 8398 has no edges.
+Error: in check_node: node 8408 has no edges.
+Error: in check_node: node 8418 has no edges.
+Error: in check_node: node 8428 has no edges.
+Error: in check_node: node 8438 has no edges.
+Error: in check_node: node 8448 has no edges.
+Error: in check_node: node 8458 has no edges.
+Error: in check_node: node 8468 has no edges.
+Error: in check_node: node 8478 has no edges.
+Error: in check_node: node 8488 has no edges.
+Error: in check_node: node 8498 has no edges.
+Error: in check_node: node 8508 has no edges.
+Error: in check_node: node 8518 has no edges.
+Error: in check_node: node 8528 has no edges.
+Error: in check_node: node 8538 has no edges.
+Error: in check_node: node 8548 has no edges.
+Error: in check_node: node 8558 has no edges.
+Error: in check_node: node 8568 has no edges.
+Error: in check_node: node 8578 has no edges.
+Error: in check_node: node 8588 has no edges.
+Error: in check_node: node 8598 has no edges.
+Error: in check_node: node 8608 has no edges.
+Error: in check_node: node 8618 has no edges.
+Error: in check_node: node 8628 has no edges.
+Error: in check_node: node 8638 has no edges.
+Error: in check_node: node 8648 has no edges.
+Error: in check_node: node 8658 has no edges.
+Error: in check_node: node 8668 has no edges.
+Error: in check_node: node 8678 has no edges.
+Error: in check_node: node 8684 has no edges.
+Error: in check_node: node 8690 has no edges.
+Error: in check_node: node 8700 has no edges.
+Error: in check_node: node 8710 has no edges.
+Error: in check_node: node 8720 has no edges.
+Error: in check_node: node 8730 has no edges.
+Error: in check_node: node 8740 has no edges.
+Error: in check_node: node 8750 has no edges.
+Error: in check_node: node 8760 has no edges.
+Error: in check_node: node 8770 has no edges.
+Error: in check_node: node 8780 has no edges.
+Error: in check_node: node 8790 has no edges.
+Error: in check_node: node 8800 has no edges.
+Error: in check_node: node 8810 has no edges.
+Error: in check_node: node 8820 has no edges.
+Error: in check_node: node 8830 has no edges.
+Error: in check_node: node 8840 has no edges.
+Error: in check_node: node 8850 has no edges.
+Error: in check_node: node 8860 has no edges.
+Error: in check_node: node 8870 has no edges.
+Error: in check_node: node 8880 has no edges.
+Error: in check_node: node 8890 has no edges.
+Error: in check_node: node 8900 has no edges.
+Error: in check_node: node 8910 has no edges.
+Error: in check_node: node 8920 has no edges.
+Error: in check_node: node 8930 has no edges.
+Error: in check_node: node 8940 has no edges.
+Error: in check_node: node 8950 has no edges.
+Error: in check_node: node 8960 has no edges.
+Error: in check_node: node 8970 has no edges.
+Error: in check_node: node 8980 has no edges.
+Error: in check_node: node 8990 has no edges.
+Error: in check_node: node 9000 has no edges.
+Error: in check_node: node 9010 has no edges.
+Error: in check_node: node 9020 has no edges.
+Error: in check_node: node 9030 has no edges.
+Error: in check_node: node 9040 has no edges.
+Error: in check_node: node 9050 has no edges.
+Error: in check_node: node 9060 has no edges.
+Error: in check_node: node 9070 has no edges.
+Error: in check_node: node 9080 has no edges.
+Error: in check_node: node 9090 has no edges.
+Error: in check_node: node 9100 has no edges.
+Error: in check_node: node 9106 has no edges.
+Error: in check_node: node 9112 has no edges.
+Error: in check_node: node 9122 has no edges.
+Error: in check_node: node 9132 has no edges.
+Error: in check_node: node 9142 has no edges.
+Error: in check_node: node 9152 has no edges.
+Error: in check_node: node 9162 has no edges.
+Error: in check_node: node 9172 has no edges.
+Error: in check_node: node 9182 has no edges.
+Error: in check_node: node 9192 has no edges.
+Error: in check_node: node 9202 has no edges.
+Error: in check_node: node 9212 has no edges.
+Error: in check_node: node 9222 has no edges.
+Error: in check_node: node 9232 has no edges.
+Error: in check_node: node 9242 has no edges.
+Error: in check_node: node 9252 has no edges.
+Error: in check_node: node 9262 has no edges.
+Error: in check_node: node 9272 has no edges.
+Error: in check_node: node 9282 has no edges.
+Error: in check_node: node 9292 has no edges.
+Error: in check_node: node 9302 has no edges.
+Error: in check_node: node 9312 has no edges.
+Error: in check_node: node 9322 has no edges.
+Error: in check_node: node 9332 has no edges.
+Error: in check_node: node 9342 has no edges.
+Error: in check_node: node 9352 has no edges.
+Error: in check_node: node 9362 has no edges.
+Error: in check_node: node 9372 has no edges.
+Error: in check_node: node 9382 has no edges.
+Error: in check_node: node 9392 has no edges.
+Error: in check_node: node 9402 has no edges.
+Error: in check_node: node 9412 has no edges.
+Error: in check_node: node 9422 has no edges.
+Error: in check_node: node 9432 has no edges.
+Error: in check_node: node 9442 has no edges.
+Error: in check_node: node 9452 has no edges.
+Error: in check_node: node 9462 has no edges.
+Error: in check_node: node 9472 has no edges.
+Error: in check_node: node 9482 has no edges.
+Error: in check_node: node 9492 has no edges.
+Error: in check_node: node 9502 has no edges.
+Error: in check_node: node 9512 has no edges.
+Error: in check_node: node 9522 has no edges.
+Error: in check_node: node 9528 has no edges.
+Error: in check_node: node 9534 has no edges.
+Error: in check_node: node 9544 has no edges.
+Error: in check_node: node 9554 has no edges.
+Error: in check_node: node 9564 has no edges.
+Error: in check_node: node 9574 has no edges.
+Error: in check_node: node 9584 has no edges.
+Error: in check_node: node 9594 has no edges.
+Error: in check_node: node 9604 has no edges.
+Error: in check_node: node 9614 has no edges.
+Error: in check_node: node 9624 has no edges.
+Error: in check_node: node 9634 has no edges.
+Error: in check_node: node 9644 has no edges.
+Error: in check_node: node 9654 has no edges.
+Error: in check_node: node 9664 has no edges.
+Error: in check_node: node 9674 has no edges.
+Error: in check_node: node 9684 has no edges.
+Error: in check_node: node 9694 has no edges.
+Error: in check_node: node 9704 has no edges.
+Error: in check_node: node 9714 has no edges.
+Error: in check_node: node 9724 has no edges.
+Error: in check_node: node 9734 has no edges.
+Error: in check_node: node 9744 has no edges.
+Error: in check_node: node 9754 has no edges.
+Error: in check_node: node 9764 has no edges.
+Error: in check_node: node 9774 has no edges.
+Error: in check_node: node 9784 has no edges.
+Error: in check_node: node 9794 has no edges.
+Error: in check_node: node 9804 has no edges.
+Error: in check_node: node 9814 has no edges.
+Error: in check_node: node 9824 has no edges.
+Error: in check_node: node 9834 has no edges.
+Error: in check_node: node 9844 has no edges.
+Error: in check_node: node 9854 has no edges.
+Error: in check_node: node 9864 has no edges.
+Error: in check_node: node 9874 has no edges.
+Error: in check_node: node 9884 has no edges.
+Error: in check_node: node 9894 has no edges.
+Error: in check_node: node 9904 has no edges.
+Error: in check_node: node 9914 has no edges.
+Error: in check_node: node 9924 has no edges.
+Error: in check_node: node 9934 has no edges.
+Error: in check_node: node 9944 has no edges.
+Error: in check_node: node 9950 has no edges.
+Error: in check_node: node 9956 has no edges.
+Error: in check_node: node 9966 has no edges.
+Error: in check_node: node 9976 has no edges.
+Error: in check_node: node 9986 has no edges.
+Error: in check_node: node 9996 has no edges.
+Error: in check_node: node 10006 has no edges.
+Error: in check_node: node 10016 has no edges.
+Error: in check_node: node 10026 has no edges.
+Error: in check_node: node 10036 has no edges.
+Error: in check_node: node 10046 has no edges.
+Error: in check_node: node 10056 has no edges.
+Error: in check_node: node 10066 has no edges.
+Error: in check_node: node 10076 has no edges.
+Error: in check_node: node 10086 has no edges.
+Error: in check_node: node 10096 has no edges.
+Error: in check_node: node 10106 has no edges.
+Error: in check_node: node 10116 has no edges.
+Error: in check_node: node 10126 has no edges.
+Error: in check_node: node 10136 has no edges.
+Error: in check_node: node 10146 has no edges.
+Error: in check_node: node 10156 has no edges.
+Error: in check_node: node 10166 has no edges.
+Error: in check_node: node 10176 has no edges.
+Error: in check_node: node 10186 has no edges.
+Error: in check_node: node 10196 has no edges.
+Error: in check_node: node 10206 has no edges.
+Error: in check_node: node 10216 has no edges.
+Error: in check_node: node 10226 has no edges.
+Error: in check_node: node 10236 has no edges.
+Error: in check_node: node 10246 has no edges.
+Error: in check_node: node 10256 has no edges.
+Error: in check_node: node 10266 has no edges.
+Error: in check_node: node 10276 has no edges.
+Error: in check_node: node 10286 has no edges.
+Error: in check_node: node 10296 has no edges.
+Error: in check_node: node 10306 has no edges.
+Error: in check_node: node 10316 has no edges.
+Error: in check_node: node 10326 has no edges.
+Error: in check_node: node 10336 has no edges.
+Error: in check_node: node 10346 has no edges.
+Error: in check_node: node 10356 has no edges.
+Error: in check_node: node 10366 has no edges.
+Error: in check_node: node 10372 has no edges.
+Error: in check_node: node 10378 has no edges.
+Error: in check_node: node 10388 has no edges.
+Error: in check_node: node 10398 has no edges.
+Error: in check_node: node 10408 has no edges.
+Error: in check_node: node 10418 has no edges.
+Error: in check_node: node 10428 has no edges.
+Error: in check_node: node 10438 has no edges.
+Error: in check_node: node 10448 has no edges.
+Error: in check_node: node 10458 has no edges.
+Error: in check_node: node 10468 has no edges.
+Error: in check_node: node 10478 has no edges.
+Error: in check_node: node 10488 has no edges.
+Error: in check_node: node 10498 has no edges.
+Error: in check_node: node 10508 has no edges.
+Error: in check_node: node 10518 has no edges.
+Error: in check_node: node 10528 has no edges.
+Error: in check_node: node 10538 has no edges.
+Error: in check_node: node 10548 has no edges.
+Error: in check_node: node 10558 has no edges.
+Error: in check_node: node 10568 has no edges.
+Error: in check_node: node 10578 has no edges.
+Error: in check_node: node 10588 has no edges.
+Error: in check_node: node 10598 has no edges.
+Error: in check_node: node 10608 has no edges.
+Error: in check_node: node 10618 has no edges.
+Error: in check_node: node 10628 has no edges.
+Error: in check_node: node 10638 has no edges.
+Error: in check_node: node 10648 has no edges.
+Error: in check_node: node 10658 has no edges.
+Error: in check_node: node 10668 has no edges.
+Error: in check_node: node 10678 has no edges.
+Error: in check_node: node 10688 has no edges.
+Error: in check_node: node 10698 has no edges.
+Error: in check_node: node 10708 has no edges.
+Error: in check_node: node 10718 has no edges.
+Error: in check_node: node 10728 has no edges.
+Error: in check_node: node 10738 has no edges.
+Error: in check_node: node 10748 has no edges.
+Error: in check_node: node 10758 has no edges.
+Error: in check_node: node 10768 has no edges.
+Error: in check_node: node 10778 has no edges.
+Error: in check_node: node 10788 has no edges.
+Error: in check_node: node 10794 has no edges.
+Error: in check_node: node 10800 has no edges.
+Error: in check_node: node 10810 has no edges.
+Error: in check_node: node 10820 has no edges.
+Error: in check_node: node 10830 has no edges.
+Error: in check_node: node 10840 has no edges.
+Error: in check_node: node 10850 has no edges.
+Error: in check_node: node 10860 has no edges.
+Error: in check_node: node 10870 has no edges.
+Error: in check_node: node 10880 has no edges.
+Error: in check_node: node 10890 has no edges.
+Error: in check_node: node 10900 has no edges.
+Error: in check_node: node 10910 has no edges.
+Error: in check_node: node 10920 has no edges.
+Error: in check_node: node 10930 has no edges.
+Error: in check_node: node 10940 has no edges.
+Error: in check_node: node 10950 has no edges.
+Error: in check_node: node 10960 has no edges.
+Error: in check_node: node 10970 has no edges.
+Error: in check_node: node 10980 has no edges.
+Error: in check_node: node 10990 has no edges.
+Error: in check_node: node 11000 has no edges.
+Error: in check_node: node 11010 has no edges.
+Error: in check_node: node 11020 has no edges.
+Error: in check_node: node 11030 has no edges.
+Error: in check_node: node 11040 has no edges.
+Error: in check_node: node 11050 has no edges.
+Error: in check_node: node 11060 has no edges.
+Error: in check_node: node 11070 has no edges.
+Error: in check_node: node 11080 has no edges.
+Error: in check_node: node 11090 has no edges.
+Error: in check_node: node 11100 has no edges.
+Error: in check_node: node 11110 has no edges.
+Error: in check_node: node 11120 has no edges.
+Error: in check_node: node 11130 has no edges.
+Error: in check_node: node 11140 has no edges.
+Error: in check_node: node 11150 has no edges.
+Error: in check_node: node 11160 has no edges.
+Error: in check_node: node 11170 has no edges.
+Error: in check_node: node 11180 has no edges.
+Error: in check_node: node 11190 has no edges.
+Error: in check_node: node 11200 has no edges.
+Error: in check_node: node 11210 has no edges.
+Error: in check_node: node 11216 has no edges.
+Error: in check_node: node 11222 has no edges.
+Error: in check_node: node 11232 has no edges.
+Error: in check_node: node 11242 has no edges.
+Error: in check_node: node 11252 has no edges.
+Error: in check_node: node 11262 has no edges.
+Error: in check_node: node 11272 has no edges.
+Error: in check_node: node 11282 has no edges.
+Error: in check_node: node 11292 has no edges.
+Error: in check_node: node 11302 has no edges.
+Error: in check_node: node 11312 has no edges.
+Error: in check_node: node 11322 has no edges.
+Error: in check_node: node 11332 has no edges.
+Error: in check_node: node 11342 has no edges.
+Error: in check_node: node 11352 has no edges.
+Error: in check_node: node 11362 has no edges.
+Error: in check_node: node 11372 has no edges.
+Error: in check_node: node 11382 has no edges.
+Error: in check_node: node 11392 has no edges.
+Error: in check_node: node 11402 has no edges.
+Error: in check_node: node 11412 has no edges.
+Error: in check_node: node 11422 has no edges.
+Error: in check_node: node 11432 has no edges.
+Error: in check_node: node 11442 has no edges.
+Error: in check_node: node 11452 has no edges.
+Error: in check_node: node 11462 has no edges.
+Error: in check_node: node 11472 has no edges.
+Error: in check_node: node 11482 has no edges.
+Error: in check_node: node 11492 has no edges.
+Error: in check_node: node 11502 has no edges.
+Error: in check_node: node 11512 has no edges.
+Error: in check_node: node 11522 has no edges.
+Error: in check_node: node 11532 has no edges.
+Error: in check_node: node 11542 has no edges.
+Error: in check_node: node 11552 has no edges.
+Error: in check_node: node 11562 has no edges.
+Error: in check_node: node 11572 has no edges.
+Error: in check_node: node 11582 has no edges.
+Error: in check_node: node 11592 has no edges.
+Error: in check_node: node 11602 has no edges.
+Error: in check_node: node 11612 has no edges.
+Error: in check_node: node 11622 has no edges.
+Error: in check_node: node 11632 has no edges.
+Error: in check_node: node 11638 has no edges.
+Error: in check_node: node 11644 has no edges.
+Error: in check_node: node 11654 has no edges.
+Error: in check_node: node 11664 has no edges.
+Error: in check_node: node 11674 has no edges.
+Error: in check_node: node 11684 has no edges.
+Error: in check_node: node 11694 has no edges.
+Error: in check_node: node 11704 has no edges.
+Error: in check_node: node 11714 has no edges.
+Error: in check_node: node 11724 has no edges.
+Error: in check_node: node 11734 has no edges.
+Error: in check_node: node 11744 has no edges.
+Error: in check_node: node 11754 has no edges.
+Error: in check_node: node 11764 has no edges.
+Error: in check_node: node 11774 has no edges.
+Error: in check_node: node 11784 has no edges.
+Error: in check_node: node 11794 has no edges.
+Error: in check_node: node 11804 has no edges.
+Error: in check_node: node 11814 has no edges.
+Error: in check_node: node 11824 has no edges.
+Error: in check_node: node 11834 has no edges.
+Error: in check_node: node 11844 has no edges.
+Error: in check_node: node 11854 has no edges.
+Error: in check_node: node 11864 has no edges.
+Error: in check_node: node 11874 has no edges.
+Error: in check_node: node 11884 has no edges.
+Error: in check_node: node 11894 has no edges.
+Error: in check_node: node 11904 has no edges.
+Error: in check_node: node 11914 has no edges.
+Error: in check_node: node 11924 has no edges.
+Error: in check_node: node 11934 has no edges.
+Error: in check_node: node 11944 has no edges.
+Error: in check_node: node 11954 has no edges.
+Error: in check_node: node 11964 has no edges.
+Error: in check_node: node 11974 has no edges.
+Error: in check_node: node 11984 has no edges.
+Error: in check_node: node 11994 has no edges.
+Error: in check_node: node 12004 has no edges.
+Error: in check_node: node 12014 has no edges.
+Error: in check_node: node 12024 has no edges.
+Error: in check_node: node 12034 has no edges.
+Error: in check_node: node 12044 has no edges.
+Error: in check_node: node 12054 has no edges.
+Error: in check_node: node 12060 has no edges.
+Error: in check_node: node 12066 has no edges.
+Error: in check_node: node 12076 has no edges.
+Error: in check_node: node 12086 has no edges.
+Error: in check_node: node 12096 has no edges.
+Error: in check_node: node 12106 has no edges.
+Error: in check_node: node 12116 has no edges.
+Error: in check_node: node 12126 has no edges.
+Error: in check_node: node 12136 has no edges.
+Error: in check_node: node 12146 has no edges.
+Error: in check_node: node 12156 has no edges.
+Error: in check_node: node 12166 has no edges.
+Error: in check_node: node 12176 has no edges.
+Error: in check_node: node 12186 has no edges.
+Error: in check_node: node 12196 has no edges.
+Error: in check_node: node 12206 has no edges.
+Error: in check_node: node 12216 has no edges.
+Error: in check_node: node 12226 has no edges.
+Error: in check_node: node 12236 has no edges.
+Error: in check_node: node 12246 has no edges.
+Error: in check_node: node 12256 has no edges.
+Error: in check_node: node 12266 has no edges.
+Error: in check_node: node 12276 has no edges.
+Error: in check_node: node 12286 has no edges.
+Error: in check_node: node 12296 has no edges.
+Error: in check_node: node 12306 has no edges.
+Error: in check_node: node 12316 has no edges.
+Error: in check_node: node 12326 has no edges.
+Error: in check_node: node 12336 has no edges.
+Error: in check_node: node 12346 has no edges.
+Error: in check_node: node 12356 has no edges.
+Error: in check_node: node 12366 has no edges.
+Error: in check_node: node 12376 has no edges.
+Error: in check_node: node 12386 has no edges.
+Error: in check_node: node 12396 has no edges.
+Error: in check_node: node 12406 has no edges.
+Error: in check_node: node 12416 has no edges.
+Error: in check_node: node 12426 has no edges.
+Error: in check_node: node 12436 has no edges.
+Error: in check_node: node 12446 has no edges.
+Error: in check_node: node 12456 has no edges.
+Error: in check_node: node 12466 has no edges.
+Error: in check_node: node 12476 has no edges.
+Error: in check_node: node 12482 has no edges.
+Error: in check_node: node 12488 has no edges.
+Error: in check_node: node 12498 has no edges.
+Error: in check_node: node 12508 has no edges.
+Error: in check_node: node 12518 has no edges.
+Error: in check_node: node 12528 has no edges.
+Error: in check_node: node 12538 has no edges.
+Error: in check_node: node 12548 has no edges.
+Error: in check_node: node 12558 has no edges.
+Error: in check_node: node 12568 has no edges.
+Error: in check_node: node 12578 has no edges.
+Error: in check_node: node 12588 has no edges.
+Error: in check_node: node 12598 has no edges.
+Error: in check_node: node 12608 has no edges.
+Error: in check_node: node 12618 has no edges.
+Error: in check_node: node 12628 has no edges.
+Error: in check_node: node 12638 has no edges.
+Error: in check_node: node 12648 has no edges.
+Error: in check_node: node 12658 has no edges.
+Error: in check_node: node 12668 has no edges.
+Error: in check_node: node 12678 has no edges.
+Error: in check_node: node 12688 has no edges.
+Error: in check_node: node 12698 has no edges.
+Error: in check_node: node 12708 has no edges.
+Error: in check_node: node 12718 has no edges.
+Error: in check_node: node 12728 has no edges.
+Error: in check_node: node 12738 has no edges.
+Error: in check_node: node 12748 has no edges.
+Error: in check_node: node 12758 has no edges.
+Error: in check_node: node 12768 has no edges.
+Error: in check_node: node 12778 has no edges.
+Error: in check_node: node 12788 has no edges.
+Error: in check_node: node 12798 has no edges.
+Error: in check_node: node 12808 has no edges.
+Error: in check_node: node 12818 has no edges.
+Error: in check_node: node 12828 has no edges.
+Error: in check_node: node 12838 has no edges.
+Error: in check_node: node 12848 has no edges.
+Error: in check_node: node 12858 has no edges.
+Error: in check_node: node 12868 has no edges.
+Error: in check_node: node 12878 has no edges.
+Error: in check_node: node 12888 has no edges.
+Error: in check_node: node 12898 has no edges.
+Error: in check_node: node 12904 has no edges.
+Error: in check_node: node 12910 has no edges.
+Error: in check_node: node 12920 has no edges.
+Error: in check_node: node 12930 has no edges.
+Error: in check_node: node 12940 has no edges.
+Error: in check_node: node 12950 has no edges.
+Error: in check_node: node 12960 has no edges.
+Error: in check_node: node 12970 has no edges.
+Error: in check_node: node 12980 has no edges.
+Error: in check_node: node 12990 has no edges.
+Error: in check_node: node 13000 has no edges.
+Error: in check_node: node 13010 has no edges.
+Error: in check_node: node 13020 has no edges.
+Error: in check_node: node 13030 has no edges.
+Error: in check_node: node 13040 has no edges.
+Error: in check_node: node 13050 has no edges.
+Error: in check_node: node 13060 has no edges.
+Error: in check_node: node 13070 has no edges.
+Error: in check_node: node 13080 has no edges.
+Error: in check_node: node 13090 has no edges.
+Error: in check_node: node 13100 has no edges.
+Error: in check_node: node 13110 has no edges.
+Error: in check_node: node 13120 has no edges.
+Error: in check_node: node 13130 has no edges.
+Error: in check_node: node 13140 has no edges.
+Error: in check_node: node 13150 has no edges.
+Error: in check_node: node 13160 has no edges.
+Error: in check_node: node 13170 has no edges.
+Error: in check_node: node 13180 has no edges.
+Error: in check_node: node 13190 has no edges.
+Error: in check_node: node 13200 has no edges.
+Error: in check_node: node 13210 has no edges.
+Error: in check_node: node 13220 has no edges.
+Error: in check_node: node 13230 has no edges.
+Error: in check_node: node 13240 has no edges.
+Error: in check_node: node 13250 has no edges.
+Error: in check_node: node 13260 has no edges.
+Error: in check_node: node 13270 has no edges.
+Error: in check_node: node 13280 has no edges.
+Error: in check_node: node 13290 has no edges.
+Error: in check_node: node 13300 has no edges.
+Error: in check_node: node 13310 has no edges.
+Error: in check_node: node 13320 has no edges.
+Error: in check_node: node 13326 has no edges.
+Error: in check_node: node 13332 has no edges.
+Error: in check_node: node 13342 has no edges.
+Error: in check_node: node 13352 has no edges.
+Error: in check_node: node 13362 has no edges.
+Error: in check_node: node 13372 has no edges.
+Error: in check_node: node 13382 has no edges.
+Error: in check_node: node 13392 has no edges.
+Error: in check_node: node 13402 has no edges.
+Error: in check_node: node 13412 has no edges.
+Error: in check_node: node 13422 has no edges.
+Error: in check_node: node 13432 has no edges.
+Error: in check_node: node 13442 has no edges.
+Error: in check_node: node 13452 has no edges.
+Error: in check_node: node 13462 has no edges.
+Error: in check_node: node 13472 has no edges.
+Error: in check_node: node 13482 has no edges.
+Error: in check_node: node 13492 has no edges.
+Error: in check_node: node 13502 has no edges.
+Error: in check_node: node 13512 has no edges.
+Error: in check_node: node 13522 has no edges.
+Error: in check_node: node 13532 has no edges.
+Error: in check_node: node 13542 has no edges.
+Error: in check_node: node 13552 has no edges.
+Error: in check_node: node 13562 has no edges.
+Error: in check_node: node 13572 has no edges.
+Error: in check_node: node 13582 has no edges.
+Error: in check_node: node 13592 has no edges.
+Error: in check_node: node 13602 has no edges.
+Error: in check_node: node 13612 has no edges.
+Error: in check_node: node 13622 has no edges.
+Error: in check_node: node 13632 has no edges.
+Error: in check_node: node 13642 has no edges.
+Error: in check_node: node 13652 has no edges.
+Error: in check_node: node 13662 has no edges.
+Error: in check_node: node 13672 has no edges.
+Error: in check_node: node 13682 has no edges.
+Error: in check_node: node 13692 has no edges.
+Error: in check_node: node 13702 has no edges.
+Error: in check_node: node 13712 has no edges.
+Error: in check_node: node 13722 has no edges.
+Error: in check_node: node 13732 has no edges.
+Error: in check_node: node 13742 has no edges.
+Error: in check_node: node 13748 has no edges.
+Error: in check_node: node 13754 has no edges.
+Error: in check_node: node 13764 has no edges.
+Error: in check_node: node 13774 has no edges.
+Error: in check_node: node 13784 has no edges.
+Error: in check_node: node 13794 has no edges.
+Error: in check_node: node 13804 has no edges.
+Error: in check_node: node 13814 has no edges.
+Error: in check_node: node 13824 has no edges.
+Error: in check_node: node 13834 has no edges.
+Error: in check_node: node 13844 has no edges.
+Error: in check_node: node 13854 has no edges.
+Error: in check_node: node 13864 has no edges.
+Error: in check_node: node 13874 has no edges.
+Error: in check_node: node 13884 has no edges.
+Error: in check_node: node 13894 has no edges.
+Error: in check_node: node 13904 has no edges.
+Error: in check_node: node 13914 has no edges.
+Error: in check_node: node 13924 has no edges.
+Error: in check_node: node 13934 has no edges.
+Error: in check_node: node 13944 has no edges.
+Error: in check_node: node 13954 has no edges.
+Error: in check_node: node 13964 has no edges.
+Error: in check_node: node 13974 has no edges.
+Error: in check_node: node 13984 has no edges.
+Error: in check_node: node 13994 has no edges.
+Error: in check_node: node 14004 has no edges.
+Error: in check_node: node 14014 has no edges.
+Error: in check_node: node 14024 has no edges.
+Error: in check_node: node 14034 has no edges.
+Error: in check_node: node 14044 has no edges.
+Error: in check_node: node 14054 has no edges.
+Error: in check_node: node 14064 has no edges.
+Error: in check_node: node 14074 has no edges.
+Error: in check_node: node 14084 has no edges.
+Error: in check_node: node 14094 has no edges.
+Error: in check_node: node 14104 has no edges.
+Error: in check_node: node 14114 has no edges.
+Error: in check_node: node 14124 has no edges.
+Error: in check_node: node 14134 has no edges.
+Error: in check_node: node 14144 has no edges.
+Error: in check_node: node 14154 has no edges.
+Error: in check_node: node 14164 has no edges.
+Error: in check_node: node 14170 has no edges.
+Error: in check_node: node 14176 has no edges.
+Error: in check_node: node 14186 has no edges.
+Error: in check_node: node 14196 has no edges.
+Error: in check_node: node 14206 has no edges.
+Error: in check_node: node 14216 has no edges.
+Error: in check_node: node 14226 has no edges.
+Error: in check_node: node 14236 has no edges.
+Error: in check_node: node 14246 has no edges.
+Error: in check_node: node 14256 has no edges.
+Error: in check_node: node 14266 has no edges.
+Error: in check_node: node 14276 has no edges.
+Error: in check_node: node 14286 has no edges.
+Error: in check_node: node 14296 has no edges.
+Error: in check_node: node 14306 has no edges.
+Error: in check_node: node 14316 has no edges.
+Error: in check_node: node 14326 has no edges.
+Error: in check_node: node 14336 has no edges.
+Error: in check_node: node 14346 has no edges.
+Error: in check_node: node 14356 has no edges.
+Error: in check_node: node 14366 has no edges.
+Error: in check_node: node 14376 has no edges.
+Error: in check_node: node 14386 has no edges.
+Error: in check_node: node 14396 has no edges.
+Error: in check_node: node 14406 has no edges.
+Error: in check_node: node 14416 has no edges.
+Error: in check_node: node 14426 has no edges.
+Error: in check_node: node 14436 has no edges.
+Error: in check_node: node 14446 has no edges.
+Error: in check_node: node 14456 has no edges.
+Error: in check_node: node 14466 has no edges.
+Error: in check_node: node 14476 has no edges.
+Error: in check_node: node 14486 has no edges.
+Error: in check_node: node 14496 has no edges.
+Error: in check_node: node 14506 has no edges.
+Error: in check_node: node 14516 has no edges.
+Error: in check_node: node 14526 has no edges.
+Error: in check_node: node 14536 has no edges.
+Error: in check_node: node 14546 has no edges.
+Error: in check_node: node 14556 has no edges.
+Error: in check_node: node 14566 has no edges.
+Error: in check_node: node 14576 has no edges.
+Error: in check_node: node 14586 has no edges.
+Error: in check_node: node 14592 has no edges.
+Error: in check_node: node 14598 has no edges.
+Error: in check_node: node 14608 has no edges.
+Error: in check_node: node 14618 has no edges.
+Error: in check_node: node 14628 has no edges.
+Error: in check_node: node 14638 has no edges.
+Error: in check_node: node 14648 has no edges.
+Error: in check_node: node 14658 has no edges.
+Error: in check_node: node 14668 has no edges.
+Error: in check_node: node 14678 has no edges.
+Error: in check_node: node 14688 has no edges.
+Error: in check_node: node 14698 has no edges.
+Error: in check_node: node 14708 has no edges.
+Error: in check_node: node 14718 has no edges.
+Error: in check_node: node 14728 has no edges.
+Error: in check_node: node 14738 has no edges.
+Error: in check_node: node 14748 has no edges.
+Error: in check_node: node 14758 has no edges.
+Error: in check_node: node 14768 has no edges.
+Error: in check_node: node 14778 has no edges.
+Error: in check_node: node 14788 has no edges.
+Error: in check_node: node 14798 has no edges.
+Error: in check_node: node 14808 has no edges.
+Error: in check_node: node 14818 has no edges.
+Error: in check_node: node 14828 has no edges.
+Error: in check_node: node 14838 has no edges.
+Error: in check_node: node 14848 has no edges.
+Error: in check_node: node 14858 has no edges.
+Error: in check_node: node 14868 has no edges.
+Error: in check_node: node 14878 has no edges.
+Error: in check_node: node 14888 has no edges.
+Error: in check_node: node 14898 has no edges.
+Error: in check_node: node 14908 has no edges.
+Error: in check_node: node 14918 has no edges.
+Error: in check_node: node 14928 has no edges.
+Error: in check_node: node 14938 has no edges.
+Error: in check_node: node 14948 has no edges.
+Error: in check_node: node 14958 has no edges.
+Error: in check_node: node 14968 has no edges.
+Error: in check_node: node 14978 has no edges.
+Error: in check_node: node 14988 has no edges.
+Error: in check_node: node 14998 has no edges.
+Error: in check_node: node 15008 has no edges.
+Error: in check_node: node 15014 has no edges.
+Error: in check_node: node 15020 has no edges.
+Error: in check_node: node 15030 has no edges.
+Error: in check_node: node 15040 has no edges.
+Error: in check_node: node 15050 has no edges.
+Error: in check_node: node 15060 has no edges.
+Error: in check_node: node 15070 has no edges.
+Error: in check_node: node 15080 has no edges.
+Error: in check_node: node 15090 has no edges.
+Error: in check_node: node 15100 has no edges.
+Error: in check_node: node 15110 has no edges.
+Error: in check_node: node 15120 has no edges.
+Error: in check_node: node 15130 has no edges.
+Error: in check_node: node 15140 has no edges.
+Error: in check_node: node 15150 has no edges.
+Error: in check_node: node 15160 has no edges.
+Error: in check_node: node 15170 has no edges.
+Error: in check_node: node 15180 has no edges.
+Error: in check_node: node 15190 has no edges.
+Error: in check_node: node 15200 has no edges.
+Error: in check_node: node 15210 has no edges.
+Error: in check_node: node 15220 has no edges.
+Error: in check_node: node 15230 has no edges.
+Error: in check_node: node 15240 has no edges.
+Error: in check_node: node 15250 has no edges.
+Error: in check_node: node 15260 has no edges.
+Error: in check_node: node 15270 has no edges.
+Error: in check_node: node 15280 has no edges.
+Error: in check_node: node 15290 has no edges.
+Error: in check_node: node 15300 has no edges.
+Error: in check_node: node 15310 has no edges.
+Error: in check_node: node 15320 has no edges.
+Error: in check_node: node 15330 has no edges.
+Error: in check_node: node 15340 has no edges.
+Error: in check_node: node 15350 has no edges.
+Error: in check_node: node 15360 has no edges.
+Error: in check_node: node 15370 has no edges.
+Error: in check_node: node 15380 has no edges.
+Error: in check_node: node 15390 has no edges.
+Error: in check_node: node 15400 has no edges.
+Error: in check_node: node 15410 has no edges.
+Error: in check_node: node 15420 has no edges.
+Error: in check_node: node 15430 has no edges.
+Error: in check_node: node 15436 has no edges.
+Error: in check_node: node 15442 has no edges.
+Error: in check_node: node 15452 has no edges.
+Error: in check_node: node 15462 has no edges.
+Error: in check_node: node 15472 has no edges.
+Error: in check_node: node 15482 has no edges.
+Error: in check_node: node 15492 has no edges.
+Error: in check_node: node 15502 has no edges.
+Error: in check_node: node 15512 has no edges.
+Error: in check_node: node 15522 has no edges.
+Error: in check_node: node 15532 has no edges.
+Error: in check_node: node 15542 has no edges.
+Error: in check_node: node 15552 has no edges.
+Error: in check_node: node 15562 has no edges.
+Error: in check_node: node 15572 has no edges.
+Error: in check_node: node 15582 has no edges.
+Error: in check_node: node 15592 has no edges.
+Error: in check_node: node 15602 has no edges.
+Error: in check_node: node 15612 has no edges.
+Error: in check_node: node 15622 has no edges.
+Error: in check_node: node 15632 has no edges.
+Error: in check_node: node 15642 has no edges.
+Error: in check_node: node 15652 has no edges.
+Error: in check_node: node 15662 has no edges.
+Error: in check_node: node 15672 has no edges.
+Error: in check_node: node 15682 has no edges.
+Error: in check_node: node 15692 has no edges.
+Error: in check_node: node 15702 has no edges.
+Error: in check_node: node 15712 has no edges.
+Error: in check_node: node 15722 has no edges.
+Error: in check_node: node 15732 has no edges.
+Error: in check_node: node 15742 has no edges.
+Error: in check_node: node 15752 has no edges.
+Error: in check_node: node 15762 has no edges.
+Error: in check_node: node 15772 has no edges.
+Error: in check_node: node 15782 has no edges.
+Error: in check_node: node 15792 has no edges.
+Error: in check_node: node 15802 has no edges.
+Error: in check_node: node 15812 has no edges.
+Error: in check_node: node 15822 has no edges.
+Error: in check_node: node 15832 has no edges.
+Error: in check_node: node 15842 has no edges.
+Error: in check_node: node 15852 has no edges.
+Error: in check_node: node 15858 has no edges.
+Error: in check_node: node 15864 has no edges.
+Error: in check_node: node 15874 has no edges.
+Error: in check_node: node 15884 has no edges.
+Error: in check_node: node 15894 has no edges.
+Error: in check_node: node 15904 has no edges.
+Error: in check_node: node 15914 has no edges.
+Error: in check_node: node 15924 has no edges.
+Error: in check_node: node 15934 has no edges.
+Error: in check_node: node 15944 has no edges.
+Error: in check_node: node 15954 has no edges.
+Error: in check_node: node 15964 has no edges.
+Error: in check_node: node 15974 has no edges.
+Error: in check_node: node 15984 has no edges.
+Error: in check_node: node 15994 has no edges.
+Error: in check_node: node 16004 has no edges.
+Error: in check_node: node 16014 has no edges.
+Error: in check_node: node 16024 has no edges.
+Error: in check_node: node 16034 has no edges.
+Error: in check_node: node 16044 has no edges.
+Error: in check_node: node 16054 has no edges.
+Error: in check_node: node 16064 has no edges.
+Error: in check_node: node 16074 has no edges.
+Error: in check_node: node 16084 has no edges.
+Error: in check_node: node 16094 has no edges.
+Error: in check_node: node 16104 has no edges.
+Error: in check_node: node 16114 has no edges.
+Error: in check_node: node 16124 has no edges.
+Error: in check_node: node 16134 has no edges.
+Error: in check_node: node 16144 has no edges.
+Error: in check_node: node 16154 has no edges.
+Error: in check_node: node 16164 has no edges.
+Error: in check_node: node 16174 has no edges.
+Error: in check_node: node 16184 has no edges.
+Error: in check_node: node 16194 has no edges.
+Error: in check_node: node 16204 has no edges.
+Error: in check_node: node 16214 has no edges.
+Error: in check_node: node 16224 has no edges.
+Error: in check_node: node 16234 has no edges.
+Error: in check_node: node 16244 has no edges.
+Error: in check_node: node 16254 has no edges.
+Error: in check_node: node 16264 has no edges.
+Error: in check_node: node 16274 has no edges.
+Error: in check_node: node 16280 has no edges.
+Error: in check_node: node 16286 has no edges.
+Error: in check_node: node 16296 has no edges.
+Error: in check_node: node 16306 has no edges.
+Error: in check_node: node 16316 has no edges.
+Error: in check_node: node 16326 has no edges.
+Error: in check_node: node 16336 has no edges.
+Error: in check_node: node 16346 has no edges.
+Error: in check_node: node 16356 has no edges.
+Error: in check_node: node 16366 has no edges.
+Error: in check_node: node 16376 has no edges.
+Error: in check_node: node 16386 has no edges.
+Error: in check_node: node 16396 has no edges.
+Error: in check_node: node 16406 has no edges.
+Error: in check_node: node 16416 has no edges.
+Error: in check_node: node 16426 has no edges.
+Error: in check_node: node 16436 has no edges.
+Error: in check_node: node 16446 has no edges.
+Error: in check_node: node 16456 has no edges.
+Error: in check_node: node 16466 has no edges.
+Error: in check_node: node 16476 has no edges.
+Error: in check_node: node 16486 has no edges.
+Error: in check_node: node 16496 has no edges.
+Error: in check_node: node 16506 has no edges.
+Error: in check_node: node 16516 has no edges.
+Error: in check_node: node 16526 has no edges.
+Error: in check_node: node 16536 has no edges.
+Error: in check_node: node 16546 has no edges.
+Error: in check_node: node 16556 has no edges.
+Error: in check_node: node 16566 has no edges.
+Error: in check_node: node 16576 has no edges.
+Error: in check_node: node 16586 has no edges.
+Error: in check_node: node 16596 has no edges.
+Error: in check_node: node 16606 has no edges.
+Error: in check_node: node 16616 has no edges.
+Error: in check_node: node 16626 has no edges.
+Error: in check_node: node 16636 has no edges.
+Error: in check_node: node 16646 has no edges.
+Error: in check_node: node 16656 has no edges.
+Error: in check_node: node 16666 has no edges.
+Error: in check_node: node 16676 has no edges.
+Error: in check_node: node 16686 has no edges.
+Error: in check_node: node 16696 has no edges.
+Error: in check_node: node 16702 has no edges.
+Error: in check_node: node 16708 has no edges.
+Error: in check_node: node 16718 has no edges.
+Error: in check_node: node 16728 has no edges.
+Error: in check_node: node 16738 has no edges.
+Error: in check_node: node 16748 has no edges.
+Error: in check_node: node 16758 has no edges.
+Error: in check_node: node 16768 has no edges.
+Error: in check_node: node 16778 has no edges.
+Error: in check_node: node 16788 has no edges.
+Error: in check_node: node 16798 has no edges.
+Error: in check_node: node 16808 has no edges.
+Error: in check_node: node 16818 has no edges.
+Error: in check_node: node 16828 has no edges.
+Error: in check_node: node 16838 has no edges.
+Error: in check_node: node 16848 has no edges.
+Error: in check_node: node 16858 has no edges.
+Error: in check_node: node 16868 has no edges.
+Error: in check_node: node 16878 has no edges.
+Error: in check_node: node 16888 has no edges.
+Error: in check_node: node 16898 has no edges.
+Error: in check_node: node 16908 has no edges.
+Error: in check_node: node 16918 has no edges.
+Error: in check_node: node 16928 has no edges.
+Error: in check_node: node 16938 has no edges.
+Error: in check_node: node 16948 has no edges.
+Error: in check_node: node 16958 has no edges.
+Error: in check_node: node 16968 has no edges.
+Error: in check_node: node 16978 has no edges.
+Error: in check_node: node 16988 has no edges.
+Error: in check_node: node 16998 has no edges.
+Error: in check_node: node 17008 has no edges.
+Error: in check_node: node 17018 has no edges.
+Error: in check_node: node 17028 has no edges.
+Error: in check_node: node 17038 has no edges.
+Error: in check_node: node 17048 has no edges.
+Error: in check_node: node 17058 has no edges.
+Error: in check_node: node 17068 has no edges.
+Error: in check_node: node 17078 has no edges.
+Error: in check_node: node 17088 has no edges.
+Error: in check_node: node 17098 has no edges.
+Error: in check_node: node 17108 has no edges.
+Error: in check_node: node 17118 has no edges.
+Error: in check_node: node 17124 has no edges.
+Error: in check_node: node 17150 has no edges.
+Error: in check_node: node 17170 has no edges.
+Error: in check_node: node 17190 has no edges.
+Error: in check_node: node 17210 has no edges.
+Error: in check_node: node 17230 has no edges.
+Error: in check_node: node 17250 has no edges.
+Error: in check_node: node 17270 has no edges.
+Error: in check_node: node 17290 has no edges.
+Error: in check_node: node 17310 has no edges.
+Error: in check_node: node 17330 has no edges.
+Error: in check_node: node 17350 has no edges.
+Error: in check_node: node 17370 has no edges.
+Error: in check_node: node 17390 has no edges.
+Error: in check_node: node 17410 has no edges.
+Error: in check_node: node 17430 has no edges.
+Error: in check_node: node 17450 has no edges.
+Error: in check_node: node 17470 has no edges.
+Error: in check_node: node 17490 has no edges.
+Error: in check_node: node 17510 has no edges.
+Error: in check_node: node 17530 has no edges.
+Error: in check_node: node 17546 has no edges.
+Error: in check_node: node 17558 has no edges.
+Error: in check_node: node 17564 has no edges.
+Error: in check_node: node 17570 has no edges.
+Error: in check_node: node 17576 has no edges.
+Error: in check_node: node 17582 has no edges.
+Error: in check_node: node 17588 has no edges.
+Error: in check_node: node 17594 has no edges.
+Error: in check_node: node 17600 has no edges.
+Error: in check_node: node 17606 has no edges.
+Error: in check_node: node 17612 has no edges.
+Error: in check_node: node 17618 has no edges.
+Error: in check_node: node 17624 has no edges.
+Error: in check_node: node 17630 has no edges.
+Error: in check_node: node 17636 has no edges.
+Error: in check_node: node 17642 has no edges.
+Error: in check_node: node 17648 has no edges.
+Error: in check_node: node 17654 has no edges.
+Error: in check_node: node 17660 has no edges.
+Error: in check_node: node 17666 has no edges.
+Error: in check_node: node 17672 has no edges.
+Error: in check_node: node 17678 has no edges.
+Error: in check_node: node 17684 has no edges.
+Error: in check_node: node 17690 has no edges.
+Error: in check_node: node 17696 has no edges.
+Error: in check_node: node 17702 has no edges.
+Error: in check_node: node 17708 has no edges.
+Error: in check_node: node 17714 has no edges.
+Error: in check_node: node 17720 has no edges.
+Error: in check_node: node 17726 has no edges.
+Error: in check_node: node 17732 has no edges.
+Error: in check_node: node 17738 has no edges.
+Error: in check_node: node 17744 has no edges.
+Error: in check_node: node 17750 has no edges.
+Error: in check_node: node 17756 has no edges.
+Error: in check_node: node 17762 has no edges.
+Error: in check_node: node 17768 has no edges.
+Error: in check_node: node 17774 has no edges.
+Error: in check_node: node 17780 has no edges.
+Error: in check_node: node 17786 has no edges.
+Error: in check_node: node 17792 has no edges.
+Confirming Router Algorithm: TIMING_DRIVEN.
+Empty heap occurred in get_heap_head.
+Some blocks are impossible to connect in this architecture.
+Routing failed.
+
+Checking to ensure routing is legal ...
+Completed routing consistency check successfully.
+
+Serial number (magic cookie) for the routing is: 27087081
+Best routing used a channel width factor of 4.
+
+
+Average number of bends per net: 3.53623  Maximum # of bends: 38
+
+
+The number of routed nets (nonglobal): 69
+Wirelength results (all in units of 1 clb segments):
+	Total wirelength: 919   Average net length: 13.3188
+	Maximum net length: 216
+
+Wirelength results in terms of physical segments:
+	Total wiring segments used: 504   Av. wire segments per net: 7.30435
+	Maximum segments used by a net: 116
+
+
+X - Directed channels:
+
+j	max occ	av_occ		capacity
+0	4	2.46341  	4
+1	3	1.80488  	4
+2	3	0.780488 	4
+3	2	0.170732 	4
+4	1	0.121951 	4
+5	1	0.0731707	4
+6	1	0.0975610	4
+7	3	1.09756  	4
+8	2	0.121951 	4
+9	1	0.0243902	4
+10	1	0.0243902	4
+11	0	0.00000  	4
+12	2	0.0731707	4
+13	2	0.121951 	4
+14	1	0.0731707	4
+15	2	0.0975610	4
+16	1	0.0243902	4
+17	1	0.0243902	4
+18	2	0.121951 	4
+19	2	0.0975610	4
+20	1	1.00000  	4
+21	1	0.0731707	4
+22	0	0.00000  	4
+23	1	0.0487805	4
+24	3	0.0975610	4
+25	1	0.0243902	4
+26	0	0.00000  	4
+27	1	0.0487805	4
+28	0	0.00000  	4
+29	2	0.0487805	4
+30	1	0.0243902	4
+31	1	0.0243902	4
+32	1	0.0243902	4
+33	0	0.00000  	4
+34	0	0.00000  	4
+35	1	0.0487805	4
+36	1	0.0731707	4
+37	1	0.0243902	4
+38	1	0.0731707	4
+39	1	0.121951 	4
+40	2	0.439024 	4
+41	2	1.68293  	4
+
+Y - Directed channels:
+
+i	max occ	av_occ		capacity
+0	4	2.80488  	4
+1	4	2.04878  	4
+2	2	0.0975610	4
+3	2	0.121951 	4
+4	1	0.0731707	4
+5	2	0.0731707	4
+6	1	0.0487805	4
+7	1	0.0487805	4
+8	0	0.00000  	4
+9	0	0.00000  	4
+10	0	0.00000  	4
+11	0	0.00000  	4
+12	0	0.00000  	4
+13	1	0.0243902	4
+14	1	0.0243902	4
+15	1	0.0243902	4
+16	1	0.219512 	4
+17	1	0.0243902	4
+18	1	0.0243902	4
+19	2	0.585366 	4
+20	3	0.195122 	4
+21	1	0.0487805	4
+22	3	0.170732 	4
+23	2	0.0975610	4
+24	2	0.0731707	4
+25	2	0.0975610	4
+26	2	0.0731707	4
+27	2	0.0975610	4
+28	2	0.195122 	4
+29	2	0.0731707	4
+30	0	0.00000  	4
+31	2	0.146341 	4
+32	0	0.00000  	4
+33	0	0.00000  	4
+34	1	0.0487805	4
+35	1	0.0487805	4
+36	2	0.0731707	4
+37	1	0.0487805	4
+38	0	0.00000  	4
+39	2	0.195122 	4
+40	3	1.14634  	4
+41	4	2.04878  	4
+
+Total Tracks in X-direction: 168  in Y-direction: 168
+
+Logic Area (in minimum width transistor areas):
+Total Logic Area: 5.043e+07  Per 1x1 logic tile: 30000
+
+Routing area (in minimum width transistor areas):
+Total Routing Area: 955319.  Per logic tile: 568.304
+
+Segment usage by type (index):
+Segment type       Fractional utilization
+------------       ----------------------
+       0                  0.0714
+
+Segment usage by length:
+Segment length       Fractional utilization
+--------------       ----------------------
+        2                   0.0714
+
+Critical Path: 4.48009e-09 (s)
+
+Time elapsed (PLACE&ROUTE): 767.858000 ms
+
+
+Time elapsed (Fernando): 767.869000 ms
+
