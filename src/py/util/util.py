@@ -6,8 +6,9 @@ import json
 from typing import List, Tuple, Dict
 import pandas as pd
 from matplotlib import pyplot as plt
+from numpy.f2py.auxfuncs import throw_error
 
-from src.py.graph.graph import Graph
+
 
 
 def get_project_root() -> str:
@@ -113,49 +114,58 @@ def generate_pic():
         plt.savefig(verify_path(root_path) + pics_folder + graph, format='png')
         plt.close()
 
-
+from src.py.graph.graph import Graph
 def generate_vpr_data(graph: Graph, data, net_path, place_path):
-    net_name = f"{data['dot_name']}_{data['placer']}_{data['edges_algorithm']}_{data['exec_id']}.net"
+    net_name = f"{data['dotName']}_{data['placer']}_{data['edgesAlgorithm']}_{data['execId']}.net"
     nodes_idx = graph.nodes_to_idx  # data["nodes_idx"]
     with open(net_path + net_name, 'w') as net_file:
 
         out_nodes = []
         pred_out_nodes = []
+        dotName = data['dotName']
 
-        for no in list(graph.g.nodes()):
-            if "Level" in no and "title" in no:
-                continue
-            elif graph.g.out_degree(no) == 0:
+        if "_k3" in dotName:
+            k = 3
+        elif "_k4" in dotName:
+            k = 4
+        elif "_k5" in dotName:
+            k = 5
+        elif "_k6" in dotName:
+            k = 6
+        else:
+            throw_error("error in k")
+
+        for no in list(graph.g.nodes):
+            a = graph.g.in_degree(no)
+            b = graph.g.out_degree(no)
+            if graph.g.out_degree(no) == 0:
                 for pre in list(graph.g.predecessors(no)):
-                    pre_ = nodes_idx[pre]
-                    net_file.write(f".output out:{pre_}\n")
-                    net_file.write(f"pinlist:  {pre_}\n\n")
-                    out_nodes.append(nodes_idx[no])
-                    pred_out_nodes.append(nodes_idx[pre])
+                    net_file.write(f".output out_{no}:{pre}\n")
+                    net_file.write(f"pinlist:  {pre}\n\n")
 
             elif graph.g.in_degree(no) == 0:
-                net_file.write(f".input {nodes_idx[no]}\n")
-                net_file.write(f"pinlist:  {nodes_idx[no]}\n\n")
+                net_file.write(f".input {no}\n")
+                net_file.write(f"pinlist:  {no}\n\n")
             else:
-                net_file.write(f".clb {nodes_idx[no]}  # Only LUT used.\n")
+                net_file.write(f".clb {no}  # Only LUT used.\n")
                 net_file.write('pinlist:')
                 i = 0
                 for pre in list(graph.g.predecessors(no)):
-                    net_file.write(f" {nodes_idx[pre]}")
+                    net_file.write(f" {pre}")
                     i += 1
-                net_file.write(' open' * (4 - i))
-                net_file.write(f" {nodes_idx[no]}")
+                net_file.write(' open' * (k - i))
+                net_file.write(f" {no}")
                 net_file.write(' open\n')
 
-                net_file.write(f"subblock: {nodes_idx[no]}")
+                net_file.write(f"subblock: {no}")
                 for j in range(i):
                     net_file.write(f" {j}")
-                net_file.write(' open' * (4 - i))
-                net_file.write(' 4 open\n\n')
+                net_file.write(' open' * (k - i))
+                net_file.write(f' {k} open\n\n')
 
     net_file.close()
 
-    place_name = f"{data['dot_name']}_{data['placer']}_{data['edges_algorithm']}_{data['exec_id']}.place"
+    place_name = f"{data['dotName']}_{data['placer']}_{data['edgesAlgorithm']}_{data['execId']}.place"
     placement = data["placement"]
     n2c = data["n2c"]
     output_nodes = graph.output_nodes_idx
