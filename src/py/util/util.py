@@ -170,7 +170,7 @@ def generate_vpr_data(graph: Graph, data, net_path, place_path):
     n2c = data["n2c"]
     output_nodes = graph.output_nodes_idx
 
-    grid_height = grid_width = int(sqrt(len(data["placement"])))
+    grid_height = grid_width = graph.n_cells_sqrt
 
     with open(place_path + place_name, 'w') as place_file:
         place_file.write(f"Netlist file: net/{net_name}  Architecture file: arch/k4-n1.xml\n")
