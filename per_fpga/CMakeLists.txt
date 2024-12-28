@@ -1,5 +1,5 @@
 # Versão mínima do CMake
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.29)
 
 # Nome do projeto
 project(PER_FPGA)
