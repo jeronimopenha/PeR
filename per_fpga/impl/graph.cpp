@@ -2,15 +2,8 @@
 
 
 void getGraphData() {
-    std::unordered_map<std::string, std::unordered_set<std::string> > succ_str;
-    std::unordered_map<std::string, std::unordered_set<std::string> > pred_str;
     std::unordered_set<std::string> nodesStr;
-    std::unordered_map<std::string, int> nodesToIdx;
-    std::unordered_map<int, std::string> idxToNodes;
-
     std::vector<std::pair<std::string, std::string> > edgesStr;
-    std::vector<std::string> inputNodesStr;
-    std::vector<std::string> outputNodesStr;
 
     std::ifstream dotFile(dotPath);
     std::string line;
@@ -21,15 +14,14 @@ void getGraphData() {
         return;
     }
 
-    //FIXME inplement the idx references here
-    //Here I will get the nodes and edges to use in other parts of the code
+    //1 - Read edges and get a list of nodes
     while (std::getline(dotFile, line)) {
         // Look for lines that define edges
 
         if (line.find("->") != std::string::npos) {
             std::string toNode;
             std::string fromNode;
-            n_edges++;
+            nEdges++;
 
             std::istringstream iss(line);
             std::string word;
@@ -47,44 +39,61 @@ void getGraphData() {
 
             nodesStr.insert(fromNode);
             nodesStr.insert(toNode);
-            succ_str[fromNode].insert(toNode);
-            pred_str[toNode].insert(fromNode);
             edgesStr.emplace_back(fromNode, toNode);
+            nEdges += 1;
         }
     }
     dotFile.close();
     nNodes = static_cast<int>(nodesStr.size());
 
-    //nodestoidx and idxtonodes
-    //inputNodes str and idx
-    //outputNodes str and idx
-    int counter = 0;
-    for (auto node: nodesStr) {
-        nodesToIdx[node] = counter;
-        idxToNodes[counter] = node;
+    //2 - Create the dictinary nodesToIdx
+    std::unordered_map<std::string, int> nodesToIdx;
 
-        if (auto it = succ_str.find(node); it == succ_str.end()) {
-            outputNodesStr.push_back(node);
-            outputNodes.push_back(counter);
-        }
-        if (auto it = pred_str.find(node); it == pred_str.end()) {
-            inputNodesStr.push_back(node);
-            inputNodes.push_back(counter);
-        }
+    int counter = 0;
+    for (const auto &node: nodesStr) {
+        nodesToIdx[node] = counter;
         counter++;
     }
 
-    const int adjacencySize = static_cast<int>(pow(2, ceil(log2(static_cast<int>(nNodes)))));
-
-    successors = std::vector<std::vector<int> >(adjacencySize, std::vector<int>(adjacencySize, -1));
-    predecessors = std::vector<std::vector<int> >(adjacencySize, std::vector<int>(adjacencySize, -1));
+    //3 - strEdges to idxEdges
+    //find the successors and the predecessors
+    //and find how many succ and pred each node have
 
     //edgesIdx
+    //successors
+    //predecessors
+
+    nSuccV = std::vector<int>(nNodes, 0);
+    nPredV = std::vector<int>(nNodes, 0);
+    successors = std::vector<bool>(nNodes * nNodes, false);
+    predecessors = std::vector<bool>(nNodes * nNodes, false);
     for (const auto &[fst, snd]: edgesStr) {
-        edges.emplace_back(nodesToIdx[fst], nodesToIdx[snd]);
+        int nodeF = nodesToIdx[fst], nodeT = nodesToIdx[snd];
+        gEdges.emplace_back(nodeF, nodeT);
+
+        int l_offset;
+        l_offset = nodeF * nNodes;
+        successors[l_offset + nodeT] = true;
+        l_offset = nodeT * nNodes;
+        predecessors[l_offset + nodeF] = true;
+
+        nSuccV[nodeF] += 1;
+        nPredV[nodeT] += 1;
     }
 
-    int totalInOut = inputNodes.size() + outputNodes.size();
+    //input and output nodes
+    for (int i = 0; i < nNodes; i++) {
+        if (nSuccV[i] == 0) {
+            outputNodes.push_back(i);
+        }
+        if (nPredV[i] == 0) {
+            inputNodes.push_back(i);
+        }
+    }
+
+    int a = 1;
+
+    int totalInOut = static_cast<int>(inputNodes.size() + outputNodes.size());
     int nBaseNodes = nNodes - totalInOut;
     int nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     int nBorderCells = nCellsBaseSqrt * 4;
@@ -96,4 +105,39 @@ void getGraphData() {
     int totalCells = nCellsBase + nBorderCells;
     nCellsSqrt = ceil(sqrt(totalCells));
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
+}
+
+//FIXME
+std::vector<std::pair<int, int> > getEdgesDepthFirst() {
+    // Copy input nodes and shuffle if needed
+    std::vector<std::string> input_list = inputNodesStr;
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(input_list.begin(), input_list.end(), g);
+
+    std::vector<std::string> stack(input_list); // Initialize stack with input_list
+    std::vector<std::pair<std::string, std::string> > edges;
+    std::unordered_set<std::string> visited;
+
+    while (!stack.empty()) {
+        std::string n = stack.back();
+        stack.pop_back();
+
+        if (visited.find(n) != visited.end()) {
+            continue;
+        }
+        visited.insert(n);
+
+
+        // Process all neighbors without priority
+        for (const auto &neigh: succ[n]) {
+            if (visited.find(neigh) == visited.end()) {
+                stack.push_back(neigh);
+                edges.emplace_back(n, neigh);
+            }
+        }
+    }
+
+    return edges;
 }

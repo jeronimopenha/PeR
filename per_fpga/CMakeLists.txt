@@ -16,11 +16,11 @@ file(GLOB_RECURSE SRCS impl/*.cpp)
 include_directories(include)
 
 # Adicionar o primeiro executável
-add_executable(yoto_main yoto_main.cpp ${SRCS}
-        include/util.h
-        impl/util.cpp
-        impl/graph.cpp
-        include/graph.h)
+add_executable(yoto_base yotoBaseMain.cpp ${SRCS}
+        include/yotoBase.h
+        impl/yotoBase.cpp)
+
+add_executable(yoto_cache yotoCacheMain.cpp ${SRCS})
 
 
 

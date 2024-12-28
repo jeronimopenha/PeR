@@ -10,7 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/jeronimo/GIT/PeR/per_fpga/impl/graph.cpp" "CMakeFiles/yoto_main.dir/impl/graph.cpp.o" "gcc" "CMakeFiles/yoto_main.dir/impl/graph.cpp.o.d"
   "/home/jeronimo/GIT/PeR/per_fpga/impl/util.cpp" "CMakeFiles/yoto_main.dir/impl/util.cpp.o" "gcc" "CMakeFiles/yoto_main.dir/impl/util.cpp.o.d"
-  "/home/jeronimo/GIT/PeR/per_fpga/yoto_main.cpp" "CMakeFiles/yoto_main.dir/yoto_main.cpp.o" "gcc" "CMakeFiles/yoto_main.dir/yoto_main.cpp.o.d"
+  "/home/jeronimo/GIT/PeR/per_fpga/yoto_base_main.cpp" "CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o" "gcc" "CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

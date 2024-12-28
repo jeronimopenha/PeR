@@ -7,13 +7,13 @@
 
 #include <string>
 #include <vector>
+#include <utility>
+#include <random>
 #include <unordered_map>
 #include <unordered_set>
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <utility>
-#include <random>
 #include<chrono>
 #include <algorithm>
 #include <cmath>
@@ -22,23 +22,25 @@
 inline std::string dotPath;
 inline std::string dotName;
 
-inline int n_edges = 0;
+inline int nEdges = 0;
 inline int nNodes = 0;
 inline int nCells = 0;
 inline int nCellsSqrt = 0;
 
-//The adjacency tables are matrices power by 2
 //Adjacency for successors
-inline std::vector<std::vector<int> > successors;
+inline std::vector<bool> successors;
 //Adjacency for predecessors
-inline std::vector<std::vector<int> > predecessors;
+inline std::vector<bool> predecessors;
 //Edges list
-inline std::vector<std::pair<int, int> > edges;
+inline std::vector<std::pair<int, int> > gEdges;
 //input nodes
-inline std::vector<int> inputNodes;
+inline std::vector<int> nSuccV;
 //output nodes
+inline std::vector<int> nPredV;
+inline std::vector<int> inputNodes;
 inline std::vector<int> outputNodes;
 
 void getGraphData();
+std::vector<std::pair<std::string, std::string> > getEdgesDepthFirst();
 
 #endif //GRAPH_H

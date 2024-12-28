@@ -1,6 +1,6 @@
-#include <iostream>
 #include  "util.h"
 #include  "graph.h"
+#include "yotoBase.h"
 
 
 int main() {
@@ -22,10 +22,15 @@ int main() {
         //reading graph variables
         getGraphData();
 
-        /*Graph g(fst, snd.substr(0, snd.size() - 4)); // Remove a extensão ".dot"
-        FPGAPPeR fpgaPer(g);
+        //execution parameters
         int nExec = 100;
-        std::string baseFolder = "reports/fpga/outputs";
+        std::string baseFolder = "reports/fpga/yoto_base";
+
+        yotoBase();
+
+        /*
+        FPGAPPeR fpgaPer(g);
+
         std::vector<std::string> placers = {"yoto"};
 
         for (const auto &placer: placers) {

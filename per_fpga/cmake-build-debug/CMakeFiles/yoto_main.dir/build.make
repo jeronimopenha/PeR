@@ -69,19 +69,19 @@ include CMakeFiles/yoto_main.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/yoto_main.dir/flags.make
 
-CMakeFiles/yoto_main.dir/yoto_main.cpp.o: CMakeFiles/yoto_main.dir/flags.make
-CMakeFiles/yoto_main.dir/yoto_main.cpp.o: /home/jeronimo/GIT/PeR/per_fpga/yoto_main.cpp
-CMakeFiles/yoto_main.dir/yoto_main.cpp.o: CMakeFiles/yoto_main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jeronimo/GIT/PeR/per_fpga/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/yoto_main.dir/yoto_main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/yoto_main.dir/yoto_main.cpp.o -MF CMakeFiles/yoto_main.dir/yoto_main.cpp.o.d -o CMakeFiles/yoto_main.dir/yoto_main.cpp.o -c /home/jeronimo/GIT/PeR/per_fpga/yoto_main.cpp
+CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o: CMakeFiles/yoto_main.dir/flags.make
+CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o: /home/jeronimo/GIT/PeR/per_fpga/yoto_base_main.cpp
+CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o: CMakeFiles/yoto_main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jeronimo/GIT/PeR/per_fpga/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o -MF CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o.d -o CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o -c /home/jeronimo/GIT/PeR/per_fpga/yoto_base_main.cpp
 
-CMakeFiles/yoto_main.dir/yoto_main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/yoto_main.dir/yoto_main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jeronimo/GIT/PeR/per_fpga/yoto_main.cpp > CMakeFiles/yoto_main.dir/yoto_main.cpp.i
+CMakeFiles/yoto_main.dir/yoto_base_main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/yoto_main.dir/yoto_base_main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jeronimo/GIT/PeR/per_fpga/yoto_base_main.cpp > CMakeFiles/yoto_main.dir/yoto_base_main.cpp.i
 
-CMakeFiles/yoto_main.dir/yoto_main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/yoto_main.dir/yoto_main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jeronimo/GIT/PeR/per_fpga/yoto_main.cpp -o CMakeFiles/yoto_main.dir/yoto_main.cpp.s
+CMakeFiles/yoto_main.dir/yoto_base_main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/yoto_main.dir/yoto_base_main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jeronimo/GIT/PeR/per_fpga/yoto_base_main.cpp -o CMakeFiles/yoto_main.dir/yoto_base_main.cpp.s
 
 CMakeFiles/yoto_main.dir/impl/graph.cpp.o: CMakeFiles/yoto_main.dir/flags.make
 CMakeFiles/yoto_main.dir/impl/graph.cpp.o: /home/jeronimo/GIT/PeR/per_fpga/impl/graph.cpp
@@ -113,14 +113,14 @@ CMakeFiles/yoto_main.dir/impl/util.cpp.s: cmake_force
 
 # Object files for target yoto_main
 yoto_main_OBJECTS = \
-"CMakeFiles/yoto_main.dir/yoto_main.cpp.o" \
+"CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o" \
 "CMakeFiles/yoto_main.dir/impl/graph.cpp.o" \
 "CMakeFiles/yoto_main.dir/impl/util.cpp.o"
 
 # External object files for target yoto_main
 yoto_main_EXTERNAL_OBJECTS =
 
-yoto_main: CMakeFiles/yoto_main.dir/yoto_main.cpp.o
+yoto_main: CMakeFiles/yoto_main.dir/yoto_base_main.cpp.o
 yoto_main: CMakeFiles/yoto_main.dir/impl/graph.cpp.o
 yoto_main: CMakeFiles/yoto_main.dir/impl/util.cpp.o
 yoto_main: CMakeFiles/yoto_main.dir/build.make
