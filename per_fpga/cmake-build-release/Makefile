@@ -117,38 +117,76 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named yoto_base
+# Target rules for targets named yotoBase
 
 # Build rule for target.
-yoto_base: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yoto_base
-.PHONY : yoto_base
+yotoBase: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yotoBase
+.PHONY : yotoBase
 
 # fast build rule for target.
-yoto_base/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/build
-.PHONY : yoto_base/fast
+yotoBase/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/build
+.PHONY : yotoBase/fast
 
 #=============================================================================
-# Target rules for targets named yoto_cache
+# Target rules for targets named yotoCache
 
 # Build rule for target.
-yoto_cache: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yoto_cache
-.PHONY : yoto_cache
+yotoCache: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yotoCache
+.PHONY : yotoCache
 
 # fast build rule for target.
-yoto_cache/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/build
-.PHONY : yoto_cache/fast
+yotoCache/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/build
+.PHONY : yotoCache/fast
+
+#=============================================================================
+# Target rules for targets named chDotStrToN
+
+# Build rule for target.
+chDotStrToN: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 chDotStrToN
+.PHONY : chDotStrToN
+
+# fast build rule for target.
+chDotStrToN/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/build
+.PHONY : chDotStrToN/fast
+
+chDotStrToNMain.o: chDotStrToNMain.cpp.o
+.PHONY : chDotStrToNMain.o
+
+# target to build an object file
+chDotStrToNMain.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/chDotStrToNMain.cpp.o
+.PHONY : chDotStrToNMain.cpp.o
+
+chDotStrToNMain.i: chDotStrToNMain.cpp.i
+.PHONY : chDotStrToNMain.i
+
+# target to preprocess a source file
+chDotStrToNMain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/chDotStrToNMain.cpp.i
+.PHONY : chDotStrToNMain.cpp.i
+
+chDotStrToNMain.s: chDotStrToNMain.cpp.s
+.PHONY : chDotStrToNMain.s
+
+# target to generate assembly for a file
+chDotStrToNMain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/chDotStrToNMain.cpp.s
+.PHONY : chDotStrToNMain.cpp.s
 
 impl/graph.o: impl/graph.cpp.o
 .PHONY : impl/graph.o
 
 # target to build an object file
 impl/graph.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/graph.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/graph.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/graph.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/graph.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/graph.cpp.o
 .PHONY : impl/graph.cpp.o
 
 impl/graph.i: impl/graph.cpp.i
@@ -156,8 +194,9 @@ impl/graph.i: impl/graph.cpp.i
 
 # target to preprocess a source file
 impl/graph.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/graph.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/graph.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/graph.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/graph.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/graph.cpp.i
 .PHONY : impl/graph.cpp.i
 
 impl/graph.s: impl/graph.cpp.s
@@ -165,8 +204,9 @@ impl/graph.s: impl/graph.cpp.s
 
 # target to generate assembly for a file
 impl/graph.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/graph.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/graph.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/graph.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/graph.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/graph.cpp.s
 .PHONY : impl/graph.cpp.s
 
 impl/util.o: impl/util.cpp.o
@@ -174,8 +214,9 @@ impl/util.o: impl/util.cpp.o
 
 # target to build an object file
 impl/util.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/util.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/util.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/util.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/util.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/util.cpp.o
 .PHONY : impl/util.cpp.o
 
 impl/util.i: impl/util.cpp.i
@@ -183,8 +224,9 @@ impl/util.i: impl/util.cpp.i
 
 # target to preprocess a source file
 impl/util.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/util.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/util.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/util.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/util.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/util.cpp.i
 .PHONY : impl/util.cpp.i
 
 impl/util.s: impl/util.cpp.s
@@ -192,84 +234,88 @@ impl/util.s: impl/util.cpp.s
 
 # target to generate assembly for a file
 impl/util.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/util.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/util.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/util.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/util.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/util.cpp.s
 .PHONY : impl/util.cpp.s
 
-impl/yoto_base.o: impl/yoto_base.cpp.o
-.PHONY : impl/yoto_base.o
+impl/yotoBase.o: impl/yotoBase.cpp.o
+.PHONY : impl/yotoBase.o
 
 # target to build an object file
-impl/yoto_base.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/yoto_base.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/yoto_base.cpp.o
-.PHONY : impl/yoto_base.cpp.o
+impl/yotoBase.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yotoBase.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/yotoBase.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.o
+.PHONY : impl/yotoBase.cpp.o
 
-impl/yoto_base.i: impl/yoto_base.cpp.i
-.PHONY : impl/yoto_base.i
+impl/yotoBase.i: impl/yotoBase.cpp.i
+.PHONY : impl/yotoBase.i
 
 # target to preprocess a source file
-impl/yoto_base.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/yoto_base.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/yoto_base.cpp.i
-.PHONY : impl/yoto_base.cpp.i
+impl/yotoBase.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yotoBase.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/yotoBase.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.i
+.PHONY : impl/yotoBase.cpp.i
 
-impl/yoto_base.s: impl/yoto_base.cpp.s
-.PHONY : impl/yoto_base.s
+impl/yotoBase.s: impl/yotoBase.cpp.s
+.PHONY : impl/yotoBase.s
 
 # target to generate assembly for a file
-impl/yoto_base.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/impl/yoto_base.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/impl/yoto_base.cpp.s
-.PHONY : impl/yoto_base.cpp.s
+impl/yotoBase.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yotoBase.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/impl/yotoBase.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.s
+.PHONY : impl/yotoBase.cpp.s
 
-yoto_base_main.o: yoto_base_main.cpp.o
-.PHONY : yoto_base_main.o
+yotoBaseMain.o: yotoBaseMain.cpp.o
+.PHONY : yotoBaseMain.o
 
 # target to build an object file
-yoto_base_main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/yoto_base_main.cpp.o
-.PHONY : yoto_base_main.cpp.o
+yotoBaseMain.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/yotoBaseMain.cpp.o
+.PHONY : yotoBaseMain.cpp.o
 
-yoto_base_main.i: yoto_base_main.cpp.i
-.PHONY : yoto_base_main.i
+yotoBaseMain.i: yotoBaseMain.cpp.i
+.PHONY : yotoBaseMain.i
 
 # target to preprocess a source file
-yoto_base_main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/yoto_base_main.cpp.i
-.PHONY : yoto_base_main.cpp.i
+yotoBaseMain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/yotoBaseMain.cpp.i
+.PHONY : yotoBaseMain.cpp.i
 
-yoto_base_main.s: yoto_base_main.cpp.s
-.PHONY : yoto_base_main.s
+yotoBaseMain.s: yotoBaseMain.cpp.s
+.PHONY : yotoBaseMain.s
 
 # target to generate assembly for a file
-yoto_base_main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_base.dir/build.make CMakeFiles/yoto_base.dir/yoto_base_main.cpp.s
-.PHONY : yoto_base_main.cpp.s
+yotoBaseMain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/yotoBaseMain.cpp.s
+.PHONY : yotoBaseMain.cpp.s
 
-yoto_cache_main.o: yoto_cache_main.cpp.o
-.PHONY : yoto_cache_main.o
+yotoCacheMain.o: yotoCacheMain.cpp.o
+.PHONY : yotoCacheMain.o
 
 # target to build an object file
-yoto_cache_main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/yoto_cache_main.cpp.o
-.PHONY : yoto_cache_main.cpp.o
+yotoCacheMain.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/yotoCacheMain.cpp.o
+.PHONY : yotoCacheMain.cpp.o
 
-yoto_cache_main.i: yoto_cache_main.cpp.i
-.PHONY : yoto_cache_main.i
+yotoCacheMain.i: yotoCacheMain.cpp.i
+.PHONY : yotoCacheMain.i
 
 # target to preprocess a source file
-yoto_cache_main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/yoto_cache_main.cpp.i
-.PHONY : yoto_cache_main.cpp.i
+yotoCacheMain.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/yotoCacheMain.cpp.i
+.PHONY : yotoCacheMain.cpp.i
 
-yoto_cache_main.s: yoto_cache_main.cpp.s
-.PHONY : yoto_cache_main.s
+yotoCacheMain.s: yotoCacheMain.cpp.s
+.PHONY : yotoCacheMain.s
 
 # target to generate assembly for a file
-yoto_cache_main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/yoto_cache.dir/build.make CMakeFiles/yoto_cache.dir/yoto_cache_main.cpp.s
-.PHONY : yoto_cache_main.cpp.s
+yotoCacheMain.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoCache.dir/build.make CMakeFiles/yotoCache.dir/yotoCacheMain.cpp.s
+.PHONY : yotoCacheMain.cpp.s
 
 # Help Target
 help:
@@ -279,23 +325,27 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... yoto_base"
-	@echo "... yoto_cache"
+	@echo "... chDotStrToN"
+	@echo "... yotoBase"
+	@echo "... yotoCache"
+	@echo "... chDotStrToNMain.o"
+	@echo "... chDotStrToNMain.i"
+	@echo "... chDotStrToNMain.s"
 	@echo "... impl/graph.o"
 	@echo "... impl/graph.i"
 	@echo "... impl/graph.s"
 	@echo "... impl/util.o"
 	@echo "... impl/util.i"
 	@echo "... impl/util.s"
-	@echo "... impl/yoto_base.o"
-	@echo "... impl/yoto_base.i"
-	@echo "... impl/yoto_base.s"
-	@echo "... yoto_base_main.o"
-	@echo "... yoto_base_main.i"
-	@echo "... yoto_base_main.s"
-	@echo "... yoto_cache_main.o"
-	@echo "... yoto_cache_main.i"
-	@echo "... yoto_cache_main.s"
+	@echo "... impl/yotoBase.o"
+	@echo "... impl/yotoBase.i"
+	@echo "... impl/yotoBase.s"
+	@echo "... yotoBaseMain.o"
+	@echo "... yotoBaseMain.i"
+	@echo "... yotoBaseMain.s"
+	@echo "... yotoCacheMain.o"
+	@echo "... yotoCacheMain.i"
+	@echo "... yotoCacheMain.s"
 .PHONY : help
 
 

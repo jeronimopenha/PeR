@@ -19,7 +19,7 @@ int main() {
         dotPath = fst;
         dotName = snd.substr(0, snd.size() - 4);
         //reading graph variables
-        getGraphData();
+        getGraphDataStr();
 
         //execution parameters
         int nExec = 100;

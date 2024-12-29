@@ -1,4 +1,7 @@
 #include "yotoBase.h"
+
+#include <util.h>
+
 #include "graph.h"
 
 void yotoBase() {
@@ -13,11 +16,11 @@ void yotoBase() {
     int tries = 0;
     int swaps = 0;
 
-    // std::vector<std::pair<std::string, std::string> > edStr = graph.getEdgesDepthFirst();
-    // std::vector<std::pair<int, int> > ed = graph.getEdgesIdx(edStr);
-    // std::vector<int> nodes = graph.getNodesIdx((graph.inputNodesStr));
-    //
-    // placeNodes(n2c, c2n, possibleInOut, nodes);
+    std::vector<std::pair<int, int> > ed = getEdgesDepthFirst();
+    //saveToDot(ed, "/home/jeronimo/test.dot");
+
+    //fixme
+    placeNodes(n2c, c2n, possibleInOut, nodes);
     //
     //
     // for (auto [a,b]: ed) {

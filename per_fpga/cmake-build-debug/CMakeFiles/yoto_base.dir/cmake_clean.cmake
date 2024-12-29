@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/yoto_base.dir/changeStrToN.cpp.o"
+  "CMakeFiles/yoto_base.dir/changeStrToN.cpp.o.d"
   "CMakeFiles/yoto_base.dir/impl/graph.cpp.o"
   "CMakeFiles/yoto_base.dir/impl/graph.cpp.o.d"
   "CMakeFiles/yoto_base.dir/impl/util.cpp.o"

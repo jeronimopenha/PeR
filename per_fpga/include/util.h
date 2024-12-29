@@ -2,6 +2,8 @@
 #define UTIL_H
 
 #include <filesystem>
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -11,5 +13,7 @@ std::string verifyPath(const std::string &path);
 
 std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
     const std::string &path, const std::string &file_extension);
+
+void saveToDot(const std::vector<std::pair<int, int>>& edges, const std::string& filename);
 
 #endif //UTIL_H

@@ -29,3 +29,25 @@ std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
 
     return files_list_by_extension;
 }
+
+void saveToDot(const std::vector<std::pair<int, int> > &edges, const std::string &filename) {
+    std::ofstream file(filename);
+    if (!file) {
+        std::cerr << "Error!" << std::endl;
+        return;
+    }
+
+    // write the dot header
+    file << "digraph G {" << std::endl;
+
+    // write the edges
+    for (const auto &[fst, snd]: edges) {
+        file << "    " << fst << " -> " << snd << ";" << std::endl;
+    }
+
+    // write the dot footer
+    file << "}" << std::endl;
+
+    file.close();
+    std::cout << "File " << filename << " saved!" << std::endl;
+}

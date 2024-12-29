@@ -40,7 +40,10 @@ inline std::vector<int> nPredV;
 inline std::vector<int> inputNodes;
 inline std::vector<int> outputNodes;
 
-void getGraphData();
-std::vector<std::pair<std::string, std::string> > getEdgesDepthFirst();
+void getGraphDataStr();
+
+void getGraphDataInt();
+
+std::vector<std::pair<int, int> > getEdgesDepthFirst();
 
 #endif //GRAPH_H
