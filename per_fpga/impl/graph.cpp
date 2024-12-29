@@ -1,5 +1,7 @@
 #include "graph.h"
 
+#include <util.h>
+
 
 void getGraphDataStr() {
     std::unordered_set<std::string> nodesStr;
@@ -64,20 +66,17 @@ void getGraphDataStr() {
 
     nSuccV = std::vector<int>(nNodes, 0);
     nPredV = std::vector<int>(nNodes, 0);
-    successors = std::vector<bool>(nNodes * nNodes, false);
-    predecessors = std::vector<bool>(nNodes * nNodes, false);
+    successors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
+    predecessors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
     for (const auto &[fst, snd]: edgesStr) {
-        int nodeF = nodesToIdx[fst], nodeT = nodesToIdx[snd];
-        gEdges.emplace_back(nodeF, nodeT);
+        int fromN = nodesToIdx[fst], toN = nodesToIdx[snd];
+        gEdges.emplace_back(fromN, toN);
 
-        int l_offset;
-        l_offset = nodeF * nNodes;
-        successors[l_offset + nodeT] = true;
-        l_offset = nodeT * nNodes;
-        predecessors[l_offset + nodeF] = true;
+        successors[fromN][toN] = true;
+        predecessors[toN][fromN] = true;
 
-        nSuccV[nodeF] += 1;
-        nPredV[nodeT] += 1;
+        nSuccV[fromN] += 1;
+        nPredV[toN] += 1;
     }
 
     //input and output nodes
@@ -162,16 +161,13 @@ void getGraphDataInt() {
 
     nSuccV = std::vector<int>(nNodes, 0);
     nPredV = std::vector<int>(nNodes, 0);
-    successors = std::vector<bool>(nNodes * nNodes, false);
-    predecessors = std::vector<bool>(nNodes * nNodes, false);
+    successors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
+    predecessors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
     for (const auto &[fst, snd]: gEdges) {
         int fromN = fst, toN = snd;
 
-        int l_offset;
-        l_offset = fromN * nNodes;
-        successors[l_offset + toN] = true;
-        l_offset = toN * nNodes;
-        predecessors[l_offset + fromN] = true;
+        successors[fromN][toN] = true;
+        predecessors[toN][fromN] = true;
 
         nSuccV[fromN] += 1;
         nPredV[toN] += 1;
@@ -204,13 +200,11 @@ void getGraphDataInt() {
 
 std::vector<std::pair<int, int> > getEdgesDepthFirst() {
     // Copy input nodes and shuffle if needed
-    std::vector<int> input_list = inputNodes;
+    std::vector<int> inputList = inputNodes;
 
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(input_list.begin(), input_list.end(), g);
+    randomVector(inputList);
 
-    std::vector<int> stack(input_list); // Initialize stack with input_list
+    std::vector<int> stack(inputList); // Initialize stack with input_list
     std::vector<std::pair<int, int> > edges;
     std::vector<bool> visited(nNodes, false);
 
@@ -223,19 +217,46 @@ std::vector<std::pair<int, int> > getEdgesDepthFirst() {
             continue;
         }
         visited[n] = true;
-
+        bool flag = false;
         // Process all neighbors
-        const int l_offset = n * nNodes;
         for (int i = 0; i < nNodes; i++) {
-            int idx = l_offset + i;
-            if (successors[idx]) {
+            if (successors[n][i]) {
                 if (!visited[i]) {
                     stack.push_back(i);
                     edges.emplace_back(n, i);
+                    flag = true;
                 }
             }
+        }
+        if(!flag) {
+            int a = 1;
         }
     }
 
     return edges;
+}
+
+std::vector<int> getInOutPos() {
+    std::vector<int> possibleInOut;
+
+    // Append positions in the first range
+    for (int i = 1; i < nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the second range
+    for (int i = 1; i < nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i + nCells - nCellsSqrt);
+    }
+
+    // Append positions in the third range
+    for (int i = nCellsSqrt; i < nCells - nCellsSqrt; i += nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the fourth range
+    for (int i = nCellsSqrt * 2 - 1; i < nCells - 1; i += nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+    return possibleInOut;
 }

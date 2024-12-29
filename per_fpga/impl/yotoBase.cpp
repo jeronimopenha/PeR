@@ -1,127 +1,145 @@
 #include "yotoBase.h"
 
-#include <util.h>
 
-#include "graph.h"
-
-void yotoBase() {
-    //std::unordered_map<int, ReportData> reports;
-
-    //auto start = std::chrono::high_resolution_clock::now();
+ReportData yotoBase() {
+    auto start = std::chrono::high_resolution_clock::now();
 
     std::vector<int> c2n(nCells, -1);
     std::vector<int> n2c(nNodes, -1);
-    std::vector<std::vector<int> > distCells = getMeshDistances();
+    std::vector<std::vector<int> > distCells = getAdjCellsDist();
+    std::vector<int> inOutCells = getInOutPos();
+
+    randomVector(inOutCells);
 
     int tries = 0;
     int swaps = 0;
 
     std::vector<std::pair<int, int> > ed = getEdgesDepthFirst();
-    //saveToDot(ed, "/home/jeronimo/test.dot");
+    saveToDot(ed, "/home/jeronimo/test.dot");
 
-    //fixme
-    placeNodes(n2c, c2n, possibleInOut, nodes);
-    //
-    //
-    // for (auto [a,b]: ed) {
-    //     if (n2c[b] != -1) {
-    //         continue;
-    //     }
-    //     const int ja = n2c[a] / graph.nCellsSqrt;
-    //     const int ia = n2c[a] % graph.nCellsSqrt;
-    //
-    //     for (const auto &line: distCells) {
-    //         bool placed = false;
-    //
-    //         for (const auto &ij: line) {
-    //             ++tries;
-    //             const int ib = ia + ij[0];
-    //             const int jb = ja + ij[1];
-    //
-    //             // Define boundary and corner conditions
-    //             const bool outOfBounds = (ib < 0 || ib >= graph.nCellsSqrt || jb < 0 || jb >= graph.nCellsSqrt);
-    //             const bool isTopLeftCorner = (ib == 0 && jb == 0);
-    //             const bool isBottomRightCorner = (ib == graph.nCellsSqrt - 1 && jb == graph.nCellsSqrt - 1);
-    //             const bool isBottomLeftCorner = (ib == graph.nCellsSqrt - 1 && jb == 0);
-    //             const bool isTopRightCorner = (ib == 0 && jb == graph.nCellsSqrt - 1);
-    //
-    //             // Check if any condition is met
-    //             if (outOfBounds || isTopLeftCorner || isBottomRightCorner || isBottomLeftCorner ||
-    //                 isTopRightCorner) {
-    //                 continue;
-    //             }
-    //
-    //
-    //             int ch = ib * graph.nCellsSqrt + jb;
-    //
-    //             // Check if 'ch' is in possibleInOut
-    //             const bool chInPossibleInOut = (
-    //                 std::find(possibleInOut.begin(), possibleInOut.end(), ch) != possibleInOut
-    //                 .end());
-    //             // Check if 'b' is in inputNodesIdx or outputNodesIdx
-    //             const bool bIsIoNode = (std::find(graph.inputNodesIdx.begin(), graph.inputNodesIdx.end(), b) !=
-    //                                     graph.
-    //                                     inputNodesIdx.end() ||
-    //                                     std::find(graph.outputNodesIdx.begin(), graph.outputNodesIdx.end(),
-    //                                               b) != graph.
-    //                                     outputNodesIdx.end());
-    //
-    //             if (chInPossibleInOut) {
-    //                 // 'ch' is in possible_positions
-    //                 if (!bIsIoNode) {
-    //                     continue;
-    //                 }
-    //             } else {
-    //                 // 'ch' is not in possible_positions
-    //                 if (bIsIoNode) {
-    //                     continue;
-    //                 }
-    //             }
-    //
-    //             // Place the node if `placement[ch]` is unoccupied
-    //             if (c2n[ch] == -1) {
-    //                 c2n[ch] = b;
-    //                 n2c[b] = ch;
-    //                 placed = true;
-    //                 ++swaps;
-    //                 break;
-    //             }
-    //         }
-    //         if (placed) {
-    //             break;
-    //         }
-    //     }
-    // }
-    // auto end = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double, std::milli> duration = end - start;
-    // float _time = duration.count();
-    // int tc = calcTotalDistance(n2c, ed);
-    //
-    // reports[exec_id] = ReportData(
-    //     exec_id,
-    //     _time,
-    //     graph.dotName,
-    //     graph.dotPath,
-    //     "yoto",
-    //     tries,
-    //     swaps,
-    //     "DEPTH_FIRST",
-    //     tc,
-    //     c2n,
-    //     n2c
-    // );
-    // //}
-    // return reports;
+    //I need to place every input at the beginning of execution
+    int lastIdxIOCellUsed = 0;
+    for (int n: inputNodes) {
+        for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
+            int ioCell = inOutCells[i];
+            if (c2n[ioCell] == -1) {
+                c2n[ioCell] = n;
+                n2c[n] = ioCell;
+                lastIdxIOCellUsed = i;
+                break;
+            }
+        }
+    }
+
+    for (auto [a,b]: ed) {
+        //Verify if A is placed
+        //if it is not placed, then place in a random inout cell.
+        //the variable lastIdxIOCellUsed is for optimize future looks
+        if (n2c[a] == -1) {
+            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
+                int ioCell = inOutCells[i];
+                if (c2n[ioCell] == -1) {
+                    c2n[ioCell] = a;
+                    n2c[a] = ioCell;
+                    lastIdxIOCellUsed = i;
+                    break;
+                }
+            }
+        }
+
+        //Now, if B is placed, go to next edge
+        if (n2c[b] != -1) {
+            continue;
+        }
+
+        // Now I will try to find an adjacent cell from A to place B
+
+        // Find the idx of A's cell
+        const int lA = n2c[a] / nCellsSqrt;
+        const int cA = n2c[a] % nCellsSqrt;
+
+        bool placed = false;
+        //Then I will look for a cell next to A's cell
+        for (const auto &ij: distCells) {
+            ++tries;
+            const int lB = lA + ij[0];
+            const int cB = cA + ij[1];
+
+            // Define boundary and corner conditions
+            const bool outOfBounds = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
+            const bool isTopLeftCorner = (lB == 0 && cB == 0);
+            const bool isBottomRightCorner = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
+            const bool isBottomLeftCorner = (lB == nCellsSqrt - 1 && cB == 0);
+            const bool isTopRightCorner = (lB == 0 && cB == nCellsSqrt - 1);
+            const bool isCorner = isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner;
+
+            // Check if the target cell is nor allowed, go to next
+            if (outOfBounds || isCorner) {
+                continue;
+            }
+
+            //find the idx for the target cell
+            int targetCell = lB * nCellsSqrt + cB;
+
+            const bool isTargetCellIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
+            const bool IsBIoNode = nSuccV[b] == 0 || nPredV[b] == 0;
+
+            //prevents IO nodes to be not put in IO cells
+            //and put a non IO noce in an IO cell
+            if (isTargetCellIO) {
+                // 'targetCell' is a IO cell
+                if (!IsBIoNode) {
+                    continue;
+                }
+            } else {
+                // 'targetCell' is not in possible_positions
+                if (IsBIoNode) {
+                    continue;
+                }
+            }
+
+            // Place the node if `placement[targetCell]` is unoccupied
+            if (c2n[targetCell] == -1) {
+                c2n[targetCell] = b;
+                n2c[b] = targetCell;
+                ++swaps;
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) {
+            int a = 1;
+        }
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration = end - start;
+    float _time = duration.count();
+    int tc = calcGraphTotalDistance(n2c, gEdges, nCellsSqrt);
+
+    ReportData report = ReportData(
+        _time,
+        dotName,
+        dotPath,
+        "yotoBase",
+        tries,
+        swaps,
+        "DEPTH_FIRST",
+        tc,
+        c2n,
+        n2c
+    );
+    return report;
 }
 
-std::vector<std::vector<int> > getMeshDistances() {
+std::vector<std::vector<int> > getAdjCellsDist() {
     int max_dist = (nCellsSqrt - 1) * 2;
     std::vector<std::vector<int> > meshDistances;
     std::vector<std::vector<std::vector<int> > > distance_table_raw(max_dist);
-    for (int i = 0; i < nCellsSqrt; ++i) {
-        for (int j = 0; j < nCellsSqrt; ++j) {
-            if (i == 0 && j == 0) continue; // Skip t
-            const int dist = i + j;
+    for (int l = 0; l < nCellsSqrt; ++l) {
+        for (int c = 0; c < nCellsSqrt; ++c) {
+            if (l == 0 && c == 0) continue; // Skip t
+            const int dist = l + c;
 
             // Lambda to check if a coordinate pair is already in a list
             auto contains = [](const std::vector<std::vector<int> > &vec, const std::vector<int> &pair) {
@@ -129,17 +147,17 @@ std::vector<std::vector<int> > getMeshDistances() {
             };
 
             // Add unique coordinates to the distance table
-            if (!contains(distance_table_raw[dist - 1], {i, j})) {
-                distance_table_raw[dist - 1].push_back({i, j});
+            if (!contains(distance_table_raw[dist - 1], {l, c})) {
+                distance_table_raw[dist - 1].push_back({l, c});
             }
-            if (!contains(distance_table_raw[dist - 1], {i, -j})) {
-                distance_table_raw[dist - 1].push_back({i, -j});
+            if (!contains(distance_table_raw[dist - 1], {l, -c})) {
+                distance_table_raw[dist - 1].push_back({l, -c});
             }
-            if (!contains(distance_table_raw[dist - 1], {-i, -j})) {
-                distance_table_raw[dist - 1].push_back({-i, -j});
+            if (!contains(distance_table_raw[dist - 1], {-l, -c})) {
+                distance_table_raw[dist - 1].push_back({-l, -c});
             }
-            if (!contains(distance_table_raw[dist - 1], {-i, j})) {
-                distance_table_raw[dist - 1].push_back({-i, j});
+            if (!contains(distance_table_raw[dist - 1], {-l, c})) {
+                distance_table_raw[dist - 1].push_back({-l, c});
             }
         }
     }

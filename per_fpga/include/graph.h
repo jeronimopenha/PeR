@@ -8,13 +8,12 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <random>
 #include <unordered_map>
 #include <unordered_set>
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include<chrono>
+#include <chrono>
 #include <algorithm>
 #include <cmath>
 
@@ -28,9 +27,9 @@ inline int nCells = 0;
 inline int nCellsSqrt = 0;
 
 //Adjacency for successors
-inline std::vector<bool> successors;
+inline std::vector<std::vector<bool>> successors;
 //Adjacency for predecessors
-inline std::vector<bool> predecessors;
+inline std::vector<std::vector<bool>> predecessors;
 //Edges list
 inline std::vector<std::pair<int, int> > gEdges;
 //input nodes
@@ -45,5 +44,7 @@ void getGraphDataStr();
 void getGraphDataInt();
 
 std::vector<std::pair<int, int> > getEdgesDepthFirst();
+
+std::vector<int> getInOutPos();
 
 #endif //GRAPH_H
