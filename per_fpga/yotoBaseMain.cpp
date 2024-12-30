@@ -23,12 +23,27 @@ int main() {
         getGraphDataInt();
 
         //execution parameters
+        std::string outBaseFolder = "reports/fpga/yoto_base/";
         int nExec = 100;
-        std::string baseFolder = "reports/fpga/yoto_base";
+        std::vector<ReportData> reports;
+        for (int exec = 0; exec < nExec; exec++)
+            reports.push_back(yotoBase());
 
-        ReportData report = yotoBase();
+        //sort the reports by total cost because I want only the 10 better placements
+        std::sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
+            return a.totalCost < b.totalCost;
+        });
 
-        savePlacedDot(report.n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+
+        for (int i = 0; i < 10; i++) {
+            //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+
+            //save reports for the 10 better placements
+            std::string reportName = dotName + "_" + std::to_string(i);
+            writeJson(rootPath + outBaseFolder, reportName, reports[i]);
+            writeVprData(rootPath + outBaseFolder, reportName, reports[i], nNodes);
+            //generate reports and files for vpr
+        }
     }
     return 0;
 }

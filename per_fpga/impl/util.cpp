@@ -1,5 +1,6 @@
 #include   "util.h"
 
+
 std::string getProjectRoot() {
     std::filesystem::path path = std::filesystem::current_path();
     for (int i = 0; i < 2; ++i) {
@@ -59,7 +60,7 @@ void randomVector(std::vector<int> &vec) {
 }
 
 int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges,
-                           int nCellsSqrt) {
+                           const int nCellsSqrt) {
     int totalDist = -static_cast<int>(edges.size());
 
     for (const auto &[fst, snd]: edges) {
@@ -80,7 +81,8 @@ int getManhattanDist(const int cell1, const int cell2, const int n_cells_sqrt) {
     return std::abs(cell1_y - cell2_y) + std::abs(cell1_x - cell2_x);
 }
 
-void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt, std::string filename) {
+void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt,
+                   const std::string &filename) {
     std::ofstream file(filename);
     if (!file) {
         std::cerr << "Error!" << std::endl;
@@ -142,5 +144,45 @@ void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, i
 
     // write the dot footer
     file << "}" << std::endl;
+    file.close();
+}
+
+void writeJson(const std::string &basePath, const std::string &fileName, const ReportData &data) {
+    std::string jsonFile = basePath + "json/" + fileName + ".json";
+
+    std::ofstream file(jsonFile);
+
+    if (file.is_open()) {
+        file << data.to_json();; // Write JSON string to file
+        file.close();
+    } else {
+        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+    }
+}
+
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, const int nNodes) {
+    std::string placeFile = basePath + "place/" + fileName + ".place";
+    std::string netFile = basePath + "net/" + fileName + ".net";
+
+    int k = 3;
+
+    if (fileName.find("_k3") != std::string::npos) {
+        k = 3;
+    } else if (fileName.find("_k4") != std::string::npos) {
+        k = 4;
+    } else if (fileName.find("_k5") != std::string::npos) {
+        k = 5;
+    } else if (fileName.find("_k6") != std::string::npos) {
+        k = 6;
+    }
+
+    std::ofstream file(netFile);
+    if (file.is_open()) {
+        for (int i = 0; i < nNodes)
+            file << data.to_json();; // Write JSON string to file
+        file.close();
+    } else {
+        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+    }
     file.close();
 }

@@ -84,5 +84,10 @@ int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::p
 
 int getManhattanDist(const int cell1, const int cell2, const int n_cells_sqrt);
 
-void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt, std::string filename);
+void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt,
+                   const std::string &filename);
+
+void writeJson(const std::string &basePath, const std::string &fileName, const ReportData &data);
+
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, const int nNodes);
 #endif //UTIL_H

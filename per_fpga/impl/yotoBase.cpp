@@ -15,7 +15,7 @@ ReportData yotoBase() {
     int swaps = 0;
 
     std::vector<std::pair<int, int> > ed = getEdgesDepthFirst();
-    saveToDot(ed, "/home/jeronimo/test.dot");
+    //saveToDot(ed, "/home/jeronimo/test.dot");
 
     //I need to place every input at the beginning of execution
     int lastIdxIOCellUsed = 0;

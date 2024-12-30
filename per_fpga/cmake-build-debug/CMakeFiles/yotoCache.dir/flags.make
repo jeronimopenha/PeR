@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/jeronimo/GIT/PeR/per_fpga/include
 
-CXX_FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+CXX_FLAGS = -g -fdiagnostics-color=always
 
