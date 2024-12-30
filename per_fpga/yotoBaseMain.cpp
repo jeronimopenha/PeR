@@ -38,11 +38,11 @@ int main() {
         for (int i = 0; i < 10; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 
-            //save reports for the 10 better placements
             std::string reportName = dotName + "_" + std::to_string(i);
+            //save reports for the 10 better placements
             writeJson(rootPath + outBaseFolder, reportName, reports[i]);
-            writeVprData(rootPath + outBaseFolder, reportName, reports[i], nNodes);
             //generate reports and files for vpr
+            writeVprData(rootPath + outBaseFolder, reportName, reports[i]);
         }
     }
     return 0;

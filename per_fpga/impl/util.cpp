@@ -160,7 +160,7 @@ void writeJson(const std::string &basePath, const std::string &fileName, const R
     }
 }
 
-void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, const int nNodes) {
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data) {
     std::string placeFile = basePath + "place/" + fileName + ".place";
     std::string netFile = basePath + "net/" + fileName + ".net";
 
@@ -178,11 +178,77 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
 
     std::ofstream file(netFile);
     if (file.is_open()) {
-        for (int i = 0; i < nNodes)
-            file << data.to_json();; // Write JSON string to file
+        for (int node = 0; node < nNodes; node++) {
+            int inDegree = nPredV[node];
+            int outDegree = nSuccV[node];
+            if (outDegree == 0) {
+                for (int pre = 0; pre < nNodes; pre++) {
+                    if (predecessors[node][pre]) {
+                        file << ".output out_" << node << ":" << pre << std::endl;
+                        file << "pinlist: " << pre << std::endl << std::endl;
+                    }
+                }
+            } else if (inDegree == 0) {
+                file << ".input " << node << std::endl;
+                file << "pinlist: " << node << std::endl << std::endl;
+            } else {
+                file << ".clb " << node << "   # Only LUT used." << std::endl;
+                file << "pinlist:";
+                int counter = 0;
+                for (int pre = 0; pre < nNodes; pre++) {
+                    if (predecessors[node][pre]) {
+                        file << " " << pre;
+                        counter++;
+                    }
+                }
+                for (int i = 0; i < k - counter; i++)
+                    file << " open";
+                file << " " << node;
+                file << " open" << std::endl;
+
+                file << "subblock: " << node;
+                for (int i = 0; i < counter; i++) {
+                    file << " " << i;
+                }
+                for (int i = 0; i < k - counter; i++)
+                    file << " open";
+                file << " " << k << " open" << std::endl << std::endl;
+            }
+        }
         file.close();
     } else {
         std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
     }
-    file.close();
+    file = std::ofstream(placeFile);
+    if (file.is_open()) {
+        file << "Netlist file: " << fileName << " Architecture file: k" << k << "-n1.xml" << std::endl;
+        file << "Array size: " << nCellsSqrt - 2 << " x " << nCellsSqrt - 2 << " logic blocks " << std::endl;
+        file << "#block name\tX\tY\tsubblk\tblock_number\n" << std::endl;
+        file << "#----------\t--\t--\t------\t------------" << std::endl;
+
+        int counter = 0;
+        for (int node = 0; node < nNodes; node++) {
+            int cell = data.n2c[node];
+            int place = data.placement[cell];
+            if (place > -1) {
+                int l = cell / nCellsSqrt;
+                int c = cell % nCellsSqrt;
+                if (nSuccV[node] == 0) {
+                    for (int pre = 0; pre < nNodes; pre++) {
+                        if (predecessors[node][pre]) {
+                            file << "out_" << node << ":" << pre << "\t" << c << "\t" << l << "\t" << 0 << "\t#" <<
+                                    counter << std::endl;
+                        }
+                    }
+                } else {
+                    file << node << "\t" << c << "\t" << l << "\t" << 0 << "\t#" << counter << std::endl;
+                }
+            }
+            counter++;
+        }
+
+        file.close();
+    } else {
+        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+    }
 }

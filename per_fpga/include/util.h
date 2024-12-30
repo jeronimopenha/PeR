@@ -8,6 +8,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include "graph.h"
 
 struct ReportData {
     float _time;
@@ -89,5 +90,5 @@ void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, i
 
 void writeJson(const std::string &basePath, const std::string &fileName, const ReportData &data);
 
-void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, const int nNodes);
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data);
 #endif //UTIL_H
