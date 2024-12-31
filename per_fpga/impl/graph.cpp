@@ -2,6 +2,25 @@
 
 #include <util.h>
 
+void graphClearData() {
+    nEdges = 0;
+    nNodes = 0;
+    nCells = 0;
+    nCellsSqrt = 0;
+
+    successors.clear();
+    //Adjacency for predecessors
+    predecessors.clear();
+    //Edges list
+    gEdges.clear();
+    //input nodes
+    nSuccV.clear();
+    //output nodes
+    nPredV.clear();
+    inputNodes.clear();
+    outputNodes.clear();
+}
+
 
 void getGraphDataStr() {
     std::unordered_set<std::string> nodesStr;

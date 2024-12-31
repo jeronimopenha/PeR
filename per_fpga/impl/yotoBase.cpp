@@ -1,6 +1,9 @@
 #include "yotoBase.h"
 
 
+//fixme - implement the zigzag algorithm too
+//I think it will be better to implement here instead make another code file
+// I will create other file for other versions of the algorithms like yotoCache and yotoQuad and yotoTH etc
 ReportData yotoBase() {
     auto start = std::chrono::high_resolution_clock::now();
 

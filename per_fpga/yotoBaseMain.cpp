@@ -2,7 +2,7 @@
 #include  "graph.h"
 #include "yotoBase.h"
 
-
+//YOTO + Depth first search
 int main() {
     // std::string root_path = get_project_root(); // Supondo que essa função existe
     const std::string rootPath = verifyPath(getProjectRoot()); // Exemplo de função que busca o root path
@@ -20,11 +20,12 @@ int main() {
         dotPath = fst;
         dotName = snd.substr(0, snd.size() - 4);
         //reading graph variables
+        graphClearData();
         getGraphDataInt();
 
         //execution parameters
         std::string outBaseFolder = "reports/fpga/yoto_base/";
-        int nExec = 100;
+        int nExec = 1000;
         std::vector<ReportData> reports;
         for (int exec = 0; exec < nExec; exec++)
             reports.push_back(yotoBase());
@@ -37,7 +38,7 @@ int main() {
 
         for (int i = 0; i < 10; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-
+            std::cout << dotName << std::endl;
             std::string reportName = dotName + "_" + std::to_string(i);
             //save reports for the 10 better placements
             writeJson(rootPath + outBaseFolder, reportName, reports[i]);

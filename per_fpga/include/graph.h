@@ -27,9 +27,9 @@ inline int nCells = 0;
 inline int nCellsSqrt = 0;
 
 //Adjacency for successors
-inline std::vector<std::vector<bool>> successors;
+inline std::vector<std::vector<bool> > successors;
 //Adjacency for predecessors
-inline std::vector<std::vector<bool>> predecessors;
+inline std::vector<std::vector<bool> > predecessors;
 //Edges list
 inline std::vector<std::pair<int, int> > gEdges;
 //input nodes
@@ -38,6 +38,8 @@ inline std::vector<int> nSuccV;
 inline std::vector<int> nPredV;
 inline std::vector<int> inputNodes;
 inline std::vector<int> outputNodes;
+
+void graphClearData();
 
 void getGraphDataStr();
 

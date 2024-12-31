@@ -15,6 +15,8 @@ int main() {
     for (const auto &[fst, snd]: files) {
         std::cout << fst << std::endl;
 
+        graphClearData();
+
         //Creating graph important variables
         dotPath = fst;
         dotName = snd.substr(0, snd.size() - 4);

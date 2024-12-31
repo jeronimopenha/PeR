@@ -221,7 +221,7 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
     }
     file = std::ofstream(placeFile);
     if (file.is_open()) {
-        file << "Netlist file: " << fileName << " Architecture file: k" << k << "-n1.xml" << std::endl;
+        file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k << "-n1.xml" << std::endl;
         file << "Array size: " << nCellsSqrt - 2 << " x " << nCellsSqrt - 2 << " logic blocks " << std::endl;
         file << "#block name\tX\tY\tsubblk\tblock_number\n" << std::endl;
         file << "#----------\t--\t--\t------\t------------" << std::endl;
