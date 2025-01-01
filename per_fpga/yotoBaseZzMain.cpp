@@ -24,11 +24,11 @@ int main() {
         getGraphDataInt();
 
         //execution parameters
-        std::string outBaseFolder = "reports/fpga/yoto_base/";
+        std::string outBaseFolder = "reports/fpga/yoto_base_zz/";
         int nExec = 1000;
         std::vector<ReportData> reports;
         for (int exec = 0; exec < nExec; exec++)
-            reports.push_back(yotoBase());
+            reports.push_back(yotoBase(ZZ));
 
         //sort the reports by total cost because I want only the 10 better placements
         std::sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {

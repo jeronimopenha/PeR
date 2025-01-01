@@ -6,7 +6,7 @@
 #include "graph.h"
 #include <vector>
 
-ReportData yotoBase();
+ReportData yotoBase(yotoAlgEnum alg = DF);
 
 std::vector<std::vector<int> > getAdjCellsDist();
 

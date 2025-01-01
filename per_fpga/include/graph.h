@@ -45,8 +45,13 @@ void getGraphDataStr();
 
 void getGraphDataInt();
 
+std::vector<int> getInOutPos();
+
 std::vector<std::pair<int, int> > getEdgesDepthFirst();
 
-std::vector<int> getInOutPos();
+std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
+
+std::vector<std::pair<int, int> > getEdgesZigzag();
+
 
 #endif //GRAPH_H

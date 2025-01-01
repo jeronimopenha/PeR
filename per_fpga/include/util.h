@@ -10,6 +10,12 @@
 #include <algorithm>
 #include "graph.h"
 
+enum yotoAlgEnum {
+    DF,
+    DFP,
+    ZZ
+  };
+
 struct ReportData {
     float _time;
     std::string dotName;

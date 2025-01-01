@@ -20,6 +20,8 @@ include_directories(include)
 
 add_executable(yotoBaseDf yotoBaseDfMain.cpp ${SRCS})
 
+add_executable(yotoBaseDfP yotoBaseDfPMain.cpp ${SRCS})
+
 add_executable(yotoBaseZz yotoBaseZzMain.cpp ${SRCS})
 
 add_executable(yotoCache yotoCacheMain.cpp ${SRCS})

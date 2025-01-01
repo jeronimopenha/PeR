@@ -4,7 +4,7 @@
 //fixme - implement the zigzag algorithm too
 //I think it will be better to implement here instead make another code file
 // I will create other file for other versions of the algorithms like yotoCache and yotoQuad and yotoTH etc
-ReportData yotoBase(bool useZigZag = false) {
+ReportData yotoBase(yotoAlgEnum alg) {
     auto start = std::chrono::high_resolution_clock::now();
 
     std::vector<int> c2n(nCells, -1);
@@ -17,16 +17,29 @@ ReportData yotoBase(bool useZigZag = false) {
     int tries = 0;
     int swaps = 0;
 
-    std::vector<std::pair<int, int> > ed = getEdgesDepthFirst();
+    std::vector<std::pair<int, int> > ed;
+
+    if (alg == ZZ) {
+        ed = getEdgesZigzag();
+    } else if (alg == DFP) {
+        ed = getEdgesDepthFirstPriority();
+    } else if (alg == DF) {
+        ed = getEdgesDepthFirst();
+    }
+
+
     //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
 
     //todo - Implement the zigzag yoto to get results
-    if (useZigZag) {
+    if (alg == ZZ) {
         //For Zig Zag algorithm I need to place only one output node at the beginning
         //because the algorithm will pass for all nodes for each connected component of the graph
-    } else {
-        //for Deptfh First Search
+    } else if (alg == DFP) {
+        //for Deptfh First Search with priority
+        //I need to place every input at the beginning of execution
+    } else if (alg == DF) {
+        //for Deptfh First Search with no priority
         //I need to place every input at the beginning of execution
 
         for (int n: inputNodes) {
@@ -118,6 +131,7 @@ ReportData yotoBase(bool useZigZag = false) {
                 break;
             }
         }
+        //fixme remove
         if (!placed) {
             int a = 1;
         }

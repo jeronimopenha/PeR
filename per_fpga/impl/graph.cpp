@@ -1,5 +1,4 @@
 #include "graph.h"
-
 #include <util.h>
 
 void graphClearData() {
@@ -20,7 +19,6 @@ void graphClearData() {
     inputNodes.clear();
     outputNodes.clear();
 }
-
 
 void getGraphDataStr() {
     std::unordered_set<std::string> nodesStr;
@@ -216,6 +214,30 @@ void getGraphDataInt() {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
+std::vector<int> getInOutPos() {
+    std::vector<int> possibleInOut;
+
+    // Append positions in the first range
+    for (int i = 1; i < nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the second range
+    for (int i = 1; i < nCellsSqrt - 1; ++i) {
+        possibleInOut.push_back(i + nCells - nCellsSqrt);
+    }
+
+    // Append positions in the third range
+    for (int i = nCellsSqrt; i < nCells - nCellsSqrt; i += nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+
+    // Append positions in the fourth range
+    for (int i = nCellsSqrt * 2 - 1; i < nCells - 1; i += nCellsSqrt) {
+        possibleInOut.push_back(i);
+    }
+    return possibleInOut;
+}
 
 std::vector<std::pair<int, int> > getEdgesDepthFirst() {
     // Copy input nodes and shuffle if needed
@@ -247,7 +269,7 @@ std::vector<std::pair<int, int> > getEdgesDepthFirst() {
                 }
             }
         }
-        if(!flag) {
+        if (!flag) {
             int a = 1;
         }
     }
@@ -255,27 +277,154 @@ std::vector<std::pair<int, int> > getEdgesDepthFirst() {
     return edges;
 }
 
-std::vector<int> getInOutPos() {
-    std::vector<int> possibleInOut;
+std::vector<std::pair<int, int> > getEdgesDepthFirstPriority() {
+    // Copia os nós de entrada e embaralha, se necessário
+    std::vector<int> inputList = inputNodes;
+    randomVector(inputList);
 
-    // Append positions in the first range
-    for (int i = 1; i < nCellsSqrt - 1; ++i) {
-        possibleInOut.push_back(i);
+    // Inicializa a pilha com inputList
+    std::vector<int> stack(inputList);
+    std::vector<std::pair<int, int> > edges;
+    std::vector<bool> visited(nNodes, false);
+
+    while (!stack.empty()) {
+        int n = stack.back();
+        stack.pop_back();
+
+        if (visited[n]) {
+            continue;
+        }
+        visited[n] = true;
+
+        // Coleta os vizinhos ainda não visitados
+        std::vector<int> neighbors;
+        for (int i = 0; i < nNodes; i++) {
+            if (successors[n][i] && !visited[i]) {
+                neighbors.push_back(i);
+            }
+        }
+
+        // Ordena os vizinhos para priorizar os maiores caminhos
+        std::sort(neighbors.begin(), neighbors.end(), [](int a, int b) {
+            // Critério para ordenar: pode ser baseado na quantidade de sucessores
+            return std::count(successors[a].begin(), successors[a].end(), true) >
+                   std::count(successors[b].begin(), successors[b].end(), true);
+        });
+
+        // Adiciona os vizinhos à pilha e armazena as arestas
+        for (int neighbor: neighbors) {
+            stack.push_back(neighbor);
+            edges.emplace_back(n, neighbor);
+        }
     }
 
-    // Append positions in the second range
-    for (int i = 1; i < nCellsSqrt - 1; ++i) {
-        possibleInOut.push_back(i + nCells - nCellsSqrt);
+    return edges;
+}
+
+std::vector<std::pair<int, int> > getEdgesZigzag() {
+    std::vector<std::pair<int, std::string> > outputList;
+
+    for (const auto &node: outputNodes) {
+        outputList.emplace_back(node, "IN");
     }
 
-    // Append positions in the third range
-    for (int i = nCellsSqrt; i < nCells - nCellsSqrt; i += nCellsSqrt) {
-        possibleInOut.push_back(i);
+
+    // if (make_shuffle) {
+    //     shuffleVector(outputList);
+    // }
+
+    std::vector<std::pair<int, std::string> > stack(outputList.begin(), outputList.end());
+    std::vector<std::pair<int, int> > edges;
+    std::vector<bool> visited(nNodes, false);
+    //std::vector<std::vector<std::string> > convergence;
+
+    // Precompute fan-in and fan-out
+    std::vector<std::vector<int> > fanIn(nNodes);
+    std::vector<std::vector<int> > fanOut(nNodes);
+    for (int i = 0; i < nNodes; i++) {
+        for (int j = 0; j < nNodes; j++) {
+            if (successors[i][j]) {
+                fanOut[i].push_back(j);
+            }
+            if (predecessors[i][j]) {
+                fanIn[i].push_back(j);
+            }
+        }
     }
 
-    // Append positions in the fourth range
-    for (int i = nCellsSqrt * 2 - 1; i < nCells - 1; i += nCellsSqrt) {
-        possibleInOut.push_back(i);
+
+    // if (make_shuffle) {
+    //     for (auto &[node, neighbors]: fan_in) shuffleVector(neighbors);
+    //     for (auto &[node, neighbors]: fan_out) shuffleVector(neighbors);
+    // }
+
+    while (!stack.empty()) {
+        auto current = stack.back();
+        stack.pop_back();
+
+        const int &a = current.first;
+        const std::string &direction = current.second;
+        visited[a] = true;;
+
+        if (direction == "IN") {
+            if (!fanOut[a].empty()) {
+                int b = fanOut[a].back();
+                fanOut[a].pop_back();
+                fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
+
+                stack.insert(stack.begin(), {a, "IN"});
+                int gg = 1;
+                //stack.insert(stack.begin(), fan_in[a].size(), {a, "IN"});
+                // stack.push_front({b, "OUT"});
+                //
+                // if (visited.count(b)) {
+                //     convergence.push_back({a, b});
+                // }
+                // edges.push_back({a, b, "OUT"});
+            } else if (!fanIn[a].empty()) {
+                int b = fanIn[a].back();
+                fanIn[a].pop_back();
+                fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
+
+                stack.insert(stack.begin(), {a, "IN"});
+                // stack.insert(stack.begin(), fan_in[a].size(), {b, "IN"});
+                //
+                // if (visited.count(b)) {
+                //     convergence.push_back({a, b});
+                // }
+                // edges.push_back({a, b, "IN"});
+            }
+        }
+        //else {
+        //         // direction == "OUT"
+        //         if (!fan_in[a].empty()) {
+        //             std::string b = fan_in[a].front();
+        //             fan_in[a].erase(fan_in[a].begin());
+        //             fan_out[b].erase(std::remove(fan_out[b].begin(), fan_out[b].end(), a), fan_out[b].end());
+        //
+        //             stack.push_front({a, "OUT"});
+        //             stack.insert(stack.begin(), fan_out[a].size(), {a, "OUT"});
+        //             stack.push_front({b, "IN"});
+        //
+        //             if (visited.count(b)) {
+        //                 convergence.push_back({a, b});
+        //             }
+        //             edges.push_back({a, b, "IN"});
+        //         } else if (!fan_out[a].empty()) {
+        //             std::string b = fan_out[a].front();
+        //             fan_out[a].erase(fan_out[a].begin());
+        //             fan_in[b].erase(std::remove(fan_in[b].begin(), fan_in[b].end(), a), fan_in[b].end());
+        //
+        //             stack.push_front({a, "OUT"});
+        //             stack.insert(stack.begin(), fan_out[a].size(), {b, "OUT"});
+        //
+        //             if (visited.count(b)) {
+        //                 convergence.push_back({a, b});
+        //             }
+        //             edges.push_back({a, b, "OUT"});
+        //         }
+        //     }
     }
-    return possibleInOut;
+    //
+    // return {clearEdges(edges), clearEdges(edges, false), convergence};
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Diretório contendo os arquivos .out
-input_folder="reports/fpga/yoto_base/out/"
+input_folder="reports/fpga/yoto_base/rep/"
 
 # Verificar se o diretório existe
 if [ ! -d "$input_folder" ]; then
@@ -9,9 +9,9 @@ if [ ! -d "$input_folder" ]; then
     exit 1
 fi
 
-# Iterar sobre todos os arquivos .out no diretório
-for arquivo in "${input_folder}"/*.out; do
-    # Verificar se existem arquivos .out
+# Iterar sobre todos os arquivos .rep no diretório
+for arquivo in "${input_folder}"/*.rep; do
+    # Verificar se existem arquivos .rep
     if [ -f "$arquivo" ]; then
         # Buscar pela linha com a frase "Critical Path: XXXX"
         linha=$(grep -E "Critical Path: [0-9]+\.[0-9]+e[+-][0-9]+" "$arquivo")
