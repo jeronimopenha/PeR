@@ -4,7 +4,7 @@
 //fixme - implement the zigzag algorithm too
 //I think it will be better to implement here instead make another code file
 // I will create other file for other versions of the algorithms like yotoCache and yotoQuad and yotoTH etc
-ReportData yotoBase() {
+ReportData yotoBase(bool useZigZag = false) {
     auto start = std::chrono::high_resolution_clock::now();
 
     std::vector<int> c2n(nCells, -1);
@@ -19,17 +19,25 @@ ReportData yotoBase() {
 
     std::vector<std::pair<int, int> > ed = getEdgesDepthFirst();
     //saveToDot(ed, "/home/jeronimo/test.dot");
-
-    //I need to place every input at the beginning of execution
     int lastIdxIOCellUsed = 0;
-    for (int n: inputNodes) {
-        for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
-            int ioCell = inOutCells[i];
-            if (c2n[ioCell] == -1) {
-                c2n[ioCell] = n;
-                n2c[n] = ioCell;
-                lastIdxIOCellUsed = i;
-                break;
+
+    //todo - Implement the zigzag yoto to get results
+    if (useZigZag) {
+        //For Zig Zag algorithm I need to place only one output node at the beginning
+        //because the algorithm will pass for all nodes for each connected component of the graph
+    } else {
+        //for Deptfh First Search
+        //I need to place every input at the beginning of execution
+
+        for (int n: inputNodes) {
+            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
+                int ioCell = inOutCells[i];
+                if (c2n[ioCell] == -1) {
+                    c2n[ioCell] = n;
+                    n2c[n] = ioCell;
+                    lastIdxIOCellUsed = i;
+                    break;
+                }
             }
         }
     }
