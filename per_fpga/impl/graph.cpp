@@ -328,9 +328,8 @@ std::vector<std::pair<int, int> > getEdgesZigzag() {
         outputList.emplace_back(node, "IN");
     }
 
-
     // if (make_shuffle) {
-    //     shuffleVector(outputList);
+    randomVector(outputList);
     // }
 
     std::vector<std::pair<int, std::string> > stack(outputList.begin(), outputList.end());
@@ -350,8 +349,9 @@ std::vector<std::pair<int, int> > getEdgesZigzag() {
                 fanIn[i].push_back(j);
             }
         }
+        randomVector(fanOut[i]);
+        randomVector(fanIn[i]);
     }
-
 
     // if (make_shuffle) {
     //     for (auto &[node, neighbors]: fan_in) shuffleVector(neighbors);
@@ -359,72 +359,75 @@ std::vector<std::pair<int, int> > getEdgesZigzag() {
     // }
 
     while (!stack.empty()) {
-        auto current = stack.back();
+        auto [fst, snd] = stack.back();
         stack.pop_back();
 
-        const int &a = current.first;
-        const std::string &direction = current.second;
+        const int &a = fst;
+        const std::string &direction = snd;
         visited[a] = true;;
 
         if (direction == "IN") {
             if (!fanOut[a].empty()) {
-                int b = fanOut[a].back();
+                const int b = fanOut[a].back();
+                stack.emplace_back(a, "IN");
+                stack.insert(stack.end(), fanIn[a].size(), {a, "IN"});
+                stack.emplace_back(b, "OUT");
+
                 fanOut[a].pop_back();
                 fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
-                stack.insert(stack.begin(), {a, "IN"});
-                int gg = 1;
-                //stack.insert(stack.begin(), fan_in[a].size(), {a, "IN"});
-                // stack.push_front({b, "OUT"});
-                //
-                // if (visited.count(b)) {
+                //if (visited.count(b)) {
                 //     convergence.push_back({a, b});
                 // }
-                // edges.push_back({a, b, "OUT"});
+                //edges.emplace_back({a, b, "OUT"});
+                edges.emplace_back(a, b);
             } else if (!fanIn[a].empty()) {
-                int b = fanIn[a].back();
+                const int b = fanIn[a].back();
+                stack.emplace_back(a, "IN");
+                stack.insert(stack.end(), fanIn[a].size(), {b, "IN"});
+
                 fanIn[a].pop_back();
                 fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
-                stack.insert(stack.begin(), {a, "IN"});
-                // stack.insert(stack.begin(), fan_in[a].size(), {b, "IN"});
                 //
                 // if (visited.count(b)) {
                 //     convergence.push_back({a, b});
                 // }
                 // edges.push_back({a, b, "IN"});
+                edges.emplace_back(a, b);
+            }
+        } else {
+            // direction == "OUT"
+            if (!fanIn[a].empty()) {
+                int b = fanIn[a].back();
+                stack.emplace_back(a, "OUT");
+                stack.insert(stack.end(), fanOut[a].size(), {a, "OUT"});
+                stack.emplace_back(b, "IN");
+
+                fanIn[a].pop_back();
+                fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
+
+                // if (visited.count(b)) {
+                //     convergence.push_back({a, b});
+                // }
+                //edges.push_back({a, b, "IN"});
+                edges.emplace_back(a, b);
+            } else if (!fanOut[a].empty()) {
+                int b = fanOut[a].back();
+                stack.emplace_back(a, "OUT");
+                stack.insert(stack.end(), fanOut[a].size(), {b, "OUT"});
+
+                fanOut[a].pop_back();
+                fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
+
+
+                // if (visited.count(b)) {
+                //     convergence.push_back({a, b});
+                // }
+                // edges.push_back({a, b, "OUT"});
+                edges.emplace_back(a, b);
             }
         }
-        //else {
-        //         // direction == "OUT"
-        //         if (!fan_in[a].empty()) {
-        //             std::string b = fan_in[a].front();
-        //             fan_in[a].erase(fan_in[a].begin());
-        //             fan_out[b].erase(std::remove(fan_out[b].begin(), fan_out[b].end(), a), fan_out[b].end());
-        //
-        //             stack.push_front({a, "OUT"});
-        //             stack.insert(stack.begin(), fan_out[a].size(), {a, "OUT"});
-        //             stack.push_front({b, "IN"});
-        //
-        //             if (visited.count(b)) {
-        //                 convergence.push_back({a, b});
-        //             }
-        //             edges.push_back({a, b, "IN"});
-        //         } else if (!fan_out[a].empty()) {
-        //             std::string b = fan_out[a].front();
-        //             fan_out[a].erase(fan_out[a].begin());
-        //             fan_in[b].erase(std::remove(fan_in[b].begin(), fan_in[b].end(), a), fan_in[b].end());
-        //
-        //             stack.push_front({a, "OUT"});
-        //             stack.insert(stack.begin(), fan_out[a].size(), {b, "OUT"});
-        //
-        //             if (visited.count(b)) {
-        //                 convergence.push_back({a, b});
-        //             }
-        //             edges.push_back({a, b, "OUT"});
-        //         }
-        //     }
     }
-    //
-    // return {clearEdges(edges), clearEdges(edges, false), convergence};
+    return edges;
 }

@@ -53,11 +53,6 @@ void saveToDot(const std::vector<std::pair<int, int> > &edges, const std::string
     std::cout << "File " << filename << " saved!" << std::endl;
 }
 
-void randomVector(std::vector<int> &vec) {
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(vec.begin(), vec.end(), g);
-}
 
 int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges,
                            const int nCellsSqrt) {

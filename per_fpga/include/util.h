@@ -85,7 +85,12 @@ std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
 
 void saveToDot(const std::vector<std::pair<int, int> > &edges, const std::string &filename);
 
-void randomVector(std::vector<int> &vec);
+template <typename T>
+void randomVector(std::vector<T> &vec) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(vec.begin(), vec.end(), g);
+}
 
 int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges, int nCellsSqrt);
 

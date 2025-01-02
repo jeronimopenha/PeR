@@ -32,14 +32,8 @@ ReportData yotoBase(yotoAlgEnum alg) {
     int lastIdxIOCellUsed = 0;
 
     //todo - Implement the zigzag yoto to get results
-    if (alg == ZZ) {
-        //For Zig Zag algorithm I need to place only one output node at the beginning
-        //because the algorithm will pass for all nodes for each connected component of the graph
-    } else if (alg == DFP) {
-        //for Deptfh First Search with priority
-        //I need to place every input at the beginning of execution
-    } else if (alg == DF) {
-        //for Deptfh First Search with no priority
+    if (alg == DF || alg == DFP) {
+        //for Deptfh First Search with or without priority
         //I need to place every input at the beginning of execution
 
         for (int n: inputNodes) {
@@ -141,6 +135,15 @@ ReportData yotoBase(yotoAlgEnum alg) {
     std::chrono::duration<double, std::milli> duration = end - start;
     float _time = duration.count();
     int tc = calcGraphTotalDistance(n2c, gEdges, nCellsSqrt);
+
+    std::string alg_type = "";
+    if (alg == DF) {
+        alg_type = "DEPTH_FIRST";
+    } else if (alg == DFP) {
+        alg_type = "DEPTH_FIRST_PRIORITY";
+    } else if (alg == ZZ) {
+        alg_type = "ZIG_ZAG";
+    }
 
     ReportData report = ReportData(
         _time,
