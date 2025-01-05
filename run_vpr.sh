@@ -14,9 +14,9 @@ nome_base="$1"
 num_processos=${2:-4}
 
 # Diretórios contendo os arquivos
-input_folder1="reports/fpga/yoto_base/net"
-input_folder2="reports/fpga/yoto_base/place"
-output_folder="reports/fpga/yoto_base/rep"
+input_folder1="reports/fpga/yoto_base_zz/net"
+input_folder2="reports/fpga/yoto_base_zz/place"
+output_folder="reports/fpga/yoto_base_zz/rep"
 
 # Extensões possíveis
 ext1=".net"
