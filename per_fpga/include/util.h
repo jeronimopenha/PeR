@@ -4,7 +4,8 @@
 //#define YOTO_BASE_DF
 //#define YOTO_BASE_DF_P
 //#define YOTO_BASE_ZZ
-#define YOTO_BASE_ZZ_CACHE
+//#define YOTO_BASE_ZZ_CACHE
+#define YOTT_BASE
 
 #include <filesystem>
 #include <iostream>
@@ -15,11 +16,6 @@
 #include <algorithm>
 #include "graph.h"
 
-enum yotoAlgEnum {
-    DF,
-    DFP,
-    ZZ
-};
 
 struct ReportData {
     float _time;

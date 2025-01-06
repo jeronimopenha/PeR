@@ -10,9 +10,9 @@
 #include <vector>
 
 
-ReportData yotoBase();
+ReportData yotoBase(Graph& g);
 
-std::vector<std::vector<int> > getAdjCellsDist();
+std::vector<std::vector<int> > getAdjCellsDist(Graph g);
 
 
 #endif //YOTO_BASE_H

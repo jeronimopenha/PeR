@@ -1,11 +1,15 @@
 #include "yotoBase.h"
 
 
-ReportData yotoBase() {
+ReportData yotoBase(Graph &g) {
+    int nCells = g.nCells;
+    int nCellsSqrt = g.nCellsSqrt;
+    int nNodes = g.nNodes;
+
     std::vector<int> c2n(nCells, -1);
     std::vector<int> n2c(nNodes, -1);
-    std::vector<std::vector<int> > distCells = getAdjCellsDist();
-    std::vector<int> inOutCells = getInOutPos();
+    std::vector<std::vector<int> > distCells = getAdjCellsDist(g);
+    std::vector<int> inOutCells = g.getInOutPos();
 #ifdef YOTO_BASE_ZZ_CACHE
     Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
     Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
@@ -110,7 +114,7 @@ ReportData yotoBase() {
             int targetCell = lB * nCellsSqrt + cB;
 
             const bool isTargetCellIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
-            const bool IsBIoNode = nSuccV[b] == 0 || nPredV[b] == 0;
+            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
@@ -143,13 +147,13 @@ ReportData yotoBase() {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration = end - start;
     float _time = duration.count();
-    int tc = calcGraphTotalDistance(n2c, gEdges, nCellsSqrt);
+    int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
 
 
     ReportData report = ReportData(
         _time,
-        dotName,
-        dotPath,
+        g.dotName,
+        g.dotPath,
         "yotoBase",
         cacheMisses,
         tries,
@@ -162,8 +166,11 @@ ReportData yotoBase() {
     return report;
 }
 
-std::vector<std::vector<int> > getAdjCellsDist() {
-    int max_dist = (nCellsSqrt - 1) * 2;
+std::vector<std::vector<int> > getAdjCellsDist(Graph g) {
+    const int nCellsSqrt = g.nCellsSqrt;
+
+
+    const int max_dist = (nCellsSqrt - 1) * 2;
     std::vector<std::vector<int> > meshDistances;
     std::vector<std::vector<std::vector<int> > > distance_table_raw(max_dist);
     for (int l = 0; l < nCellsSqrt; ++l) {

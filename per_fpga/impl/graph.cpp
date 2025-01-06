@@ -1,26 +1,12 @@
 #include "graph.h"
 #include <util.h>
 
-void graphClearData() {
-    nEdges = 0;
-    nNodes = 0;
-    nCells = 0;
-    nCellsSqrt = 0;
-
-    successors.clear();
-    //Adjacency for predecessors
-    predecessors.clear();
-    //Edges list
-    gEdges.clear();
-    //input nodes
-    nSuccV.clear();
-    //output nodes
-    nPredV.clear();
-    inputNodes.clear();
-    outputNodes.clear();
+Graph::Graph(const std::string &dotPath, const std::string &dotName) {
+    this->dotPath = dotPath;
+    this->dotName = dotName;
 }
 
-void getGraphDataStr() {
+void Graph::getGraphDataStr() {
     std::unordered_set<std::string> nodesStr;
     std::vector<std::pair<std::string, std::string> > edgesStr;
 
@@ -122,7 +108,7 @@ void getGraphDataStr() {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
-void getGraphDataInt() {
+void Graph::getGraphDataInt() {
     std::unordered_set<int> nodes;
 
     std::ifstream dotFile(dotPath);
@@ -214,7 +200,7 @@ void getGraphDataInt() {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
-std::vector<int> getInOutPos() {
+std::vector<int> Graph::getInOutPos() {
     std::vector<int> possibleInOut;
 
     // Append positions in the first range
@@ -239,7 +225,7 @@ std::vector<int> getInOutPos() {
     return possibleInOut;
 }
 
-std::vector<std::pair<int, int> > getEdgesDepthFirst() {
+std::vector<std::pair<int, int> > Graph::getEdgesDepthFirst() {
     // Copy input nodes and shuffle if needed
     std::vector<int> inputList = inputNodes;
 
@@ -277,7 +263,7 @@ std::vector<std::pair<int, int> > getEdgesDepthFirst() {
     return edges;
 }
 
-std::vector<std::pair<int, int> > getEdgesDepthFirstPriority() {
+std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
     // Copia os nós de entrada e embaralha, se necessário
     std::vector<int> inputList = inputNodes;
     randomVector(inputList);
@@ -305,7 +291,7 @@ std::vector<std::pair<int, int> > getEdgesDepthFirstPriority() {
         }
 
         // Ordena os vizinhos para priorizar os maiores caminhos
-        std::sort(neighbors.begin(), neighbors.end(), [](int a, int b) {
+        std::sort(neighbors.begin(), neighbors.end(), [this](int a, int b) {
             // Critério para ordenar: pode ser baseado na quantidade de sucessores
             return std::count(successors[a].begin(), successors[a].end(), true) >
                    std::count(successors[b].begin(), successors[b].end(), true);
@@ -321,7 +307,7 @@ std::vector<std::pair<int, int> > getEdgesDepthFirstPriority() {
     return edges;
 }
 
-std::vector<std::pair<int, int> > getEdgesZigzag() {
+std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
     std::vector<std::pair<int, std::string> > outputList;
 
     for (const auto &node: outputNodes) {
@@ -433,7 +419,7 @@ std::vector<std::pair<int, int> > getEdgesZigzag() {
 }
 
 
-std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges) {
+std::vector<std::pair<int, int> > Graph::clearEdges(const std::vector<std::pair<int, int> > &edges) {
     std::vector placedNodes(nNodes, false); // Set to track placed nodes
     std::vector<std::pair<int, int> > new_edges; // Vector to store filtered edges
 

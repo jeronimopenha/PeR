@@ -17,42 +17,48 @@
 #include <algorithm>
 #include <cmath>
 
+class Graph {
+public:
+    std::string dotPath;
+    std::string dotName;
 
-inline std::string dotPath;
-inline std::string dotName;
+    int nEdges = 0;
+    int nNodes = 0;
+    int nCells = 0;
+    int nCellsSqrt = 0;
 
-inline int nEdges = 0;
-inline int nNodes = 0;
-inline int nCells = 0;
-inline int nCellsSqrt = 0;
+    //Adjacency for successors
+    std::vector<std::vector<bool> > successors;
+    //Adjacency for predecessors
+    std::vector<std::vector<bool> > predecessors;
+    //Edges list
+    std::vector<std::pair<int, int> > gEdges;
+    //input nodes
+    std::vector<int> nSuccV;
+    //output nodes
+    std::vector<int> nPredV;
+    std::vector<int> inputNodes;
+    std::vector<int> outputNodes;
 
-//Adjacency for successors
-inline std::vector<std::vector<bool> > successors;
-//Adjacency for predecessors
-inline std::vector<std::vector<bool> > predecessors;
-//Edges list
-inline std::vector<std::pair<int, int> > gEdges;
-//input nodes
-inline std::vector<int> nSuccV;
-//output nodes
-inline std::vector<int> nPredV;
-inline std::vector<int> inputNodes;
-inline std::vector<int> outputNodes;
 
-void graphClearData();
+    Graph(const std::string &dotPath, const std::string &dotName);
 
-void getGraphDataStr();
+    //void graphClearData();
 
-void getGraphDataInt();
+    void getGraphDataStr();
 
-std::vector<int> getInOutPos();
+    void getGraphDataInt();
 
-std::vector<std::pair<int, int> > getEdgesDepthFirst();
+    std::vector<int> getInOutPos();
 
-std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
+    std::vector<std::pair<int, int> > getEdgesDepthFirst();
 
-std::vector<std::pair<int, int> > getEdgesZigzag();
+    std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
 
-std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges);
+    std::vector<std::pair<int, int> > getEdgesZigzag();
+
+    std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges);
+};
+
 
 #endif //GRAPH_H

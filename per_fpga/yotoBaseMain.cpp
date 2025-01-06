@@ -17,11 +17,9 @@ int main() {
         std::cout << fst << std::endl;
 
         //Creating graph important variables
-        dotPath = fst;
-        dotName = snd.substr(0, snd.size() - 4);
+        Graph g = Graph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
-        graphClearData();
-        getGraphDataInt();
+        g.getGraphDataInt();
 
         //execution parameters
 #ifdef YOTO_BASE_DF
@@ -32,12 +30,14 @@ int main() {
         std::string outBaseFolder = "reports/fpga/yoto_base_zz/";
 #elifdef YOTO_BASE_ZZ_CACHE
         std::string outBaseFolder = "reports/fpga/yoto_base_zz_cache/";
+#elifdef YOTT_BASE
+        std::string outBaseFolder = "reports/fpga/yott_base/";
 #endif
 
         int nExec = 1000;
         std::vector<ReportData> reports;
         for (int exec = 0; exec < nExec; exec++)
-            reports.push_back(yotoBase());
+            reports.push_back(yotoBase(g));
 
         //sort the reports by total cost because I want only the 10 better placements
         std::sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
@@ -47,8 +47,8 @@ int main() {
 
         for (int i = 0; i < 10; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-            std::cout << dotName << std::endl;
-            std::string reportName = dotName + "_" + std::to_string(i);
+            std::cout << g.dotName << std::endl;
+            std::string reportName = g.dotName + "_" + std::to_string(i);
             //save reports for the 10 better placements
             writeJson(rootPath + outBaseFolder, reportName, reports[i]);
             //generate reports and files for vpr
