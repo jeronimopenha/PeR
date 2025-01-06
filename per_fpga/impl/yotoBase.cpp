@@ -1,61 +1,68 @@
 #include "yotoBase.h"
 
 
-//fixme - implement the zigzag algorithm too
-//I think it will be better to implement here instead make another code file
-// I will create other file for other versions of the algorithms like yotoCache and yotoQuad and yotoTH etc
-ReportData yotoBase(yotoAlgEnum alg) {
-    auto start = std::chrono::high_resolution_clock::now();
-
+ReportData yotoBase() {
     std::vector<int> c2n(nCells, -1);
     std::vector<int> n2c(nNodes, -1);
     std::vector<std::vector<int> > distCells = getAdjCellsDist();
     std::vector<int> inOutCells = getInOutPos();
-
+#ifdef YOTO_BASE_ZZ_CACHE
+    Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+    Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+#endif
     randomVector(inOutCells);
 
+    int cacheMisses = 0;
     int tries = 0;
     int swaps = 0;
 
+    std::string alg_type;
     std::vector<std::pair<int, int> > ed;
-
-    if (alg == ZZ) {
-        ed = getEdgesZigzag();
-    } else if (alg == DFP) {
-        ed = getEdgesDepthFirstPriority();
-    } else if (alg == DF) {
-        ed = getEdgesDepthFirst();
-    }
-
+#if defined(YOTO_BASE_ZZ) || defined(YOTO_BASE_ZZ_CACHE)
+    ed = getEdgesZigzag();
+    alg_type = "ZIG_ZAG";
+#elifdef YOTO_BASE_DF_P
+    ed = getEdgesDepthFirstPriority();
+    alg_type = "DEPTH_FIRST_PRIORITY";
+#elifdef YOTO_BASE_DF
+    ed = getEdgesDepthFirst();
+    alg_type = "DEPTH_FIRST";
+#endif
 
     //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
 
-    //todo - Implement the zigzag yoto to get results
-    if (alg == DF || alg == DFP) {
-        //for Deptfh First Search with or without priority
-        //I need to place every input at the beginning of execution
-
-        for (int n: inputNodes) {
-            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
-                int ioCell = inOutCells[i];
-                if (c2n[ioCell] == -1) {
-                    c2n[ioCell] = n;
-                    n2c[n] = ioCell;
-                    lastIdxIOCellUsed = i;
-                    break;
-                }
+#if defined(YOTO_BASE_DF) || defined(YOTO_BASE_DF_P)
+    //for Deptfh First Search with or without priority
+    //I need to place every input at the beginning of execution
+    for (int n: inputNodes) {
+        for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
+            int ioCell = inOutCells[i];
+            if (c2n[ioCell] == -1) {
+                c2n[ioCell] = n;
+                n2c[n] = ioCell;
+                lastIdxIOCellUsed = i;
+                break;
             }
         }
     }
+#endif
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (auto [a,b]: ed) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
+#ifdef YOTO_BASE_ZZ_CACHE
+        cacheMisses += cacheN2C.checkCache(a, n2c);
+#endif
+
         if (n2c[a] == -1) {
             for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
                 int ioCell = inOutCells[i];
+#ifdef YOTO_BASE_ZZ_CACHE
+                cacheMisses += cacheC2N.checkCache(ioCell, c2n);
+#endif
                 if (c2n[ioCell] == -1) {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
@@ -66,6 +73,9 @@ ReportData yotoBase(yotoAlgEnum alg) {
         }
 
         //Now, if B is placed, go to next edge
+#ifdef YOTO_BASE_ZZ_CACHE
+        cacheMisses += cacheN2C.checkCache(b, n2c);
+#endif
         if (n2c[b] != -1) {
             continue;
         }
@@ -76,7 +86,7 @@ ReportData yotoBase(yotoAlgEnum alg) {
         const int lA = n2c[a] / nCellsSqrt;
         const int cA = n2c[a] % nCellsSqrt;
 
-        bool placed = false;
+        //bool placed = false;
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells) {
             ++tries;
@@ -117,17 +127,16 @@ ReportData yotoBase(yotoAlgEnum alg) {
             }
 
             // Place the node if `placement[targetCell]` is unoccupied
+#ifdef YOTO_BASE_ZZ_CACHE
+            cacheMisses += cacheC2N.checkCache(targetCell, c2n);
+#endif
             if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
-                placed = true;
+                //placed = true;
                 break;
             }
-        }
-        //fixme remove
-        if (!placed) {
-            int a = 1;
         }
     }
 
@@ -136,23 +145,16 @@ ReportData yotoBase(yotoAlgEnum alg) {
     float _time = duration.count();
     int tc = calcGraphTotalDistance(n2c, gEdges, nCellsSqrt);
 
-    std::string alg_type = "";
-    if (alg == DF) {
-        alg_type = "DEPTH_FIRST";
-    } else if (alg == DFP) {
-        alg_type = "DEPTH_FIRST_PRIORITY";
-    } else if (alg == ZZ) {
-        alg_type = "ZIG_ZAG";
-    }
 
     ReportData report = ReportData(
         _time,
         dotName,
         dotPath,
         "yotoBase",
+        cacheMisses,
         tries,
         swaps,
-        "DEPTH_FIRST",
+        alg_type,
         tc,
         c2n,
         n2c

@@ -429,5 +429,23 @@ std::vector<std::pair<int, int> > getEdgesZigzag() {
             }
         }
     }
-    return edges;
+    return clearEdges(edges);
+}
+
+
+std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges) {
+    std::vector placedNodes(nNodes, false); // Set to track placed nodes
+    std::vector<std::pair<int, int> > new_edges; // Vector to store filtered edges
+
+    // Add the first node of the first edge to the set
+    placedNodes[edges[0].first] = true;
+
+    for (const auto [fst,snd]: edges) {
+        // Check if the second node is not in the set or if we don't remove placed edges
+        if (!placedNodes[snd]) {
+            placedNodes[snd] = true; // Add n2 to the set
+            new_edges.emplace_back(fst, snd); // Add the edge to the new list
+        }
+    }
+    return new_edges;
 }

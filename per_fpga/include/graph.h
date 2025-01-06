@@ -53,5 +53,6 @@ std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
 
 std::vector<std::pair<int, int> > getEdgesZigzag();
 
+std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges);
 
 #endif //GRAPH_H

@@ -65,7 +65,7 @@ export input_folder1 input_folder2 output_folder nome_base ext1 ext2
 
 # Gerar uma lista de tarefas
 tasks_file=$(mktemp)
-for k in 3 4 5 6; do
+for k in 4 5 6; do
     for y in {0..9}; do
         echo "$k $y" >> "$tasks_file"
     done

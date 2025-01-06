@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/yotoBaseZz.dir/impl/cache.cpp.o"
+  "CMakeFiles/yotoBaseZz.dir/impl/cache.cpp.o.d"
   "CMakeFiles/yotoBaseZz.dir/impl/graph.cpp.o"
   "CMakeFiles/yotoBaseZz.dir/impl/graph.cpp.o.d"
   "CMakeFiles/yotoBaseZz.dir/impl/util.cpp.o"

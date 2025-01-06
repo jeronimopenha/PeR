@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/yotoBaseDfP.dir/impl/cache.cpp.o"
+  "CMakeFiles/yotoBaseDfP.dir/impl/cache.cpp.o.d"
   "CMakeFiles/yotoBaseDfP.dir/impl/graph.cpp.o"
   "CMakeFiles/yotoBaseDfP.dir/impl/graph.cpp.o.d"
   "CMakeFiles/yotoBaseDfP.dir/impl/util.cpp.o"
