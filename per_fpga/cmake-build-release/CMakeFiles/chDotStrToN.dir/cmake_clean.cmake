@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/chDotStrToN.dir/impl/util.cpp.o.d"
   "CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.o"
   "CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.o.d"
+  "CMakeFiles/chDotStrToN.dir/impl/yottBase.cpp.o"
+  "CMakeFiles/chDotStrToN.dir/impl/yottBase.cpp.o.d"
   "chDotStrToN"
   "chDotStrToN.pdb"
 )

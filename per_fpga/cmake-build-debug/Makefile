@@ -274,6 +274,33 @@ impl/yotoBase.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yotoBase.cpp.s
 .PHONY : impl/yotoBase.cpp.s
 
+impl/yottBase.o: impl/yottBase.cpp.o
+.PHONY : impl/yottBase.o
+
+# target to build an object file
+impl/yottBase.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yottBase.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yottBase.cpp.o
+.PHONY : impl/yottBase.cpp.o
+
+impl/yottBase.i: impl/yottBase.cpp.i
+.PHONY : impl/yottBase.i
+
+# target to preprocess a source file
+impl/yottBase.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yottBase.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yottBase.cpp.i
+.PHONY : impl/yottBase.cpp.i
+
+impl/yottBase.s: impl/yottBase.cpp.s
+.PHONY : impl/yottBase.s
+
+# target to generate assembly for a file
+impl/yottBase.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/yotoBase.dir/build.make CMakeFiles/yotoBase.dir/impl/yottBase.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/yottBase.cpp.s
+.PHONY : impl/yottBase.cpp.s
+
 yotoBaseMain.o: yotoBaseMain.cpp.o
 .PHONY : yotoBaseMain.o
 
@@ -323,6 +350,9 @@ help:
 	@echo "... impl/yotoBase.o"
 	@echo "... impl/yotoBase.i"
 	@echo "... impl/yotoBase.s"
+	@echo "... impl/yottBase.o"
+	@echo "... impl/yottBase.i"
+	@echo "... impl/yottBase.s"
 	@echo "... yotoBaseMain.o"
 	@echo "... yotoBaseMain.i"
 	@echo "... yotoBaseMain.s"

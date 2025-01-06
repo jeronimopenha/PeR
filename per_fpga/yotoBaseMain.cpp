@@ -1,6 +1,7 @@
 #include  "util.h"
 #include  "graph.h"
 #include "yotoBase.h"
+#include "yottBase.h"
 
 //Choose the algorithm in util.h defines
 int main() {
@@ -37,7 +38,11 @@ int main() {
         int nExec = 1000;
         std::vector<ReportData> reports;
         for (int exec = 0; exec < nExec; exec++)
+#ifdef defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
             reports.push_back(yotoBase(g));
+#elifdef YOTT_BASE
+            reports.push_back(yottBase(g));
+#endif
 
         //sort the reports by total cost because I want only the 10 better placements
         std::sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
