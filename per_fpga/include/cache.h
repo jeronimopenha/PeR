@@ -21,7 +21,7 @@ private:
 public:
     Cache(int cacheLinesExp, int cacheColumnsExp);
 
-    int checkCache(int address, const std::vector<int> &vec);
+    int readCache(int address, const std::vector<int> &vec);
 };
 
 

@@ -307,7 +307,8 @@ std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
     return edges;
 }
 
-std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
+//todo this function needs to return 3 vectors: edges, convergences and cleared edges
+std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<int, int> > &convergence) {
     std::vector<std::pair<int, std::string> > outputList;
 
     for (const auto &node: outputNodes) {
@@ -318,10 +319,9 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
     randomVector(outputList);
     // }
 
-    std::vector<std::pair<int, std::string> > stack(outputList.begin(), outputList.end());
+    std::vector stack(outputList.begin(), outputList.end());
     std::vector<std::pair<int, int> > edges;
-    std::vector<bool> visited(nNodes, false);
-    //std::vector<std::vector<std::string> > convergence;
+    std::vector visited(nNodes, false);
 
     // Precompute fan-in and fan-out
     std::vector<std::vector<int> > fanIn(nNodes);
@@ -339,10 +339,6 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
         randomVector(fanIn[i]);
     }
 
-    // if (make_shuffle) {
-    //     for (auto &[node, neighbors]: fan_in) shuffleVector(neighbors);
-    //     for (auto &[node, neighbors]: fan_out) shuffleVector(neighbors);
-    // }
 
     while (!stack.empty()) {
         auto [fst, snd] = stack.back();
@@ -362,9 +358,9 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
                 fanOut[a].pop_back();
                 fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
-                //if (visited.count(b)) {
-                //     convergence.push_back({a, b});
-                // }
+                if (visited[b]) {
+                    convergence.emplace_back(a, b);
+                }
                 //edges.emplace_back({a, b, "OUT"});
                 edges.emplace_back(a, b);
             } else if (!fanIn[a].empty()) {
@@ -375,10 +371,10 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
                 fanIn[a].pop_back();
                 fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
-                //
-                // if (visited.count(b)) {
-                //     convergence.push_back({a, b});
-                // }
+
+                if (visited[b]) {
+                    convergence.emplace_back(a, b);
+                }
                 // edges.push_back({a, b, "IN"});
                 edges.emplace_back(a, b);
             }
@@ -393,9 +389,9 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
                 fanIn[a].pop_back();
                 fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
-                // if (visited.count(b)) {
-                //     convergence.push_back({a, b});
-                // }
+                if (visited[b]) {
+                    convergence.emplace_back(a, b);
+                }
                 //edges.push_back({a, b, "IN"});
                 edges.emplace_back(a, b);
             } else if (!fanOut[a].empty()) {
@@ -407,9 +403,9 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag() {
                 fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
 
-                // if (visited.count(b)) {
-                //     convergence.push_back({a, b});
-                // }
+                if (visited[b]) {
+                    convergence.emplace_back(a, b);
+                }
                 // edges.push_back({a, b, "OUT"});
                 edges.emplace_back(a, b);
             }
@@ -434,4 +430,66 @@ std::vector<std::pair<int, int> > Graph::clearEdges(const std::vector<std::pair<
         }
     }
     return new_edges;
+}
+
+
+std::unordered_map<std::string, std::vector<std::pair<int, int> > > Graph::get_graph_annotations(
+    const std::vector<std::pair<int, int> > &edges,
+    const std::vector<std::pair<int, int> > &convergences
+) {
+    std::unordered_map<std::string, std::vector<std::pair<int, int> > > annotations;
+
+    // Initialization of the dictionary
+    for (const auto &[fst, snd]: edges) {
+        std::string key = func_key(std::to_string(fst), std::to_string(snd));
+        annotations[key] = {};
+    }
+
+    for (const auto &[fst,snd]: convergences) {
+        const int elem_cycle_begin = fst;
+        int elem_cycle_end = snd;
+        std::list<std::string> walk_key;
+        bool found_start = false;
+        int count = 0;
+        int value1 = -1;
+
+        for (auto it = edges.rbegin(); it != edges.rend(); ++it) {
+            const int a = it->first;
+            int b = it->second;
+
+            if (elem_cycle_begin == b && !found_start) {
+                value1 = a;
+                std::string key = func_key(std::to_string(value1), std::to_string(elem_cycle_begin));
+                walk_key.push_front(key);
+                annotations[key].push_back({elem_cycle_end, count});
+                count++;
+                found_start = true;
+            } else if (found_start && (value1 == b || elem_cycle_end == a)) {
+                const int value2 = b;
+                value1 = a;
+                std::string key = func_key(std::to_string(value1), std::to_string(value2));
+
+                if (value1 != elem_cycle_end && value2 != elem_cycle_end) {
+                    walk_key.push_front(key);
+                    annotations[key].push_back({elem_cycle_end, count});
+                    count++;
+                } else {
+                    // Go back and update values
+                    const int half_count = count / 2;
+                    auto it = walk_key.begin();
+                    for (int k = 0; k < half_count; ++k, ++it) {
+                        auto &dic_actual = annotations[*it];
+                        for (auto &[fst,snd]: dic_actual) {
+                            if (fst == elem_cycle_end) {
+                                snd = k + 1;
+                            }
+                        }
+                    }
+                    break; // Move to the next element in convergences
+                }
+            }
+        }
+    }
+
+    return annotations;
 }

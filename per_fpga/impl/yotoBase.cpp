@@ -8,7 +8,7 @@ ReportData yotoBase(Graph &g) {
 
     std::vector<int> c2n(nCells, -1);
     std::vector<int> n2c(nNodes, -1);
-    std::vector<std::vector<int> > distCells = getAdjCellsDist(g);
+    std::vector<std::vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
     std::vector<int> inOutCells = g.getInOutPos();
 #ifdef YOTO_BASE_ZZ_CACHE
     Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
@@ -164,49 +164,4 @@ ReportData yotoBase(Graph &g) {
         n2c
     );
     return report;
-}
-
-std::vector<std::vector<int> > getAdjCellsDist(Graph g) {
-    const int nCellsSqrt = g.nCellsSqrt;
-
-
-    const int max_dist = (nCellsSqrt - 1) * 2;
-    std::vector<std::vector<int> > meshDistances;
-    std::vector<std::vector<std::vector<int> > > distance_table_raw(max_dist);
-    for (int l = 0; l < nCellsSqrt; ++l) {
-        for (int c = 0; c < nCellsSqrt; ++c) {
-            if (l == 0 && c == 0) continue; // Skip t
-            const int dist = l + c;
-
-            // Lambda to check if a coordinate pair is already in a list
-            auto contains = [](const std::vector<std::vector<int> > &vec, const std::vector<int> &pair) {
-                return std::find(vec.begin(), vec.end(), pair) != vec.end();
-            };
-
-            // Add unique coordinates to the distance table
-            if (!contains(distance_table_raw[dist - 1], {l, c})) {
-                distance_table_raw[dist - 1].push_back({l, c});
-            }
-            if (!contains(distance_table_raw[dist - 1], {l, -c})) {
-                distance_table_raw[dist - 1].push_back({l, -c});
-            }
-            if (!contains(distance_table_raw[dist - 1], {-l, -c})) {
-                distance_table_raw[dist - 1].push_back({-l, -c});
-            }
-            if (!contains(distance_table_raw[dist - 1], {-l, c})) {
-                distance_table_raw[dist - 1].push_back({-l, c});
-            }
-        }
-    }
-    // Shuffle the distance table if make_shuffle is set
-
-    auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
-    for (auto &d: distance_table_raw) {
-        std::shuffle(d.begin(), d.end(), rng);
-        for (const auto &pair: d) {
-            meshDistances.push_back(pair);
-        }
-    }
-
-    return meshDistances;
 }

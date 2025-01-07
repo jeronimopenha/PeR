@@ -1,6 +1,10 @@
 #include   "util.h"
 
 
+std::string func_key(const std::string& a, const std::string& b) {
+    return a + " " + b;
+}
+
 std::string getProjectRoot() {
     std::filesystem::path path = std::filesystem::current_path();
     for (int i = 0; i < 2; ++i) {
@@ -155,7 +159,7 @@ void writeJson(const std::string &basePath, const std::string &fileName, const R
     }
 }
 
-void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data) {
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, Graph g) {
     std::string placeFile = basePath + "place/" + fileName + ".place";
     std::string netFile = basePath + "net/" + fileName + ".net";
 
@@ -173,12 +177,12 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
 
     std::ofstream file(netFile);
     if (file.is_open()) {
-        for (int node = 0; node < nNodes; node++) {
-            int inDegree = nPredV[node];
-            int outDegree = nSuccV[node];
+        for (int node = 0; node < g.nNodes; node++) {
+            int inDegree = g.nPredV[node];
+            int outDegree = g.nSuccV[node];
             if (outDegree == 0) {
-                for (int pre = 0; pre < nNodes; pre++) {
-                    if (predecessors[node][pre]) {
+                for (int pre = 0; pre < g.nNodes; pre++) {
+                    if (g.predecessors[node][pre]) {
                         file << ".output out_" << node << ":" << pre << std::endl;
                         file << "pinlist: " << pre << std::endl << std::endl;
                     }
@@ -190,8 +194,8 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
                 file << ".clb " << node << "   # Only LUT used." << std::endl;
                 file << "pinlist:";
                 int counter = 0;
-                for (int pre = 0; pre < nNodes; pre++) {
-                    if (predecessors[node][pre]) {
+                for (int pre = 0; pre < g.nNodes; pre++) {
+                    if (g.predecessors[node][pre]) {
                         file << " " << pre;
                         counter++;
                     }
@@ -216,21 +220,22 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
     }
     file = std::ofstream(placeFile);
     if (file.is_open()) {
-        file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k << "-n1.xml" << std::endl;
-        file << "Array size: " << nCellsSqrt - 2 << " x " << nCellsSqrt - 2 << " logic blocks " << std::endl;
+        file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
+                "-n1.xml" << std::endl;
+        file << "Array size: " << g.nCellsSqrt - 2 << " x " << g.nCellsSqrt - 2 << " logic blocks " << std::endl;
         file << "#block name\tX\tY\tsubblk\tblock_number\n" << std::endl;
         file << "#----------\t--\t--\t------\t------------" << std::endl;
 
         int counter = 0;
-        for (int node = 0; node < nNodes; node++) {
+        for (int node = 0; node < g.nNodes; node++) {
             int cell = data.n2c[node];
             int place = data.placement[cell];
             if (place > -1) {
-                int l = cell / nCellsSqrt;
-                int c = cell % nCellsSqrt;
-                if (nSuccV[node] == 0) {
-                    for (int pre = 0; pre < nNodes; pre++) {
-                        if (predecessors[node][pre]) {
+                int l = cell / g.nCellsSqrt;
+                int c = cell % g.nCellsSqrt;
+                if (g.nSuccV[node] == 0) {
+                    for (int pre = 0; pre < g.nNodes; pre++) {
+                        if (g.predecessors[node][pre]) {
                             file << "out_" << node << ":" << pre << "\t" << c << "\t" << l << "\t" << 0 << "\t#" <<
                                     counter << std::endl;
                         }
@@ -247,3 +252,46 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
         std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
     }
 }
+
+std::vector<std::vector<int> > getAdjCellsDist(const int nCellsSqrt) {
+    const int max_dist = (nCellsSqrt - 1) * 2;
+    std::vector<std::vector<int> > meshDistances;
+    std::vector<std::vector<std::vector<int> > > distance_table_raw(max_dist);
+    for (int l = 0; l < nCellsSqrt; ++l) {
+        for (int c = 0; c < nCellsSqrt; ++c) {
+            if (l == 0 && c == 0) continue; // Skip t
+            const int dist = l + c;
+
+            // Lambda to check if a coordinate pair is already in a list
+            auto contains = [](const std::vector<std::vector<int> > &vec, const std::vector<int> &pair) {
+                return std::find(vec.begin(), vec.end(), pair) != vec.end();
+            };
+
+            // Add unique coordinates to the distance table
+            if (!contains(distance_table_raw[dist - 1], {l, c})) {
+                distance_table_raw[dist - 1].push_back({l, c});
+            }
+            if (!contains(distance_table_raw[dist - 1], {l, -c})) {
+                distance_table_raw[dist - 1].push_back({l, -c});
+            }
+            if (!contains(distance_table_raw[dist - 1], {-l, -c})) {
+                distance_table_raw[dist - 1].push_back({-l, -c});
+            }
+            if (!contains(distance_table_raw[dist - 1], {-l, c})) {
+                distance_table_raw[dist - 1].push_back({-l, c});
+            }
+        }
+    }
+    // Shuffle the distance table if make_shuffle is set
+
+    auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+    for (auto &d: distance_table_raw) {
+        std::shuffle(d.begin(), d.end(), rng);
+        for (const auto &pair: d) {
+            meshDistances.push_back(pair);
+        }
+    }
+
+    return meshDistances;
+}
+

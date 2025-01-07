@@ -18,7 +18,7 @@ endif ()
 file(GLOB_RECURSE SRCS impl/*.cpp)
 include_directories(include)
 
-add_executable(yotoBase yotoBaseMain.cpp ${SRCS})
+add_executable(PeRMain PeRMain.cpp ${SRCS})
 
 #add_executable(yotoBaseDf yotoBaseDfMain.cpp ${SRCS})
 

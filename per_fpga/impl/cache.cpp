@@ -12,7 +12,7 @@ Cache::Cache(const int cacheLinesExp, const int cacheColumnsExp) {
     this->cacheData = std::vector(cacheLines, std::vector<int>(cacheColumns));
 }
 
-int Cache::checkCache(const int address, const std::vector<int> &vec) {
+int Cache::readCache(const int address, const std::vector<int> &vec) {
     const int tag = address >> (cacheLinesExp + cacheColumnsExp);
     int column = address & (cacheColumns - 1);
     const int line = (address >> cacheColumnsExp) & (cacheLines - 1);

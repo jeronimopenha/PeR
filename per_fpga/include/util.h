@@ -77,12 +77,16 @@ struct ReportData {
     }
 };
 
+std::string func_key(const std::string &a, const std::string &b);
+
 std::string getProjectRoot();
 
 std::string verifyPath(const std::string &path);
 
 std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
-    const std::string &path, const std::string &file_extension);
+    const std::string &path,
+    const std::string &file_extension
+);
 
 void saveToDot(const std::vector<std::pair<int, int> > &edges, const std::string &filename);
 
@@ -95,12 +99,16 @@ void randomVector(std::vector<T> &vec) {
 
 int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges, int nCellsSqrt);
 
-int getManhattanDist(const int cell1, const int cell2, const int n_cells_sqrt);
+int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
 
 void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt,
                    const std::string &filename);
 
 void writeJson(const std::string &basePath, const std::string &fileName, const ReportData &data);
 
-void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data);
+void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, Graph g);
+
+std::vector<std::vector<int> > getAdjCellsDist(int nCellsSqrt);
+
+
 #endif //UTIL_H

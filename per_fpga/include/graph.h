@@ -9,6 +9,7 @@
 #include <vector>
 #include <utility>
 #include <unordered_map>
+#include <list>
 #include <unordered_set>
 #include <sstream>
 #include <iostream>
@@ -55,9 +56,14 @@ public:
 
     std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
 
-    std::vector<std::pair<int, int> > getEdgesZigzag();
+    std::vector<std::pair<int, int> > getEdgesZigzag(std::vector<std::pair<int, int> > &convergence);
 
     std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges);
+
+    std::unordered_map<std::string, std::vector<std::pair<int, int> > > get_graph_annotations(
+        const std::vector<std::pair<int, int> > &edges,
+        const std::vector<std::pair<int, int> > &convergences
+    );
 };
 
 

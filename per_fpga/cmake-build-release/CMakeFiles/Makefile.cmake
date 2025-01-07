@@ -44,6 +44,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/yotoBase.dir/DependInfo.cmake"
+  "CMakeFiles/PeRMain.dir/DependInfo.cmake"
   "CMakeFiles/chDotStrToN.dir/DependInfo.cmake"
   )

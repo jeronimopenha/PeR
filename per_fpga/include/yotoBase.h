@@ -12,7 +12,6 @@
 
 ReportData yotoBase(Graph& g);
 
-std::vector<std::vector<int> > getAdjCellsDist(Graph g);
 
 
 #endif //YOTO_BASE_H
