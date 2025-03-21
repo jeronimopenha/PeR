@@ -147,7 +147,10 @@ ReportData yotoBase(Graph &g) {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration = end - start;
     float _time = duration.count();
-    int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+
+    // commented to take the cost of the longest path
+    //int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    int tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 
 
     ReportData report = ReportData(

@@ -44,6 +44,8 @@ public:
     vector<int> inputNodes;
     vector<int> outputNodes;
 
+    vector<int> longestPath;
+
 
     Graph(const string &dotPath, const string &dotName);
 
@@ -70,7 +72,7 @@ public:
 
     void dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order);
 
-    vector<int> findLongestPath();
+    void findLongestPath();
 };
 
 

@@ -99,6 +99,8 @@ void randomVector(std::vector<T> &vec) {
 
 int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges, int nCellsSqrt);
 
+int calcGraphLPDistance(const vector<int> &longestPath, const std::vector<int> &n2c, const int nCellsSqrt);
+
 int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
 
 void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt,

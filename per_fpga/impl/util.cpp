@@ -1,7 +1,7 @@
 #include   "util.h"
 
 
-std::string func_key(const std::string& a, const std::string& b) {
+std::string func_key(const std::string &a, const std::string &b) {
     return a + " " + b;
 }
 
@@ -64,6 +64,19 @@ int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::p
 
     for (const auto &[fst, snd]: edges) {
         const int tempDist = getManhattanDist(n2c[fst], n2c[snd], nCellsSqrt);
+
+        // Acc the total distance
+        totalDist += tempDist;
+    }
+
+    return totalDist;
+}
+
+int calcGraphLPDistance(const vector<int> &longestPath, const std::vector<int> &n2c, const int nCellsSqrt) {
+    int totalDist = 0;
+
+    for (int idx = 0; idx < longestPath.size()-1; idx++) {
+        const int tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx+1]], nCellsSqrt);
 
         // Acc the total distance
         totalDist += tempDist;
@@ -294,4 +307,3 @@ std::vector<std::vector<int> > getAdjCellsDist(const int nCellsSqrt) {
 
     return meshDistances;
 }
-

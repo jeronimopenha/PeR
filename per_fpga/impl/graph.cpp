@@ -505,7 +505,7 @@ void Graph::dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited,
     topo_order.push_back(idx);
 }
 
-vector<int> Graph::findLongestPath() {
+void Graph::findLongestPath() {
     // 1. Construir lista de adjacência a partir da matriz de sucessores
     vector<vector<int> > adj(nNodes);
     for (int i = 0; i < nNodes; ++i)
@@ -551,5 +551,5 @@ vector<int> Graph::findLongestPath() {
         path.push_back(v);
     reverse(path.begin(), path.end());
 
-    return path;
+    longestPath = path;
 }

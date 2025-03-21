@@ -9,6 +9,7 @@ int main() {
     const std::string rootPath = verifyPath(getProjectRoot());
     std::cout << rootPath << std::endl;
     const std::string benchPath = "benchmarks/fpga/eval/";
+    //const std::string benchPath = "benchmarks/fpga/bench_test/";
     const std::string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
