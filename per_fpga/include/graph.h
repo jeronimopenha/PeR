@@ -17,11 +17,14 @@
 #include <chrono>
 #include <algorithm>
 #include <cmath>
+#include <limits>
+
+using namespace std;
 
 class Graph {
 public:
-    std::string dotPath;
-    std::string dotName;
+    string dotPath;
+    string dotName;
 
     int nEdges = 0;
     int nNodes = 0;
@@ -29,20 +32,20 @@ public:
     int nCellsSqrt = 0;
 
     //Adjacency for successors
-    std::vector<std::vector<bool> > successors;
+    vector<vector<bool> > successors;
     //Adjacency for predecessors
-    std::vector<std::vector<bool> > predecessors;
+    vector<vector<bool> > predecessors;
     //Edges list
-    std::vector<std::pair<int, int> > gEdges;
+    vector<pair<int, int> > gEdges;
     //input nodes
-    std::vector<int> nSuccV;
+    vector<int> nSuccV;
     //output nodes
-    std::vector<int> nPredV;
-    std::vector<int> inputNodes;
-    std::vector<int> outputNodes;
+    vector<int> nPredV;
+    vector<int> inputNodes;
+    vector<int> outputNodes;
 
 
-    Graph(const std::string &dotPath, const std::string &dotName);
+    Graph(const string &dotPath, const string &dotName);
 
     //void graphClearData();
 
@@ -50,20 +53,24 @@ public:
 
     void getGraphDataInt();
 
-    std::vector<int> getInOutPos();
+    vector<int> getInOutPos();
 
-    std::vector<std::pair<int, int> > getEdgesDepthFirst();
+    vector<pair<int, int> > getEdgesDepthFirst();
 
-    std::vector<std::pair<int, int> > getEdgesDepthFirstPriority();
+    vector<pair<int, int> > getEdgesDepthFirstPriority();
 
-    std::vector<std::pair<int, int> > getEdgesZigzag(std::vector<std::pair<int, int> > &convergence);
+    vector<pair<int, int> > getEdgesZigzag(vector<pair<int, int> > &convergence);
 
-    std::vector<std::pair<int, int> > clearEdges(const std::vector<std::pair<int, int> > &edges);
+    vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges);
 
-    std::unordered_map<std::string, std::vector<std::pair<int, int> > > get_graph_annotations(
-        const std::vector<std::pair<int, int> > &edges,
-        const std::vector<std::pair<int, int> > &convergences
+    unordered_map<string, vector<pair<int, int> > > get_graph_annotations(
+        const vector<pair<int, int> > &edges,
+        const vector<pair<int, int> > &convergences
     );
+
+    void dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order);
+
+    vector<int> findLongestPath();
 };
 
 

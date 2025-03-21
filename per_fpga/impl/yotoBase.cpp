@@ -29,7 +29,7 @@ ReportData yotoBase(Graph &g) {
     ed = getEdgesDepthFirstPriority();
     alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef YOTO_BASE_DF
-    ed = getEdgesDepthFirst();
+    ed = g.getEdgesDepthFirst();
     alg_type = "DEPTH_FIRST";
 #endif
 
@@ -39,7 +39,7 @@ ReportData yotoBase(Graph &g) {
 #if defined(YOTO_BASE_DF) || defined(YOTO_BASE_DF_P)
     //for Deptfh First Search with or without priority
     //I need to place every input at the beginning of execution
-    for (int n: inputNodes) {
+    for (int n: g.inputNodes) {
         for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
             int ioCell = inOutCells[i];
             if (c2n[ioCell] == -1) {

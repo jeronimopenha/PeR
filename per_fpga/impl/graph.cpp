@@ -1,34 +1,34 @@
 #include "graph.h"
-#include <util.h>
+#include "util.h"
 
-Graph::Graph(const std::string &dotPath, const std::string &dotName) {
+Graph::Graph(const string &dotPath, const string &dotName) {
     this->dotPath = dotPath;
     this->dotName = dotName;
 }
 
 void Graph::getGraphDataStr() {
-    std::unordered_set<std::string> nodesStr;
-    std::vector<std::pair<std::string, std::string> > edgesStr;
+    unordered_set<string> nodesStr;
+    vector<pair<string, string> > edgesStr;
 
-    std::ifstream dotFile(dotPath);
-    std::string line;
+    ifstream dotFile(dotPath);
+    string line;
 
     // If  the opening has an error
     if (!dotFile.is_open()) {
-        std::cerr << "Error opening file: " << dotPath << std::endl;
+        cerr << "Error opening file: " << dotPath << endl;
         return;
     }
 
     //1 - Read edges and get a list of nodes
-    while (std::getline(dotFile, line)) {
+    while (getline(dotFile, line)) {
         // Look for lines that define edges
 
-        if (line.find("->") != std::string::npos) {
-            std::string toNode;
-            std::string fromNode;
+        if (line.find("->") != string::npos) {
+            string toNode;
+            string fromNode;
 
-            std::istringstream iss(line);
-            std::string word;
+            istringstream iss(line);
+            string word;
             // Get the fromNode
             iss >> fromNode;
             // Ignore the "->" part
@@ -36,9 +36,9 @@ void Graph::getGraphDataStr() {
             // Get the toNode
             iss >> toNode;
             // Remove any trailing characters (like semicolon)
-            toNode.erase(std::remove(toNode.begin(), toNode.end(), ';'), toNode.end());
-            toNode.erase(std::remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
-            fromNode.erase(std::remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
+            toNode.erase(remove(toNode.begin(), toNode.end(), ';'), toNode.end());
+            toNode.erase(remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
+            fromNode.erase(remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
             // Add the edge to the adjacency list
 
             nodesStr.insert(fromNode);
@@ -51,7 +51,7 @@ void Graph::getGraphDataStr() {
     nNodes = static_cast<int>(nodesStr.size());
 
     //2 - Create the dictinary nodesToIdx
-    std::unordered_map<std::string, int> nodesToIdx;
+    unordered_map<string, int> nodesToIdx;
 
     int counter = 0;
     for (const auto &node: nodesStr) {
@@ -67,10 +67,10 @@ void Graph::getGraphDataStr() {
     //successors
     //predecessors
 
-    nSuccV = std::vector<int>(nNodes, 0);
-    nPredV = std::vector<int>(nNodes, 0);
-    successors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
-    predecessors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
+    nSuccV = vector<int>(nNodes, 0);
+    nPredV = vector<int>(nNodes, 0);
+    successors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
+    predecessors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
     for (const auto &[fst, snd]: edgesStr) {
         int fromN = nodesToIdx[fst], toN = nodesToIdx[snd];
         gEdges.emplace_back(fromN, toN);
@@ -109,27 +109,27 @@ void Graph::getGraphDataStr() {
 }
 
 void Graph::getGraphDataInt() {
-    std::unordered_set<int> nodes;
+    unordered_set<int> nodes;
 
-    std::ifstream dotFile(dotPath);
-    std::string line;
+    ifstream dotFile(dotPath);
+    string line;
 
     // If  the opening has an error
     if (!dotFile.is_open()) {
-        std::cerr << "Error opening file: " << dotPath << std::endl;
+        cerr << "Error opening file: " << dotPath << endl;
         return;
     }
 
     //1 - Read edges and get a list of nodes
-    while (std::getline(dotFile, line)) {
+    while (getline(dotFile, line)) {
         // Look for lines that define edges
 
-        if (line.find("->") != std::string::npos) {
-            std::string toNode;
-            std::string fromNode;
+        if (line.find("->") != string::npos) {
+            string toNode;
+            string fromNode;
 
-            std::istringstream iss(line);
-            std::string word;
+            istringstream iss(line);
+            string word;
             // Get the fromNode
             iss >> fromNode;
             // Ignore the "->" part
@@ -137,12 +137,12 @@ void Graph::getGraphDataInt() {
             // Get the toNode
             iss >> toNode;
             // Remove any trailing characters (like semicolon)
-            toNode.erase(std::remove(toNode.begin(), toNode.end(), ';'), toNode.end());
-            toNode.erase(std::remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
-            fromNode.erase(std::remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
+            toNode.erase(remove(toNode.begin(), toNode.end(), ';'), toNode.end());
+            toNode.erase(remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
+            fromNode.erase(remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
 
-            int fromN = std::stoi(fromNode);
-            int toN = std::stoi(toNode);
+            int fromN = stoi(fromNode);
+            int toN = stoi(toNode);
 
             // Add the edge to the adjacency list
 
@@ -162,10 +162,10 @@ void Graph::getGraphDataInt() {
     //successors
     //predecessors
 
-    nSuccV = std::vector<int>(nNodes, 0);
-    nPredV = std::vector<int>(nNodes, 0);
-    successors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
-    predecessors = std::vector<std::vector<bool> >(nNodes, std::vector<bool>(nNodes, false));
+    nSuccV = vector<int>(nNodes, 0);
+    nPredV = vector<int>(nNodes, 0);
+    successors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
+    predecessors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
     for (const auto &[fst, snd]: gEdges) {
         int fromN = fst, toN = snd;
 
@@ -200,8 +200,8 @@ void Graph::getGraphDataInt() {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
-std::vector<int> Graph::getInOutPos() {
-    std::vector<int> possibleInOut;
+vector<int> Graph::getInOutPos() {
+    vector<int> possibleInOut;
 
     // Append positions in the first range
     for (int i = 1; i < nCellsSqrt - 1; ++i) {
@@ -225,15 +225,15 @@ std::vector<int> Graph::getInOutPos() {
     return possibleInOut;
 }
 
-std::vector<std::pair<int, int> > Graph::getEdgesDepthFirst() {
+vector<pair<int, int> > Graph::getEdgesDepthFirst() {
     // Copy input nodes and shuffle if needed
-    std::vector<int> inputList = inputNodes;
+    vector<int> inputList = inputNodes;
 
     randomVector(inputList);
 
-    std::vector<int> stack(inputList); // Initialize stack with input_list
-    std::vector<std::pair<int, int> > edges;
-    std::vector<bool> visited(nNodes, false);
+    vector<int> stack(inputList); // Initialize stack with input_list
+    vector<pair<int, int> > edges;
+    vector<bool> visited(nNodes, false);
 
     while (!stack.empty()) {
         int n = stack.back();
@@ -263,15 +263,15 @@ std::vector<std::pair<int, int> > Graph::getEdgesDepthFirst() {
     return edges;
 }
 
-std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
+vector<pair<int, int> > Graph::getEdgesDepthFirstPriority() {
     // Copia os nós de entrada e embaralha, se necessário
-    std::vector<int> inputList = inputNodes;
+    vector<int> inputList = inputNodes;
     randomVector(inputList);
 
     // Inicializa a pilha com inputList
-    std::vector<int> stack(inputList);
-    std::vector<std::pair<int, int> > edges;
-    std::vector<bool> visited(nNodes, false);
+    vector<int> stack(inputList);
+    vector<pair<int, int> > edges;
+    vector<bool> visited(nNodes, false);
 
     while (!stack.empty()) {
         int n = stack.back();
@@ -283,7 +283,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
         visited[n] = true;
 
         // Coleta os vizinhos ainda não visitados
-        std::vector<int> neighbors;
+        vector<int> neighbors;
         for (int i = 0; i < nNodes; i++) {
             if (successors[n][i] && !visited[i]) {
                 neighbors.push_back(i);
@@ -291,10 +291,10 @@ std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
         }
 
         // Ordena os vizinhos para priorizar os maiores caminhos
-        std::sort(neighbors.begin(), neighbors.end(), [this](int a, int b) {
+        sort(neighbors.begin(), neighbors.end(), [this](int a, int b) {
             // Critério para ordenar: pode ser baseado na quantidade de sucessores
-            return std::count(successors[a].begin(), successors[a].end(), true) >
-                   std::count(successors[b].begin(), successors[b].end(), true);
+            return count(successors[a].begin(), successors[a].end(), true) >
+                   count(successors[b].begin(), successors[b].end(), true);
         });
 
         // Adiciona os vizinhos à pilha e armazena as arestas
@@ -308,8 +308,8 @@ std::vector<std::pair<int, int> > Graph::getEdgesDepthFirstPriority() {
 }
 
 //todo this function needs to return 3 vectors: edges, convergences and cleared edges
-std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<int, int> > &convergence) {
-    std::vector<std::pair<int, std::string> > outputList;
+vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergence) {
+    vector<pair<int, string> > outputList;
 
     for (const auto &node: outputNodes) {
         outputList.emplace_back(node, "IN");
@@ -319,13 +319,13 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
     randomVector(outputList);
     // }
 
-    std::vector stack(outputList.begin(), outputList.end());
-    std::vector<std::pair<int, int> > edges;
-    std::vector visited(nNodes, false);
+    vector stack(outputList.begin(), outputList.end());
+    vector<pair<int, int> > edges;
+    vector visited(nNodes, false);
 
     // Precompute fan-in and fan-out
-    std::vector<std::vector<int> > fanIn(nNodes);
-    std::vector<std::vector<int> > fanOut(nNodes);
+    vector<vector<int> > fanIn(nNodes);
+    vector<vector<int> > fanOut(nNodes);
     for (int i = 0; i < nNodes; i++) {
         for (int j = 0; j < nNodes; j++) {
             if (successors[i][j]) {
@@ -345,7 +345,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
         stack.pop_back();
 
         const int &a = fst;
-        const std::string &direction = snd;
+        const string &direction = snd;
         visited[a] = true;;
 
         if (direction == "IN") {
@@ -356,7 +356,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
                 stack.emplace_back(b, "OUT");
 
                 fanOut[a].pop_back();
-                fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
+                fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
@@ -369,7 +369,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
                 stack.insert(stack.end(), fanIn[a].size(), {b, "IN"});
 
                 fanIn[a].pop_back();
-                fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
+                fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
 
                 if (visited[b]) {
@@ -387,7 +387,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
                 stack.emplace_back(b, "IN");
 
                 fanIn[a].pop_back();
-                fanOut[b].erase(std::remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
+                fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
@@ -400,7 +400,7 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
                 stack.insert(stack.end(), fanOut[a].size(), {b, "OUT"});
 
                 fanOut[a].pop_back();
-                fanIn[b].erase(std::remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
+                fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
 
                 if (visited[b]) {
@@ -415,9 +415,9 @@ std::vector<std::pair<int, int> > Graph::getEdgesZigzag(std::vector<std::pair<in
 }
 
 
-std::vector<std::pair<int, int> > Graph::clearEdges(const std::vector<std::pair<int, int> > &edges) {
-    std::vector placedNodes(nNodes, false); // Set to track placed nodes
-    std::vector<std::pair<int, int> > new_edges; // Vector to store filtered edges
+vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) {
+    vector placedNodes(nNodes, false); // Set to track placed nodes
+    vector<pair<int, int> > new_edges; // Vector to store filtered edges
 
     // Add the first node of the first edge to the set
     placedNodes[edges[0].first] = true;
@@ -433,22 +433,22 @@ std::vector<std::pair<int, int> > Graph::clearEdges(const std::vector<std::pair<
 }
 
 
-std::unordered_map<std::string, std::vector<std::pair<int, int> > > Graph::get_graph_annotations(
-    const std::vector<std::pair<int, int> > &edges,
-    const std::vector<std::pair<int, int> > &convergences
+unordered_map<string, vector<pair<int, int> > > Graph::get_graph_annotations(
+    const vector<pair<int, int> > &edges,
+    const vector<pair<int, int> > &convergences
 ) {
-    std::unordered_map<std::string, std::vector<std::pair<int, int> > > annotations;
+    unordered_map<string, vector<pair<int, int> > > annotations;
 
     // Initialization of the dictionary
     for (const auto &[fst, snd]: edges) {
-        std::string key = func_key(std::to_string(fst), std::to_string(snd));
+        string key = func_key(to_string(fst), to_string(snd));
         annotations[key] = {};
     }
 
     for (const auto &[fst,snd]: convergences) {
         const int elem_cycle_begin = fst;
         int elem_cycle_end = snd;
-        std::list<std::string> walk_key;
+        list<string> walk_key;
         bool found_start = false;
         int count = 0;
         int value1 = -1;
@@ -459,7 +459,7 @@ std::unordered_map<std::string, std::vector<std::pair<int, int> > > Graph::get_g
 
             if (elem_cycle_begin == b && !found_start) {
                 value1 = a;
-                std::string key = func_key(std::to_string(value1), std::to_string(elem_cycle_begin));
+                string key = func_key(to_string(value1), to_string(elem_cycle_begin));
                 walk_key.push_front(key);
                 annotations[key].push_back({elem_cycle_end, count});
                 count++;
@@ -467,7 +467,7 @@ std::unordered_map<std::string, std::vector<std::pair<int, int> > > Graph::get_g
             } else if (found_start && (value1 == b || elem_cycle_end == a)) {
                 const int value2 = b;
                 value1 = a;
-                std::string key = func_key(std::to_string(value1), std::to_string(value2));
+                string key = func_key(to_string(value1), to_string(value2));
 
                 if (value1 != elem_cycle_end && value2 != elem_cycle_end) {
                     walk_key.push_front(key);
@@ -492,4 +492,64 @@ std::unordered_map<std::string, std::vector<std::pair<int, int> > > Graph::get_g
     }
 
     return annotations;
+}
+
+
+void Graph::dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order) {
+    visited[idx] = true;
+    for (int v: adj[idx]) {
+        if (!visited[v]) {
+            dfs(v, adj, visited, topo_order);
+        }
+    }
+    topo_order.push_back(idx);
+}
+
+vector<int> Graph::findLongestPath() {
+    // 1. Construir lista de adjacência a partir da matriz de sucessores
+    vector<vector<int> > adj(nNodes);
+    for (int i = 0; i < nNodes; ++i)
+        for (int j = 0; j < nNodes; ++j)
+            if (successors[i][j])
+                adj[i].push_back(j);
+
+    // 2. Ordenação topológica
+    vector<bool> visited(nNodes, false);
+    vector<int> topo_order;
+    for (int i = 0; i < nNodes; ++i)
+        if (!visited[i])
+            dfs(i, adj, visited, topo_order);
+    reverse(topo_order.begin(), topo_order.end());
+
+    // 3. Programação dinâmica para encontrar o maior caminho
+    vector<int> dist(nNodes, numeric_limits<int>::min());
+    vector<int> parent(nNodes, -1);
+    for (int i = 0; i < nNodes; ++i)
+        dist[i] = 0; // cada nó pode iniciar um caminho de comprimento 0
+
+    for (int u: topo_order) {
+        for (int v: adj[u]) {
+            if (dist[u] + 1 > dist[v]) {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+            }
+        }
+    }
+
+    // 4. Encontrar o nó final do maior caminho
+    int max_len = -1, end_node = -1;
+    for (int i = 0; i < nNodes; ++i) {
+        if (dist[i] > max_len) {
+            max_len = dist[i];
+            end_node = i;
+        }
+    }
+
+    // 5. Reconstruir o caminho
+    vector<int> path;
+    for (int v = end_node; v != -1; v = parent[v])
+        path.push_back(v);
+    reverse(path.begin(), path.end());
+
+    return path;
 }

@@ -21,6 +21,7 @@ int main() {
         Graph g = Graph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
         g.getGraphDataInt();
+        g.findLongestPath();
 
         //execution parameters
 #ifdef YOTO_BASE_DF
