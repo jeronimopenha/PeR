@@ -9,10 +9,10 @@ Cache::Cache(const int cacheLinesExp, const int cacheColumnsExp) {
 
     this->cacheValid = std::vector(cacheLines, false);
     this->cacheTag = std::vector<int>(cacheLines);
-    this->cacheData = std::vector(cacheLines, std::vector<int>(cacheColumns));
+    this->cacheData = vector(cacheLines, vector<int>(cacheColumns));
 }
 
-int Cache::readCache(const int address, const std::vector<int> &vec) {
+int Cache::readCache(const int address, const vector<int> &vec) {
     const int tag = address >> (cacheLinesExp + cacheColumnsExp);
     int column = address & (cacheColumns - 1);
     const int line = (address >> cacheColumnsExp) & (cacheLines - 1);

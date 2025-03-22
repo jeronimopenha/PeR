@@ -3,20 +3,22 @@
 #include "yotoBase.h"
 #include "yottBase.h"
 
+using namespace std;
+
 //Choose the algorithm in util.h defines
 int main() {
-    // std::string root_path = get_project_root();
-    const std::string rootPath = verifyPath(getProjectRoot());
-    std::cout << rootPath << std::endl;
-    const std::string benchPath = "benchmarks/fpga/eval/";
-    //const std::string benchPath = "benchmarks/fpga/bench_test/";
-    const std::string benchExt = ".dot";
+    // string root_path = get_project_root();
+    const string rootPath = verifyPath(getProjectRoot());
+    cout << rootPath << endl;
+    const string benchPath = "benchmarks/fpga/eval/";
+    //const string benchPath = "benchmarks/fpga/bench_test/";
+    const string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
-    // std::vector<std::vector<std::string>> files = {{"path/to/file.dot", "file.dot"}};
+    // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
     for (const auto &[fst, snd]: files) {
-        std::cout << fst << std::endl;
+        cout << fst << endl;
 
         //Creating graph important variables
         Graph g = Graph(fst, snd.substr(0, snd.size() - 4));
@@ -26,20 +28,21 @@ int main() {
 
         //execution parameters
 #ifdef YOTO_BASE_DF
-        std::string outBaseFolder = "reports/fpga/yoto_base/";
+        string outBaseFolder = "reports/fpga/yoto_base/";
 #elifdef YOTO_BASE_DF_P
-        std::string outBaseFolder = "reports/fpga/yoto_base_p/";
+        string outBaseFolder = "reports/fpga/yoto_base_p/";
 #elifdef YOTO_BASE_ZZ
-        std::string outBaseFolder = "reports/fpga/yoto_base_zz/";
+        string outBaseFolder = "reports/fpga/yoto_base_zz/";
 #elifdef YOTO_BASE_ZZ_CACHE
-        std::string outBaseFolder = "reports/fpga/yoto_base_zz_cache/";
+        string outBaseFolder = "reports/fpga/yoto_base_zz_cache/";
 #elifdef YOTT_BASE
-        std::string outBaseFolder = "reports/fpga/yott_base/";
+        string outBaseFolder = "reports/fpga/yott_base/";
 #endif
 
         int nExec = 1000;
-        std::vector<ReportData> reports;
+        vector<ReportData> reports;
         for (int exec = 0; exec < nExec; exec++)
+                cout << exec << ", ";
 #if defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
             reports.push_back(yotoBase(g));
 #elifdef YOTT_BASE
@@ -47,15 +50,15 @@ int main() {
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements
-        std::sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
+        sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;
         });
 
 
         for (int i = 0; i < 10; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-            std::cout << g.dotName << std::endl;
-            std::string reportName = g.dotName + "_" + std::to_string(i);
+            cout << g.dotName << endl;
+            string reportName = g.dotName + "_" + to_string(i);
             //save reports for the 10 better placements
             writeJson(rootPath + outBaseFolder, reportName, reports[i]);
             //generate reports and files for vpr

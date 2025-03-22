@@ -5,10 +5,10 @@ ReportData yottBase(Graph &g) {
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
-    std::vector<int> c2n(nCells, -1);
-    std::vector<int> n2c(nNodes, -1);
-    std::vector<std::vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
-    std::vector<int> inOutCells = g.getInOutPos();
+    vector<int> c2n(nCells, -1);
+    vector<int> n2c(nNodes, -1);
+    vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
+    vector<int> inOutCells = g.getInOutPos();
 
     randomVector(inOutCells);
 
@@ -16,15 +16,15 @@ ReportData yottBase(Graph &g) {
     int tries = 0;
     int swaps = 0;
 
-    std::string alg_type = "ZIG_ZAG";
-    std::vector<std::pair<int, int> > ed;
-    std::vector<std::pair<int, int> > convergence;
+    string alg_type = "ZIG_ZAG";
+    vector<pair<int, int> > ed;
+    vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
 
     //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
 
     for (auto [a,b]: ed) {
         //Verify if A is placed
@@ -109,8 +109,8 @@ ReportData yottBase(Graph &g) {
         }
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration = end - start;
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> duration = end - start;
     float _time = duration.count();
     int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+using namespace std;
 
 class Cache {
 private:
@@ -14,14 +15,14 @@ private:
     int cacheLinesExp;
     int cacheColumns;
     int cacheColumnsExp;
-    std::vector<bool> cacheValid;
-    std::vector<int> cacheTag;
-    std::vector<std::vector<int> > cacheData;
+    vector<bool> cacheValid;
+    vector<int> cacheTag;
+    vector<vector<int> > cacheData;
 
 public:
     Cache(int cacheLinesExp, int cacheColumnsExp);
 
-    int readCache(int address, const std::vector<int> &vec);
+    int readCache(int address, const vector<int> &vec);
 };
 
 

@@ -8,6 +8,8 @@
 #include "util.h"
 #include "graph.h"
 
+using namespace std;
+
 ReportData yottBase(Graph& g);
 
 

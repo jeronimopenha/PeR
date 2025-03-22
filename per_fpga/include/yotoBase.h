@@ -9,6 +9,7 @@
 #include "graph.h"
 #include <vector>
 
+using namespace std;
 
 ReportData yotoBase(Graph& g);
 

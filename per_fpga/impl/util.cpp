@@ -1,33 +1,33 @@
 #include   "util.h"
 
 
-std::string func_key(const std::string &a, const std::string &b) {
+string func_key(const string &a, const string &b) {
     return a + " " + b;
 }
 
-std::string getProjectRoot() {
-    std::filesystem::path path = std::filesystem::current_path();
+string getProjectRoot() {
+    filesystem::path path = filesystem::current_path();
     for (int i = 0; i < 2; ++i) {
         path = path.parent_path();
     }
     return path.string();
 }
 
-std::string verifyPath(const std::string &path) {
+string verifyPath(const string &path) {
     if (!path.empty() && path.back() != '/') {
         return path + '/';
     }
     return path;
 }
 
-std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
-    const std::string &path, const std::string &file_extension) {
-    std::vector<std::pair<std::string, std::string> > files_list_by_extension;
+vector<pair<string, string> > getFilesListByExtension(
+    const string &path, const string &file_extension) {
+    vector<pair<string, string> > files_list_by_extension;
 
-    for (const auto &entry: std::filesystem::recursive_directory_iterator(path)) {
+    for (const auto &entry: filesystem::recursive_directory_iterator(path)) {
         if (entry.is_regular_file() && entry.path().extension() == file_extension) {
-            std::string file_path = entry.path().string();
-            std::string file_name = entry.path().filename().string();
+            string file_path = entry.path().string();
+            string file_name = entry.path().filename().string();
             files_list_by_extension.emplace_back(file_path, file_name);
         }
     }
@@ -35,30 +35,30 @@ std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
     return files_list_by_extension;
 }
 
-void saveToDot(const std::vector<std::pair<int, int> > &edges, const std::string &filename) {
-    std::ofstream file(filename);
+void saveToDot(const vector<pair<int, int> > &edges, const string &filename) {
+    ofstream file(filename);
     if (!file) {
-        std::cerr << "Error!" << std::endl;
+        cerr << "Error!" << endl;
         return;
     }
 
     // write the dot header
-    file << "digraph G {" << std::endl;
+    file << "digraph G {" << endl;
 
     // write the edges
     for (const auto &[fst, snd]: edges) {
-        file << "    " << fst << " -> " << snd << ";" << std::endl;
+        file << "    " << fst << " -> " << snd << ";" << endl;
     }
 
     // write the dot footer
-    file << "}" << std::endl;
+    file << "}" << endl;
 
     file.close();
-    std::cout << "File " << filename << " saved!" << std::endl;
+    cout << "File " << filename << " saved!" << endl;
 }
 
 
-int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges,
+int calcGraphTotalDistance(const vector<int> &n2c, const vector<pair<int, int> > &edges,
                            const int nCellsSqrt) {
     int totalDist = -static_cast<int>(edges.size());
 
@@ -72,7 +72,7 @@ int calcGraphTotalDistance(const std::vector<int> &n2c, const std::vector<std::p
     return totalDist;
 }
 
-int calcGraphLPDistance(const vector<int> &longestPath, const std::vector<int> &n2c, const int nCellsSqrt) {
+int calcGraphLPDistance(const vector<int> &longestPath, const vector<int> &n2c, const int nCellsSqrt) {
     int totalDist = 0;
 
     for (int idx = 0; idx < longestPath.size()-1; idx++) {
@@ -90,50 +90,50 @@ int getManhattanDist(const int cell1, const int cell2, const int n_cells_sqrt) {
     const int cell1_y = cell1 / n_cells_sqrt;
     const int cell2_x = cell2 % n_cells_sqrt;
     const int cell2_y = cell2 / n_cells_sqrt;
-    return std::abs(cell1_y - cell2_y) + std::abs(cell1_x - cell2_x);
+    return abs(cell1_y - cell2_y) + abs(cell1_x - cell2_x);
 }
 
-void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, int nCellsSqrt,
-                   const std::string &filename) {
-    std::ofstream file(filename);
+void savePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSqrt,
+                   const string &filename) {
+    ofstream file(filename);
     if (!file) {
-        std::cerr << "Error!" << std::endl;
+        cerr << "Error!" << endl;
         return;
     }
 
-    std::vector<int> cells(nCellsSqrt * nCellsSqrt, -1);
+    vector<int> cells(nCellsSqrt * nCellsSqrt, -1);
 
     for (int i = 0; i < n2c.size(); i++) {
         cells[n2c[i]] = i;
     }
 
     // write the dot header
-    file << "digraph layout{" << std::endl;
-    file << "rankdir=TB; \n" << std::endl;
-    file << "splines=ortho; \n" << std::endl;
-    file << "node [style=filled shape=square fixedsize=true width=0.6];" << std::endl;
+    file << "digraph layout{" << endl;
+    file << "rankdir=TB; \n" << endl;
+    file << "splines=ortho; \n" << endl;
+    file << "node [style=filled shape=square fixedsize=true width=0.6];" << endl;
 
     for (int i = 0; i < cells.size(); i++) {
         if (cells[i] == -1) {
-            file << i << "[label=\"\", fontsize=8, fillcolor=\"#ffffff\"];" << std::endl;
+            file << i << "[label=\"\", fontsize=8, fillcolor=\"#ffffff\"];" << endl;
         } else {
-            file << i << "[label=\"" << cells[i] << "\", fontsize=8, fillcolor=\"#a9ccde\"];" << std::endl;
+            file << i << "[label=\"" << cells[i] << "\", fontsize=8, fillcolor=\"#a9ccde\"];" << endl;
         }
     }
-    file << "edge [constraint=false, style=vis];" << std::endl;
+    file << "edge [constraint=false, style=vis];" << endl;
     //normal edges
     for (auto [fst,snd]: ed) {
-        file << n2c[fst] << " -> " << n2c[snd] << ";" << std::endl;
+        file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
     }
 
 
-    file << "edge [constraint=true, style=invis];" << std::endl;
+    file << "edge [constraint=true, style=invis];" << endl;
     //structural edges
     for (int j = 0; j < nCellsSqrt; j++) {
         for (int i = 0; i < nCellsSqrt; i++) {
             int c = j + i * nCellsSqrt;
             if (i == nCellsSqrt - 1) {
-                file << c << ";" << std::endl;
+                file << c << ";" << endl;
             } else {
                 file << c << " -> ";
             }
@@ -150,45 +150,45 @@ void savePlacedDot(std::vector<int> n2c, std::vector<std::pair<int, int> > ed, i
                 file << c << " -> ";
             }
         }
-        file << "};" << std::endl;
+        file << "};" << endl;
     }
 
 
     // write the dot footer
-    file << "}" << std::endl;
+    file << "}" << endl;
     file.close();
 }
 
-void writeJson(const std::string &basePath, const std::string &fileName, const ReportData &data) {
-    std::string jsonFile = basePath + "json/" + fileName + ".json";
+void writeJson(const string &basePath, const string &fileName, const ReportData &data) {
+    string jsonFile = basePath + "json/" + fileName + ".json";
 
-    std::ofstream file(jsonFile);
+    ofstream file(jsonFile);
 
     if (file.is_open()) {
         file << data.to_json();; // Write JSON string to file
         file.close();
     } else {
-        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
 }
 
-void writeVprData(const std::string &basePath, const std::string &fileName, const ReportData &data, Graph g) {
-    std::string placeFile = basePath + "place/" + fileName + ".place";
-    std::string netFile = basePath + "net/" + fileName + ".net";
+void writeVprData(const string &basePath, const string &fileName, const ReportData &data, Graph g) {
+    string placeFile = basePath + "place/" + fileName + ".place";
+    string netFile = basePath + "net/" + fileName + ".net";
 
     int k = 3;
 
-    if (fileName.find("_k3") != std::string::npos) {
+    if (fileName.find("_k3") != string::npos) {
         k = 3;
-    } else if (fileName.find("_k4") != std::string::npos) {
+    } else if (fileName.find("_k4") != string::npos) {
         k = 4;
-    } else if (fileName.find("_k5") != std::string::npos) {
+    } else if (fileName.find("_k5") != string::npos) {
         k = 5;
-    } else if (fileName.find("_k6") != std::string::npos) {
+    } else if (fileName.find("_k6") != string::npos) {
         k = 6;
     }
 
-    std::ofstream file(netFile);
+    ofstream file(netFile);
     if (file.is_open()) {
         for (int node = 0; node < g.nNodes; node++) {
             int inDegree = g.nPredV[node];
@@ -196,15 +196,15 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
             if (outDegree == 0) {
                 for (int pre = 0; pre < g.nNodes; pre++) {
                     if (g.predecessors[node][pre]) {
-                        file << ".output out_" << node << ":" << pre << std::endl;
-                        file << "pinlist: " << pre << std::endl << std::endl;
+                        file << ".output out_" << node << ":" << pre << endl;
+                        file << "pinlist: " << pre << endl << endl;
                     }
                 }
             } else if (inDegree == 0) {
-                file << ".input " << node << std::endl;
-                file << "pinlist: " << node << std::endl << std::endl;
+                file << ".input " << node << endl;
+                file << "pinlist: " << node << endl << endl;
             } else {
-                file << ".clb " << node << "   # Only LUT used." << std::endl;
+                file << ".clb " << node << "   # Only LUT used." << endl;
                 file << "pinlist:";
                 int counter = 0;
                 for (int pre = 0; pre < g.nNodes; pre++) {
@@ -216,7 +216,7 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
                 for (int i = 0; i < k - counter; i++)
                     file << " open";
                 file << " " << node;
-                file << " open" << std::endl;
+                file << " open" << endl;
 
                 file << "subblock: " << node;
                 for (int i = 0; i < counter; i++) {
@@ -224,20 +224,20 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
                 }
                 for (int i = 0; i < k - counter; i++)
                     file << " open";
-                file << " " << k << " open" << std::endl << std::endl;
+                file << " " << k << " open" << endl << endl;
             }
         }
         file.close();
     } else {
-        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
-    file = std::ofstream(placeFile);
+    file = ofstream(placeFile);
     if (file.is_open()) {
         file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
-                "-n1.xml" << std::endl;
-        file << "Array size: " << g.nCellsSqrt - 2 << " x " << g.nCellsSqrt - 2 << " logic blocks " << std::endl;
-        file << "#block name\tX\tY\tsubblk\tblock_number\n" << std::endl;
-        file << "#----------\t--\t--\t------\t------------" << std::endl;
+                "-n1.xml" << endl;
+        file << "Array size: " << g.nCellsSqrt - 2 << " x " << g.nCellsSqrt - 2 << " logic blocks " << endl;
+        file << "#block name\tX\tY\tsubblk\tblock_number\n" << endl;
+        file << "#----------\t--\t--\t------\t------------" << endl;
 
         int counter = 0;
         for (int node = 0; node < g.nNodes; node++) {
@@ -250,11 +250,11 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
                     for (int pre = 0; pre < g.nNodes; pre++) {
                         if (g.predecessors[node][pre]) {
                             file << "out_" << node << ":" << pre << "\t" << c << "\t" << l << "\t" << 0 << "\t#" <<
-                                    counter << std::endl;
+                                    counter << endl;
                         }
                     }
                 } else {
-                    file << node << "\t" << c << "\t" << l << "\t" << 0 << "\t#" << counter << std::endl;
+                    file << node << "\t" << c << "\t" << l << "\t" << 0 << "\t#" << counter << endl;
                 }
             }
             counter++;
@@ -262,22 +262,22 @@ void writeVprData(const std::string &basePath, const std::string &fileName, cons
 
         file.close();
     } else {
-        std::cerr << "Error opening file for writing: " << fileName << ".json" << std::endl;
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
 }
 
-std::vector<std::vector<int> > getAdjCellsDist(const int nCellsSqrt) {
+vector<vector<int> > getAdjCellsDist(const int nCellsSqrt) {
     const int max_dist = (nCellsSqrt - 1) * 2;
-    std::vector<std::vector<int> > meshDistances;
-    std::vector<std::vector<std::vector<int> > > distance_table_raw(max_dist);
+    vector<vector<int> > meshDistances;
+    vector<vector<vector<int> > > distance_table_raw(max_dist);
     for (int l = 0; l < nCellsSqrt; ++l) {
         for (int c = 0; c < nCellsSqrt; ++c) {
             if (l == 0 && c == 0) continue; // Skip t
             const int dist = l + c;
 
             // Lambda to check if a coordinate pair is already in a list
-            auto contains = [](const std::vector<std::vector<int> > &vec, const std::vector<int> &pair) {
-                return std::find(vec.begin(), vec.end(), pair) != vec.end();
+            auto contains = [](const vector<vector<int> > &vec, const vector<int> &pair) {
+                return find(vec.begin(), vec.end(), pair) != vec.end();
             };
 
             // Add unique coordinates to the distance table
@@ -297,9 +297,9 @@ std::vector<std::vector<int> > getAdjCellsDist(const int nCellsSqrt) {
     }
     // Shuffle the distance table if make_shuffle is set
 
-    auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+    auto rng = default_random_engine(chrono::system_clock::now().time_since_epoch().count());
     for (auto &d: distance_table_raw) {
-        std::shuffle(d.begin(), d.end(), rng);
+        shuffle(d.begin(), d.end(), rng);
         for (const auto &pair: d) {
             meshDistances.push_back(pair);
         }

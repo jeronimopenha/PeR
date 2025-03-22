@@ -6,10 +6,10 @@ ReportData yotoBase(Graph &g) {
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
-    std::vector<int> c2n(nCells, -1);
-    std::vector<int> n2c(nNodes, -1);
-    std::vector<std::vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
-    std::vector<int> inOutCells = g.getInOutPos();
+    vector<int> c2n(nCells, -1);
+    vector<int> n2c(nNodes, -1);
+    vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
+    vector<int> inOutCells = g.getInOutPos();
 #ifdef YOTO_BASE_ZZ_CACHE
     Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
     Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
@@ -20,10 +20,11 @@ ReportData yotoBase(Graph &g) {
     int tries = 0;
     int swaps = 0;
 
-    std::string alg_type;
-    std::vector<std::pair<int, int> > ed;
+    string alg_type;
+    vector<pair<int, int> > ed;
 #if defined(YOTO_BASE_ZZ) || defined(YOTO_BASE_ZZ_CACHE)
-    ed = getEdgesZigzag();
+    vector<pair<int, int> > convergence;
+    ed = g.getEdgesZigzag(convergence);
     alg_type = "ZIG_ZAG";
 #elifdef YOTO_BASE_DF_P
     ed = getEdgesDepthFirstPriority();
@@ -51,7 +52,7 @@ ReportData yotoBase(Graph &g) {
         }
     }
 #endif
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
 
     for (auto [a,b]: ed) {
         //Verify if A is placed
@@ -144,8 +145,8 @@ ReportData yotoBase(Graph &g) {
         }
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration = end - start;
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> duration = end - start;
     float _time = duration.count();
 
     // commented to take the cost of the longest path
