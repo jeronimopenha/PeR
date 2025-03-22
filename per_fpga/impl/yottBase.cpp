@@ -24,6 +24,7 @@ ReportData yottBase(Graph &g) {
 
     vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
+    unordered_map<string, vector<pair<int, int> > > annotations = g.getGraphAnnotations(ed, convergence);
     alg_type = "ZIG_ZAG";
 
 
@@ -74,6 +75,8 @@ ReportData yottBase(Graph &g) {
 
         //bool placed = false;
         //Then I will look for a cell next to A's cell
+
+        bool placed = false;
         for (const auto &ij: distCells) {
             ++tries;
             const int lB = lA + ij[0];

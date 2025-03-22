@@ -433,7 +433,7 @@ vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) 
 }
 
 
-unordered_map<string, vector<pair<int, int> > > Graph::get_graph_annotations(
+unordered_map<string, vector<pair<int, int> > > Graph::getGraphAnnotations(
     const vector<pair<int, int> > &edges,
     const vector<pair<int, int> > &convergences
 ) {
