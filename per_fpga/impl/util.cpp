@@ -75,8 +75,8 @@ int calcGraphTotalDistance(const vector<int> &n2c, const vector<pair<int, int> >
 int calcGraphLPDistance(const vector<int> &longestPath, const vector<int> &n2c, const int nCellsSqrt) {
     int totalDist = 0;
 
-    for (int idx = 0; idx < longestPath.size()-1; idx++) {
-        const int tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx+1]], nCellsSqrt);
+    for (int idx = 0; idx < longestPath.size() - 1; idx++) {
+        const int tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx + 1]], nCellsSqrt);
 
         // Acc the total distance
         totalDist += tempDist;
@@ -233,8 +233,21 @@ void writeVprData(const string &basePath, const string &fileName, const ReportDa
     }
     file = ofstream(placeFile);
     if (file.is_open()) {
+#ifdef YOTO_BASE_DF
         file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
                 "-n1.xml" << endl;
+#elifdef YOTO_BASE_DF_P
+        file << "Netlist file: reports/fpga/yoto_base_p/net/" << fileName << ".net Architecture file: arch/k" << k <<
+                "-n1.xml" << endl;
+#elifdef YOTO_BASE_ZZ
+        file << "Netlist file: reports/fpga/yoto_base_zz/net/" << fileName << ".net Architecture file: arch/k" << k <<
+                "-n1.xml" << endl;
+#elifdef YOTT_BASE
+        file << "Netlist file: reports/fpga/yott_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
+                "-n1.xml" << endl;
+#endif
+
+
         file << "Array size: " << g.nCellsSqrt - 2 << " x " << g.nCellsSqrt - 2 << " logic blocks " << endl;
         file << "#block name\tX\tY\tsubblk\tblock_number\n" << endl;
         file << "#----------\t--\t--\t------\t------------" << endl;
