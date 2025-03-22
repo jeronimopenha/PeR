@@ -9,17 +9,23 @@ ReportData yottBase(Graph &g) {
     vector<int> n2c(nNodes, -1);
     vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
-
+#ifdef YOTO_BASE_ZZ_CACHE
+    Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+    Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+#endif
     randomVector(inOutCells);
 
     int cacheMisses = 0;
     int tries = 0;
     int swaps = 0;
 
-    string alg_type = "ZIG_ZAG";
+    string alg_type;
     vector<pair<int, int> > ed;
+
     vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
+    alg_type = "ZIG_ZAG";
+
 
     //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
@@ -30,12 +36,16 @@ ReportData yottBase(Graph &g) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-
+#ifdef YOTO_BASE_ZZ_CACHE
+        cacheMisses += cacheN2C.checkCache(a, n2c);
+#endif
 
         if (n2c[a] == -1) {
             for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
                 int ioCell = inOutCells[i];
-
+#ifdef YOTO_BASE_ZZ_CACHE
+                cacheMisses += cacheC2N.checkCache(ioCell, c2n);
+#endif
                 if (c2n[ioCell] == -1) {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
@@ -46,7 +56,9 @@ ReportData yottBase(Graph &g) {
         }
 
         //Now, if B is placed, go to next edge
-
+#ifdef YOTO_BASE_ZZ_CACHE
+        cacheMisses += cacheN2C.checkCache(b, n2c);
+#endif
         if (n2c[b] != -1) {
             continue;
         }
@@ -56,6 +68,9 @@ ReportData yottBase(Graph &g) {
         // Find the idx of A's cell
         const int lA = n2c[a] / nCellsSqrt;
         const int cA = n2c[a] % nCellsSqrt;
+
+        int betterCell = -1;
+        int betterCellDist = nCells;
 
         //bool placed = false;
         //Then I will look for a cell next to A's cell
@@ -98,7 +113,9 @@ ReportData yottBase(Graph &g) {
             }
 
             // Place the node if `placement[targetCell]` is unoccupied
-
+#ifdef YOTO_BASE_ZZ_CACHE
+            cacheMisses += cacheC2N.checkCache(targetCell, c2n);
+#endif
             if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
@@ -112,8 +129,13 @@ ReportData yottBase(Graph &g) {
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
     float _time = duration.count();
-    int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
 
+    // commented to take the cost of the longest path
+#ifdef TOTAL_COST
+    int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+#elifdef LP_COST
+    int tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+#endif
 
     ReportData report = ReportData(
         _time,

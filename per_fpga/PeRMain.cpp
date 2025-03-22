@@ -10,8 +10,8 @@ int main() {
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     cout << rootPath << endl;
-    const string benchPath = "benchmarks/fpga/eval/";
-    //const string benchPath = "benchmarks/fpga/bench_test/";
+    //const string benchPath = "benchmarks/fpga/eval/";
+    const string benchPath = "benchmarks/fpga/bench_test/";
     const string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
