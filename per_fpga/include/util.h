@@ -1,11 +1,16 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+//Choose a type of total cost
+#define TOTAL_COST
+//#define LP_COST
+
+//Choose the algorithm to be run
 //#define YOTO_BASE_DF
 //#define YOTO_BASE_DF_P
-#define YOTO_BASE_ZZ
+//#define YOTO_BASE_ZZ
 //#define YOTO_BASE_ZZ_CACHE
-//#define YOTT_BASE
+#define YOTT_BASE
 
 #include <filesystem>
 #include <iostream>

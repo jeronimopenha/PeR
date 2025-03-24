@@ -150,9 +150,11 @@ ReportData yotoBase(Graph &g) {
     float _time = duration.count();
 
     // commented to take the cost of the longest path
-    //int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+#ifdef TOTAL_COST
+    int tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+#elifdef LP_COST
     int tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-
+#endif
 
     ReportData report = ReportData(
         _time,

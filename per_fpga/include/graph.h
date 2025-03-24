@@ -65,7 +65,7 @@ public:
 
     vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges);
 
-    unordered_map<string, vector<pair<int, int> > > get_graph_annotations(
+    unordered_map<string, vector<pair<int, int> > > getGraphAnnotations(
         const vector<pair<int, int> > &edges,
         const vector<pair<int, int> > &convergences
     );
