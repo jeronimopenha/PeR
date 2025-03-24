@@ -244,6 +244,33 @@ impl/graph.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/graph.cpp.s
 .PHONY : impl/graph.cpp.s
 
+impl/sa_base.o: impl/sa_base.cpp.o
+.PHONY : impl/sa_base.o
+
+# target to build an object file
+impl/sa_base.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.o
+.PHONY : impl/sa_base.cpp.o
+
+impl/sa_base.i: impl/sa_base.cpp.i
+.PHONY : impl/sa_base.i
+
+# target to preprocess a source file
+impl/sa_base.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.i
+.PHONY : impl/sa_base.cpp.i
+
+impl/sa_base.s: impl/sa_base.cpp.s
+.PHONY : impl/sa_base.s
+
+# target to generate assembly for a file
+impl/sa_base.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.s
+.PHONY : impl/sa_base.cpp.s
+
 impl/util.o: impl/util.cpp.o
 .PHONY : impl/util.o
 
@@ -347,6 +374,9 @@ help:
 	@echo "... impl/graph.o"
 	@echo "... impl/graph.i"
 	@echo "... impl/graph.s"
+	@echo "... impl/sa_base.o"
+	@echo "... impl/sa_base.i"
+	@echo "... impl/sa_base.s"
 	@echo "... impl/util.o"
 	@echo "... impl/util.i"
 	@echo "... impl/util.s"
