@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/jeronimo/GIT/PeR/per_fpga/include
+CXX_INCLUDES = -I/home/jeronimo/Documentos/GIT/PeR/per_fpga/include
 
 CXX_FLAGS = -O3 -fdiagnostics-color=always
 
