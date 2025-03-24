@@ -25,7 +25,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/app/extra/clion/bin/cmake/linux/x64/share/cmake-3.30/Modules/Platform/Linux-Initialize.cmake"
   "/app/extra/clion/bin/cmake/linux/x64/share/cmake-3.30/Modules/Platform/Linux.cmake"
   "/app/extra/clion/bin/cmake/linux/x64/share/cmake-3.30/Modules/Platform/UnixPaths.cmake"
-  "/home/jeronimo/Documentos/GIT/PeR/per_fpga/CMakeLists.txt"
+  "/home/jeronimo/GIT/PeR/per_fpga/CMakeLists.txt"
   "CMakeFiles/3.30.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.30.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.30.5/CMakeSystem.cmake"

@@ -1,4 +1,4 @@
-# Install script for directory: /home/jeronimo/Documentos/GIT/PeR/per_fpga
+# Install script for directory: /home/jeronimo/GIT/PeR/per_fpga
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -57,6 +57,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "/home/jeronimo/Documentos/GIT/PeR/per_fpga/cmake-build-release/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/home/jeronimo/GIT/PeR/per_fpga/cmake-build-release/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

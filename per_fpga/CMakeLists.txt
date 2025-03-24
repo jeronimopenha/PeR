@@ -7,15 +7,15 @@ project(PER_FPGA)
 set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fopenmp")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fopenmp")
 
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif ()
 
-find_package(OpenMP REQUIRED)
+
 
 file(GLOB_RECURSE SRCS impl/*.cpp)
 include_directories(include)
