@@ -2,6 +2,7 @@
 #include  "graph.h"
 #include "yotoBase.h"
 #include "yottBase.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -10,8 +11,8 @@ int main() {
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     cout << rootPath << endl;
-    //const string benchPath = "benchmarks/fpga/eval/";
-    const string benchPath = "benchmarks/fpga/bench_test/";
+    const string benchPath = "benchmarks/fpga/eval/";
+    //const string benchPath = "benchmarks/fpga/bench_test/";
     const string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
@@ -36,21 +37,43 @@ int main() {
 #elifdef YOTO_BASE_ZZ_CACHE
         string outBaseFolder = "reports/fpga/yoto_base_zz_cache/";
 #elifdef YOTT_BASE
-        string outBaseFolder = "reports/fpga/yott_base/";
+        string outBaseFolder = "reports/fpga_total_cost_metric/yott_base/";
+        //string outBaseFolder = "reports/fpga/yott_base/";
 #endif
 
         int nExec = 1000;
         vector<ReportData> reports;
-        for (int exec = 0; exec < nExec; exec++) {
+
+        int nThreads = max(1, omp_get_num_procs() - 1);
+        omp_set_num_threads(nThreads);
+
+#pragma omp parallel
+        {
+#pragma omp for schedule(dynamic)
+            for (int exec = 0; exec < nExec; exec++) {
+                ReportData report;
+#if defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
+                report = yotoBase(g);
+#elifdef YOTT_BASE
+                report = yottBase(g);
+#endif
+#pragma omp critical
+                {
+                    reports.push_back(report);
+                }
+            }
+        }
+
+        /*for (int exec = 0; exec < nExec; exec++) {
             // if (exec % 50 == 0) {
             //     cout << exec << ", ";
             // }
 #if defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
             reports.push_back(yotoBase(g));
 #elifdef YOTT_BASE
-                reports.push_back(yottBase(g));
+            reports.push_back(yottBase(g));
 #endif
-        }
+        }*/
         //sort the reports by total cost because I want only the 10 better placements
         sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;

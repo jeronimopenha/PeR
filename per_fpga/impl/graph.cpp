@@ -441,7 +441,7 @@ unordered_map<string, vector<pair<int, int> > > Graph::getGraphAnnotations(
 
     // Initialization of the dictionary
     for (const auto &[fst, snd]: edges) {
-        string key = func_key(to_string(fst), to_string(snd));
+        string key = funcKey(to_string(fst), to_string(snd));
         annotations[key] = {};
     }
 
@@ -459,7 +459,7 @@ unordered_map<string, vector<pair<int, int> > > Graph::getGraphAnnotations(
 
             if (elem_cycle_begin == b && !found_start) {
                 value1 = a;
-                string key = func_key(to_string(value1), to_string(elem_cycle_begin));
+                string key = funcKey(to_string(value1), to_string(elem_cycle_begin));
                 walk_key.push_front(key);
                 annotations[key].push_back({elem_cycle_end, count});
                 count++;
@@ -467,7 +467,7 @@ unordered_map<string, vector<pair<int, int> > > Graph::getGraphAnnotations(
             } else if (found_start && (value1 == b || elem_cycle_end == a)) {
                 const int value2 = b;
                 value1 = a;
-                string key = func_key(to_string(value1), to_string(value2));
+                string key = funcKey(to_string(value1), to_string(value2));
 
                 if (value1 != elem_cycle_end && value2 != elem_cycle_end) {
                     walk_key.push_front(key);

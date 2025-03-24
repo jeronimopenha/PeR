@@ -15,6 +15,8 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif ()
 
+find_package(OpenMP REQUIRED)
+
 file(GLOB_RECURSE SRCS impl/*.cpp)
 include_directories(include)
 

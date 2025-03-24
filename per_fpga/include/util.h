@@ -84,7 +84,7 @@ struct ReportData {
     }
 };
 
-string func_key(const string &a, const string &b);
+string funcKey(const string &a, const string &b);
 
 string getProjectRoot();
 
