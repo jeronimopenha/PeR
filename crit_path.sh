@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Diretório contendo os arquivos
-input_folder="reports/fpga/yoto_base/rep"
+input_folder="reports/fpga/yoto_base_zz/rep"
 
 # Verificar se o diretório existe
 if [ ! -d "$input_folder" ]; then
