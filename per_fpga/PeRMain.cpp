@@ -44,7 +44,7 @@ int main() {
         string outBaseFolder = "reports/fpga/sa_base/";
 #endif
 
-        int nExec = 1000;
+        int nExec = 100;
         vector<ReportData> reports;
 
         int nThreads = max(1, omp_get_num_procs() - 1);
