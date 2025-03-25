@@ -83,15 +83,15 @@ ReportData saBase(Graph& g)
                 if (cellA == cellB)
                     continue;
                 // Check if cellA is nor allowed, go to next
-                if (is_invalid_cell(cellA, nCellsSqrt))
+                if (isInvalidCell(cellA, nCellsSqrt))
                     continue;
-                if (is_invalid_cell(cellB, nCellsSqrt))
+                if (isInvalidCell(cellB, nCellsSqrt))
                     continue;
 
                 //prevents IO nodes to be not put in IO cells
                 //and put a non IO node in an IO cell
-                const bool isCellAIO = is_io_cell(cellA, nCellsSqrt);
-                const bool isCellBIO = is_io_cell(cellB, nCellsSqrt);
+                const bool isCellAIO = isIOCell(cellA, nCellsSqrt);
+                const bool isCellBIO = isIOCell(cellB, nCellsSqrt);
 
                 if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;

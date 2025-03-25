@@ -1,14 +1,15 @@
 #include "yotoBase.h"
 
 
-ReportData yotoBase(Graph &g) {
+ReportData yotoBase(Graph& g)
+{
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
-    vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
+    vector<vector<int>> distCells = getAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 #ifdef YOTO_BASE_ZZ_CACHE
     Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
@@ -21,7 +22,7 @@ ReportData yotoBase(Graph &g) {
     int swaps = 0;
 
     string alg_type;
-    vector<pair<int, int> > ed;
+    vector<pair<int, int>> ed;
 #if defined(YOTO_BASE_ZZ) || defined(YOTO_BASE_ZZ_CACHE)
     vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
@@ -54,7 +55,8 @@ ReportData yotoBase(Graph &g) {
 #endif
     auto start = chrono::high_resolution_clock::now();
 
-    for (auto [a,b]: ed) {
+    for (auto [a,b] : ed)
+    {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
@@ -62,13 +64,16 @@ ReportData yotoBase(Graph &g) {
         cacheMisses += cacheN2C.checkCache(a, n2c);
 #endif
 
-        if (n2c[a] == -1) {
-            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
+        if (n2c[a] == -1)
+        {
+            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++)
+            {
                 int ioCell = inOutCells[i];
 #ifdef YOTO_BASE_ZZ_CACHE
                 cacheMisses += cacheC2N.checkCache(ioCell, c2n);
 #endif
-                if (c2n[ioCell] == -1) {
+                if (c2n[ioCell] == -1)
+                {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
                     lastIdxIOCellUsed = i;
@@ -81,7 +86,8 @@ ReportData yotoBase(Graph &g) {
 #ifdef YOTO_BASE_ZZ_CACHE
         cacheMisses += cacheN2C.checkCache(b, n2c);
 #endif
-        if (n2c[b] != -1) {
+        if (n2c[b] != -1)
+        {
             continue;
         }
 
@@ -93,40 +99,38 @@ ReportData yotoBase(Graph &g) {
 
         //bool placed = false;
         //Then I will look for a cell next to A's cell
-        for (const auto &ij: distCells) {
+        for (const auto& ij : distCells)
+        {
             ++tries;
             const int lB = lA + ij[0];
             const int cB = cA + ij[1];
 
-            // Define boundary and corner conditions
-            const bool outOfBounds = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
-            const bool isTopLeftCorner = (lB == 0 && cB == 0);
-            const bool isBottomRightCorner = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
-            const bool isBottomLeftCorner = (lB == nCellsSqrt - 1 && cB == 0);
-            const bool isTopRightCorner = (lB == 0 && cB == nCellsSqrt - 1);
-            const bool isCorner = isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner;
-
-            // Check if the target cell is nor allowed, go to next
-            if (outOfBounds || isCorner) {
-                continue;
-            }
-
             //find the idx for the target cell
             int targetCell = lB * nCellsSqrt + cB;
 
-            const bool isTargetCellIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
+            // Check if the target cell is nor allowed, go to next
+            if (isInvalidCell(targetCell, nCellsSqrt))
+                continue;
+
+
+            const bool isTargetCellIO = isIOCell(targetCell, nCellsSqrt);
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
-            if (isTargetCellIO) {
+            if (isTargetCellIO)
+            {
                 // 'targetCell' is a IO cell
-                if (!IsBIoNode) {
+                if (!IsBIoNode)
+                {
                     continue;
                 }
-            } else {
+            }
+            else
+            {
                 // 'targetCell' is not in possible_positions
-                if (IsBIoNode) {
+                if (IsBIoNode)
+                {
                     continue;
                 }
             }
@@ -135,7 +139,8 @@ ReportData yotoBase(Graph &g) {
 #ifdef YOTO_BASE_ZZ_CACHE
             cacheMisses += cacheC2N.checkCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell] == -1) {
+            if (c2n[targetCell] == -1)
+            {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
