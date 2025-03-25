@@ -176,6 +176,16 @@ void Graph::getGraphDataInt() {
         nPredV[toN] += 1;
     }
 
+    //neighbors vector
+    neighbors.resize(nNodes);
+    for (size_t i = 0; i < successors.size(); ++i) {
+        for (size_t j = 0; j < successors[i].size(); ++j) {
+            if (successors[i][j] || predecessors[i][j]) {
+                neighbors[i].push_back(j);
+            }
+        }
+    }
+
     //input and output nodes
     for (int i = 0; i < nNodes; i++) {
         gNodes.push_back(i);

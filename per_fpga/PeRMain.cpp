@@ -44,7 +44,7 @@ int main() {
         string outBaseFolder = "reports/fpga/sa_base/";
 #endif
 
-        int nExec = 1;
+        int nExec = 1000;
         vector<ReportData> reports;
 
         int nThreads = max(1, omp_get_num_procs() - 1);
@@ -69,22 +69,12 @@ int main() {
             }
         }
 
-        /*for (int exec = 0; exec < nExec; exec++) {
-            // if (exec % 50 == 0) {
-            //     cout << exec << ", ";
-            // }
-#if defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
-            reports.push_back(yotoBase(g));
-#elifdef YOTT_BASE
-            reports.push_back(yottBase(g));
-#endif
-        }*/
         //sort the reports by total cost because I want only the 10 better placements
         sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;
         });
 
-
+        //todo tries and swaps SA!!!
         for (int i = 0; i < 10; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;

@@ -3,8 +3,10 @@
 
 #include "yottBase.h"
 
+
 ReportData saBase(Graph &g) {
     const string alg_type = "SA";
+    int cacheMisses = 0;
     int tries = 0;
     int swaps = 0;
 
@@ -38,7 +40,6 @@ ReportData saBase(Graph &g) {
             idx++;
         }
     }
-    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
 
     //place the clb nodes to their initial positions
     vector<int> clbNodes = g.clbNodes;
@@ -52,7 +53,13 @@ ReportData saBase(Graph &g) {
         }
     }
 
-    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+    std::vector<std::vector<int> > neighbors = g.neighbors;
+
+    static random_device rd;
+    static mt19937 gen(rd());
+    static uniform_real_distribution<> dis(0.0, 1.0);
+
+    //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
 
     //begin of SA algorithm
     const float t_min = 0.001;
@@ -62,198 +69,62 @@ ReportData saBase(Graph &g) {
 
     while (t >= t_min) {
         for (int cellA = 1; cellA < nCells; cellA++) {
-            const int lA = cellA / nCellsSqrt;
-            const int cA = cellA % nCellsSqrt;
-
-            // Define boundary and corner conditions for A
-            const bool outOfBoundsA = (lA < 0 || lA >= nCellsSqrt || cA < 0 || cA >= nCellsSqrt);
-            const bool isTopLeftCornerA = (lA == 0 && cA == 0);
-            const bool isBottomRightCornerA = (lA == nCellsSqrt - 1 && cA == nCellsSqrt - 1);
-            const bool isBottomLeftCornerA = (lA == nCellsSqrt - 1 && cA == 0);
-            const bool isTopRightCornerA = (lA == 0 && cA == nCellsSqrt - 1);
-            const bool isCornerA = isTopLeftCornerA || isTopRightCornerA || isBottomLeftCornerA ||
-                                   isBottomRightCornerA;
-
             // Check if cellA is nor allowed, go to next
-            if (outOfBoundsA || isCornerA) {
+            if (is_invalid_cell(cellA, nCellsSqrt))
                 continue;
-            }
 
             for (int cellB = 1; cellB < nCells; cellB++) {
                 if (cellA == cellB)
                     continue;
-
-                const int lB = cellB / nCellsSqrt;
-                const int cB = cellB % nCellsSqrt;
-
-                const bool outOfBoundsB = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
-                const bool isTopLeftCornerB = (lB == 0 && cB == 0);
-                const bool isBottomRightCornerB = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
-                const bool isBottomLeftCornerB = (lB == nCellsSqrt - 1 && cB == 0);
-                const bool isTopRightCornerB = (lB == 0 && cB == nCellsSqrt - 1);
-                const bool isCornerB = isTopLeftCornerB || isTopRightCornerB || isBottomLeftCornerB ||
-                                       isBottomRightCornerB;
-
-                // Check if cellB is nor allowed, go to next
-                if (outOfBoundsB || isCornerB) {
+                if (is_invalid_cell(cellB, nCellsSqrt))
                     continue;
-                }
 
                 //prevents IO nodes to be not put in IO cells
-                //and put a non IO noce in an IO cell
-                const bool isCellAIO = lA == 0 || lA == nCellsSqrt - 1 || cA == 0 || cA == nCellsSqrt - 1;
-                const bool isCellBIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
+                //and put a non IO node in an IO cell
+                const bool isCellAIO = is_io_cell(cellA, nCellsSqrt);
+                const bool isCellBIO = is_io_cell(cellB, nCellsSqrt);
 
-                if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO)) {
+                if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;
-                }
 
                 int a = c2n[cellA];
                 int b = c2n[cellB];
 
-                //TODO continue to implement the SA algorithm
+                if (a == -1 && b == -1)
+                    continue;
+
+                int costABefore, costAAfter;
+                int costBBefore, costBAfter;
+
+                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costABefore,
+                            costBAfter);
+
+                int costAfter = costAAfter + costBAfter;
+                int costBefore = costABefore + costBBefore;
+
+                double value = exp((-1 * (costAfter - costBefore) / t));
+
+                double rnd = dis(gen);
+
+                if ((costAfter < costBefore) || (rnd <= value)) {
+                    if (a != -1) {
+                        n2c[a] = cellB;
+                    }
+                    if (b != -1) {
+                        n2c[b] = cellA;
+                    }
+                    c2n[cellA] = b;
+                    c2n[cellB] = a;
+
+                    //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+                    int hhh = 1;
+                }
+
             }
+            t *= 0.999;
         }
     }
-    /*
 
-    for (auto [a,b]: ed) {
-        //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
-        //Verify if A is placed
-        //if it is not placed, then place in a random inout cell.
-        //the variable lastIdxIOCellUsed is for optimize future looks
-
-
-        if (n2c[a] == -1) {
-            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
-                int ioCell = inOutCells[i];
-
-                if (c2n[ioCell] == -1) {
-                    c2n[ioCell] = a;
-                    n2c[a] = ioCell;
-                    lastIdxIOCellUsed = i;
-                    break;
-                }
-            }
-        }
-
-        //Now, if B is placed, go to next edge
-
-        if (n2c[b] != -1) {
-            continue;
-        }
-
-        // Now I will try to find an adjacent cell from A to place B
-
-        // Find the idx of A's cell
-        const int cellA = n2c[a];
-        const int lA = cellA / nCellsSqrt;
-        const int cA = cellA % nCellsSqrt;
-
-        int betterCell = -1;
-        int betterCellDist = nCells;
-
-        //bool placed = false;
-        //Then I will look for a cell next to A's cell
-
-        for (const auto &ij: distCells) {
-            ++tries;
-            const int lB = lA + ij[0];
-            const int cB = cA + ij[1];
-            //find the idx for the target cell
-            const int targetCell = lB * nCellsSqrt + cB;
-            const int targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
-
-            // Define boundary and corner conditions
-            const bool outOfBounds = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
-            const bool isTopLeftCorner = (lB == 0 && cB == 0);
-            const bool isBottomRightCorner = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
-            const bool isBottomLeftCorner = (lB == nCellsSqrt - 1 && cB == 0);
-            const bool isTopRightCorner = (lB == 0 && cB == nCellsSqrt - 1);
-            const bool isCorner = isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner;
-
-            // Check if the target cell is nor allowed, go to next
-            if (outOfBounds || isCorner) {
-                continue;
-            }
-
-            const bool isTargetCellIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
-
-            //prevents IO nodes to be not put in IO cells
-            //and put a non IO noce in an IO cell
-            if (isTargetCellIO) {
-                // 'targetCell' is a IO cell
-                if (!IsBIoNode) {
-                    continue;
-                }
-            } else {
-                // 'targetCell' is not in possible_positions
-                if (IsBIoNode) {
-                    continue;
-                }
-            }
-
-            //begin of yott verifications.
-            // if yott verifications does not match until targetCellDistance < 4, then
-            //the better found cell will be used and if it is not set, yoto will be executed
-            //the code needs to be improved, but ir works
-
-            //beginning with an annotation if it exists
-            string key = to_string(a) + " " + to_string(b);
-            vector<pair<int, int> > annotation = annotations[key];
-
-            //if we have an annotation
-            if (!annotation.empty()) {
-                if (targetCellDist < 4) {
-                    if (c2n[targetCell] != -1)
-                        continue;
-                    //find the distance of the target cell to the annotated cell and compare if they are equal
-                    int annCell = n2c[annotation[0].first];
-                    int annDist = annotation[0].second + 1;
-                    int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
-                    if (tAnnDist == annDist) {
-                        if (c2n[targetCell] == -1) {
-                            c2n[targetCell] = b;
-                            n2c[b] = targetCell;
-                            ++swaps;
-                            break;
-                        }
-                        continue;
-                    }
-                    int modDist = abs(annDist - tAnnDist);
-                    if (modDist < betterCellDist && c2n[targetCell] == -1) {
-                        betterCellDist = modDist;
-                        betterCell = targetCell;
-                    }
-                    continue;
-                }
-                if (betterCell > -1) {
-                    c2n[betterCell] = b;
-                    n2c[b] = betterCell;
-                    ++swaps;
-                    break;
-                }
-                if (c2n[targetCell] == -1) {
-                    c2n[targetCell] = b;
-                    n2c[b] = targetCell;
-                    ++swaps;
-                    break;
-                }
-            }
-
-            // if the target node has no annotations, then it will put it on the first empty cell
-#ifdef YOTO_BASE_ZZ_CACHE
-            cacheMisses += cacheC2N.checkCache(targetCell, c2n);
-#endif
-            if (c2n[targetCell] == -1) {
-                c2n[targetCell] = b;
-                n2c[b] = targetCell;
-                ++swaps;
-                break;
-            }
-        }
-    }
     //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
 
     auto end = chrono::high_resolution_clock::now();
@@ -280,5 +151,47 @@ ReportData saBase(Graph &g) {
         c2n,
         n2c
     );
-    return report;*/
+    return report;
+}
+
+
+void getSwapCost(
+    const std::vector<int> &n2c,
+    const int a,
+    const int b,
+    const int cellA,
+    const int cellB,
+    const int nCellsSqrt,
+    const std::vector<std::vector<int> > &neighbors,
+    int &costABefore,
+    int &costAAfter,
+    int &costBBefore,
+    int &costBAfter
+) {
+    costABefore = 0;
+    costAAfter = 0;
+    costBBefore = 0;
+    costBAfter = 0;
+
+    if (a != -1) {
+        for (const int node: neighbors[a]) {
+            costABefore += getManhattanDist(cellA, n2c[node], nCellsSqrt);
+            if (cellB == n2c[node]) {
+                costAAfter += getManhattanDist(cellA, cellB, nCellsSqrt);
+            } else {
+                costAAfter += getManhattanDist(cellB, n2c[node], nCellsSqrt);
+            }
+        }
+    }
+
+    if (b != -1) {
+        for (const int node: neighbors[b]) {
+            costBBefore += getManhattanDist(cellB, n2c[node], nCellsSqrt);
+            if (cellA == n2c[node]) {
+                costBAfter += getManhattanDist(cellB, cellA, nCellsSqrt);
+            } else {
+                costBAfter += getManhattanDist(cellA, n2c[node], nCellsSqrt);
+            }
+        }
+    }
 }

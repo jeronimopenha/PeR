@@ -35,6 +35,8 @@ public:
     vector<vector<bool> > successors;
     //Adjacency for predecessors
     vector<vector<bool> > predecessors;
+    //Neighbors vector
+    vector<vector<int> > neighbors;
     //Edges list
     vector<pair<int, int> > gEdges;
     //nodes List

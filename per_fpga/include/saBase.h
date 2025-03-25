@@ -10,6 +10,20 @@
 
 using namespace std;
 
-ReportData saBase(Graph& g);
+ReportData saBase(Graph &g);
+
+void getSwapCost(
+    const std::vector<int> &n2c,
+    int a,
+    int b,
+    int cellA,
+    int cellB,
+    int nCellsSqrt,
+    const std::vector<std::vector<int> > &neighbors,
+    int &costABefore,
+    int &costAAfter,
+    int &costBBefore,
+    int &costBAfter
+);
 
 #endif //SA_BASE_H

@@ -120,5 +120,8 @@ void writeVprData(const string &basePath, const string &fileName, const ReportDa
 
 vector<vector<int> > getAdjCellsDist(int nCellsSqrt);
 
+bool is_invalid_cell(int cell, int nCellsSqrt) ;
+
+bool is_io_cell(int cell, int nCellsSqrt) ;
 
 #endif //UTIL_H
