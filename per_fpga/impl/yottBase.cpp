@@ -93,25 +93,15 @@ ReportData yottBase(Graph& g)
             const int targetCell = lB * nCellsSqrt + cB;
             const int targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
-            // Define boundary and corner conditions
-            const bool outOfBounds = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
-            const bool isTopLeftCorner = (lB == 0 && cB == 0);
-            const bool isBottomRightCorner = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
-            const bool isBottomLeftCorner = (lB == nCellsSqrt - 1 && cB == 0);
-            const bool isTopRightCorner = (lB == 0 && cB == nCellsSqrt - 1);
-            const bool isCorner = isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner;
-
             // Check if the target cell is nor allowed, go to next
-            if (outOfBounds || isCorner)
-            {
+            if (isInvalidCell(targetCell, nCellsSqrt))
                 continue;
-            }
 
-            const bool isTargetCellIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
+            const bool isTargetCellIO = isIOCell(targetCell, nCellsSqrt);
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
-            //and put a non IO noce in an IO cell
+            //and put a non IO node in an IO cell
             if (isTargetCellIO)
             {
                 // 'targetCell' is a IO cell
@@ -145,11 +135,22 @@ ReportData yottBase(Graph& g)
                 {
                     if (c2n[targetCell] != -1)
                         continue;
+
+                    int modDist = 0;
+                    bool found = true;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
-                    int annCell = n2c[annotation[0].first];
-                    int annDist = annotation[0].second + 1;
-                    int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
-                    if (tAnnDist == annDist)
+                    for (auto [fst, snd] : annotation)
+                    {
+                        int annCell = n2c[fst];
+                        int annDist = snd + 1;
+                        int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
+                        if (tAnnDist != annDist)
+                        {
+                            found = false;
+                            modDist += abs(annDist - tAnnDist);
+                        }
+                    }
+                    if (found)
                     {
                         if (c2n[targetCell] == -1)
                         {
@@ -160,7 +161,7 @@ ReportData yottBase(Graph& g)
                         }
                         continue;
                     }
-                    int modDist = abs(annDist - tAnnDist);
+
                     if (modDist < betterCellDist && c2n[targetCell] == -1)
                     {
                         betterCellDist = modDist;

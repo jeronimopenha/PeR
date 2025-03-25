@@ -10,8 +10,8 @@
 //#define YOTO_BASE_DF_P
 //#define YOTO_BASE_ZZ
 //#define YOTO_BASE_ZZ_CACHE
-//#define YOTT_BASE
-#define SA_BASE
+#define YOTT_BASE
+//#define SA_BASE
 
 #include <filesystem>
 #include <iostream>
@@ -120,8 +120,8 @@ void writeVprData(const string &basePath, const string &fileName, const ReportDa
 
 vector<vector<int> > getAdjCellsDist(int nCellsSqrt);
 
-bool is_invalid_cell(int cell, int nCellsSqrt) ;
+bool isInvalidCell(int cell, int nCellsSqrt) ;
 
-bool is_io_cell(int cell, int nCellsSqrt) ;
+bool isIOCell(int cell, int nCellsSqrt) ;
 
 #endif //UTIL_H
