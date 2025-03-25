@@ -10,7 +10,8 @@
 //#define YOTO_BASE_DF_P
 //#define YOTO_BASE_ZZ
 //#define YOTO_BASE_ZZ_CACHE
-#define YOTT_BASE
+//#define YOTT_BASE
+#define SA_BASE
 
 #include <filesystem>
 #include <iostream>

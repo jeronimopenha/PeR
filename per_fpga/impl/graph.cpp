@@ -178,12 +178,16 @@ void Graph::getGraphDataInt() {
 
     //input and output nodes
     for (int i = 0; i < nNodes; i++) {
+        gNodes.push_back(i);
         if (nSuccV[i] == 0) {
             outputNodes.push_back(i);
+            continue;
         }
         if (nPredV[i] == 0) {
             inputNodes.push_back(i);
+            continue;
         }
+        clbNodes.push_back(i);
     }
 
     int totalInOut = static_cast<int>(inputNodes.size() + outputNodes.size());
@@ -223,6 +227,18 @@ vector<int> Graph::getInOutPos() {
         possibleInOut.push_back(i);
     }
     return possibleInOut;
+}
+
+vector<int> Graph::getClbPos() {
+    vector<int> pos;
+    for (int i = 1; i < nCellsSqrt - 1; i++) {
+        int start = i * nCellsSqrt + 1;
+        int end = (i + 1) * nCellsSqrt - 1;
+        for (int j = start; j < end; j++) {
+            pos.push_back(j);
+        }
+    }
+    return pos;
 }
 
 vector<pair<int, int> > Graph::getEdgesDepthFirst() {

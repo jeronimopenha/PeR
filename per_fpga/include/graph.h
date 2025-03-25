@@ -37,10 +37,13 @@ public:
     vector<vector<bool> > predecessors;
     //Edges list
     vector<pair<int, int> > gEdges;
+    //nodes List
+    vector<int> gNodes;
     //input nodes
     vector<int> nSuccV;
     //output nodes
     vector<int> nPredV;
+    vector<int> clbNodes;
     vector<int> inputNodes;
     vector<int> outputNodes;
 
@@ -56,6 +59,8 @@ public:
     void getGraphDataInt();
 
     vector<int> getInOutPos();
+
+    vector<int> getClbPos();
 
     vector<pair<int, int> > getEdgesDepthFirst();
 

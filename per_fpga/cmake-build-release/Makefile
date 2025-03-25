@@ -244,32 +244,32 @@ impl/graph.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/graph.cpp.s
 .PHONY : impl/graph.cpp.s
 
-impl/sa_base.o: impl/sa_base.cpp.o
-.PHONY : impl/sa_base.o
+impl/saBase.o: impl/saBase.cpp.o
+.PHONY : impl/saBase.o
 
 # target to build an object file
-impl/sa_base.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.o
-.PHONY : impl/sa_base.cpp.o
+impl/saBase.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/saBase.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/saBase.cpp.o
+.PHONY : impl/saBase.cpp.o
 
-impl/sa_base.i: impl/sa_base.cpp.i
-.PHONY : impl/sa_base.i
+impl/saBase.i: impl/saBase.cpp.i
+.PHONY : impl/saBase.i
 
 # target to preprocess a source file
-impl/sa_base.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.i
-.PHONY : impl/sa_base.cpp.i
+impl/saBase.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/saBase.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/saBase.cpp.i
+.PHONY : impl/saBase.cpp.i
 
-impl/sa_base.s: impl/sa_base.cpp.s
-.PHONY : impl/sa_base.s
+impl/saBase.s: impl/saBase.cpp.s
+.PHONY : impl/saBase.s
 
 # target to generate assembly for a file
-impl/sa_base.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/sa_base.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/sa_base.cpp.s
-.PHONY : impl/sa_base.cpp.s
+impl/saBase.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PeRMain.dir/build.make CMakeFiles/PeRMain.dir/impl/saBase.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chDotStrToN.dir/build.make CMakeFiles/chDotStrToN.dir/impl/saBase.cpp.s
+.PHONY : impl/saBase.cpp.s
 
 impl/util.o: impl/util.cpp.o
 .PHONY : impl/util.o
@@ -374,9 +374,9 @@ help:
 	@echo "... impl/graph.o"
 	@echo "... impl/graph.i"
 	@echo "... impl/graph.s"
-	@echo "... impl/sa_base.o"
-	@echo "... impl/sa_base.i"
-	@echo "... impl/sa_base.s"
+	@echo "... impl/saBase.o"
+	@echo "... impl/saBase.i"
+	@echo "... impl/saBase.s"
 	@echo "... impl/util.o"
 	@echo "... impl/util.i"
 	@echo "... impl/util.s"

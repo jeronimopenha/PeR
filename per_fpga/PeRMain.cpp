@@ -2,6 +2,7 @@
 #include  "graph.h"
 #include "yotoBase.h"
 #include "yottBase.h"
+#include "saBase.h"
 #include <omp.h>
 
 using namespace std;
@@ -11,8 +12,8 @@ int main() {
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     cout << rootPath << endl;
-    const string benchPath = "benchmarks/fpga/eval/";
-    //const string benchPath = "benchmarks/fpga/bench_test/";
+    //const string benchPath = "benchmarks/fpga/eval/";
+    const string benchPath = "benchmarks/fpga/bench_test/";
     const string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
@@ -39,9 +40,11 @@ int main() {
 #elifdef YOTT_BASE
         string outBaseFolder = "reports/fpga_total_cost_metric/yott_base/";
         //string outBaseFolder = "reports/fpga/yott_base/";
+#elifdef SA_BASE
+        string outBaseFolder = "reports/fpga/sa_base/";
 #endif
 
-        int nExec = 1000;
+        int nExec = 1;
         vector<ReportData> reports;
 
         int nThreads = max(1, omp_get_num_procs() - 1);
@@ -56,6 +59,8 @@ int main() {
                 report = yotoBase(g);
 #elifdef YOTT_BASE
                 report = yottBase(g);
+#elifdef SA_BASE
+                report = saBase(g);
 #endif
 #pragma omp critical
                 {

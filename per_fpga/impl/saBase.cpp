@@ -3,60 +3,132 @@
 
 #include "yottBase.h"
 
-ReportData saBase(Graph& g)
-{
-    int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
-    int nNodes = g.nNodes;
-
-    vector<int> c2n(nCells, -1);
-    vector<int> n2c(nNodes, -1);
-    vector<vector<int>> distCells = getAdjCellsDist(nCellsSqrt);
-    vector<int> inOutCells = g.getInOutPos();
-#ifdef YOTO_BASE_ZZ_CACHE
-    Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
-    Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
-#endif
-    randomVector(inOutCells);
-
-    int cacheMisses = 0;
+ReportData saBase(Graph &g) {
+    const string alg_type = "SA";
     int tries = 0;
     int swaps = 0;
 
-    string alg_type;
-    vector<pair<int, int>> ed;
-
-    vector<pair<int, int>> convergence;
-    ed = g.getEdgesZigzag(convergence);
-    unordered_map<string, vector<pair<int, int>>> annotations = g.getGraphAnnotations(ed, convergence);
-    alg_type = "ZIG_ZAG";
+    const int nCells = g.nCells;
+    const int nCellsSqrt = g.nCellsSqrt;
+    const int nNodes = g.nNodes;
+    const vector<pair<int, int> > ed = g.gEdges;
 
 
-    //saveToDot(ed, "/home/jeronimo/test.dot");
-    int lastIdxIOCellUsed = 0;
+    vector<int> c2n(nCells, -1);
+    vector<int> n2c(nNodes, -1);
+
+    vector<int> inOutCells = g.getInOutPos();
+    randomVector(inOutCells);
+
+    vector<int> clbCells = g.getClbPos();
+    randomVector(clbCells);
+
+    //place the io nodes to their initial positions
+    vector<int> ioNodes;
+    ioNodes.reserve(g.inputNodes.size() + g.outputNodes.size());
+    ioNodes.insert(ioNodes.end(), g.inputNodes.begin(), g.inputNodes.end());
+    ioNodes.insert(ioNodes.end(), g.outputNodes.begin(), g.outputNodes.end());
+
+
+    int idx = 0;
+    for (int node: ioNodes) {
+        if (c2n[inOutCells[idx]] == -1) {
+            c2n[inOutCells[idx]] = node;
+            n2c[node] = inOutCells[idx];
+            idx++;
+        }
+    }
+    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+
+    //place the clb nodes to their initial positions
+    vector<int> clbNodes = g.clbNodes;
+
+    idx = 0;
+    for (int node: clbNodes) {
+        if (c2n[clbCells[idx]] == -1) {
+            c2n[clbCells[idx]] = node;
+            n2c[node] = clbCells[idx];
+            idx++;
+        }
+    }
+
+    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+
+    //begin of SA algorithm
+    const float t_min = 0.001;
+    float t = 100;
 
     auto start = chrono::high_resolution_clock::now();
 
-    for (auto [a,b] : ed)
-    {
+    while (t >= t_min) {
+        for (int cellA = 1; cellA < nCells; cellA++) {
+            const int lA = cellA / nCellsSqrt;
+            const int cA = cellA % nCellsSqrt;
+
+            // Define boundary and corner conditions for A
+            const bool outOfBoundsA = (lA < 0 || lA >= nCellsSqrt || cA < 0 || cA >= nCellsSqrt);
+            const bool isTopLeftCornerA = (lA == 0 && cA == 0);
+            const bool isBottomRightCornerA = (lA == nCellsSqrt - 1 && cA == nCellsSqrt - 1);
+            const bool isBottomLeftCornerA = (lA == nCellsSqrt - 1 && cA == 0);
+            const bool isTopRightCornerA = (lA == 0 && cA == nCellsSqrt - 1);
+            const bool isCornerA = isTopLeftCornerA || isTopRightCornerA || isBottomLeftCornerA ||
+                                   isBottomRightCornerA;
+
+            // Check if cellA is nor allowed, go to next
+            if (outOfBoundsA || isCornerA) {
+                continue;
+            }
+
+            for (int cellB = 1; cellB < nCells; cellB++) {
+                if (cellA == cellB)
+                    continue;
+
+                const int lB = cellB / nCellsSqrt;
+                const int cB = cellB % nCellsSqrt;
+
+                const bool outOfBoundsB = (lB < 0 || lB >= nCellsSqrt || cB < 0 || cB >= nCellsSqrt);
+                const bool isTopLeftCornerB = (lB == 0 && cB == 0);
+                const bool isBottomRightCornerB = (lB == nCellsSqrt - 1 && cB == nCellsSqrt - 1);
+                const bool isBottomLeftCornerB = (lB == nCellsSqrt - 1 && cB == 0);
+                const bool isTopRightCornerB = (lB == 0 && cB == nCellsSqrt - 1);
+                const bool isCornerB = isTopLeftCornerB || isTopRightCornerB || isBottomLeftCornerB ||
+                                       isBottomRightCornerB;
+
+                // Check if cellB is nor allowed, go to next
+                if (outOfBoundsB || isCornerB) {
+                    continue;
+                }
+
+                //prevents IO nodes to be not put in IO cells
+                //and put a non IO noce in an IO cell
+                const bool isCellAIO = lA == 0 || lA == nCellsSqrt - 1 || cA == 0 || cA == nCellsSqrt - 1;
+                const bool isCellBIO = lB == 0 || lB == nCellsSqrt - 1 || cB == 0 || cB == nCellsSqrt - 1;
+
+                if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO)) {
+                    continue;
+                }
+
+                int a = c2n[cellA];
+                int b = c2n[cellB];
+
+                //TODO continue to implement the SA algorithm
+            }
+        }
+    }
+    /*
+
+    for (auto [a,b]: ed) {
         //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-#ifdef YOTO_BASE_ZZ_CACHE
-        cacheMisses += cacheN2C.checkCache(a, n2c);
-#endif
 
-        if (n2c[a] == -1)
-        {
-            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++)
-            {
+
+        if (n2c[a] == -1) {
+            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
                 int ioCell = inOutCells[i];
-#ifdef YOTO_BASE_ZZ_CACHE
-                cacheMisses += cacheC2N.checkCache(ioCell, c2n);
-#endif
-                if (c2n[ioCell] == -1)
-                {
+
+                if (c2n[ioCell] == -1) {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
                     lastIdxIOCellUsed = i;
@@ -66,11 +138,8 @@ ReportData saBase(Graph& g)
         }
 
         //Now, if B is placed, go to next edge
-#ifdef YOTO_BASE_ZZ_CACHE
-        cacheMisses += cacheN2C.checkCache(b, n2c);
-#endif
-        if (n2c[b] != -1)
-        {
+
+        if (n2c[b] != -1) {
             continue;
         }
 
@@ -87,8 +156,7 @@ ReportData saBase(Graph& g)
         //bool placed = false;
         //Then I will look for a cell next to A's cell
 
-        for (const auto& ij : distCells)
-        {
+        for (const auto &ij: distCells) {
             ++tries;
             const int lB = lA + ij[0];
             const int cB = cA + ij[1];
@@ -105,8 +173,7 @@ ReportData saBase(Graph& g)
             const bool isCorner = isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner;
 
             // Check if the target cell is nor allowed, go to next
-            if (outOfBounds || isCorner)
-            {
+            if (outOfBounds || isCorner) {
                 continue;
             }
 
@@ -115,19 +182,14 @@ ReportData saBase(Graph& g)
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
-            if (isTargetCellIO)
-            {
+            if (isTargetCellIO) {
                 // 'targetCell' is a IO cell
-                if (!IsBIoNode)
-                {
+                if (!IsBIoNode) {
                     continue;
                 }
-            }
-            else
-            {
+            } else {
                 // 'targetCell' is not in possible_positions
-                if (IsBIoNode)
-                {
+                if (IsBIoNode) {
                     continue;
                 }
             }
@@ -139,23 +201,19 @@ ReportData saBase(Graph& g)
 
             //beginning with an annotation if it exists
             string key = to_string(a) + " " + to_string(b);
-            vector<pair<int, int>> annotation = annotations[key];
+            vector<pair<int, int> > annotation = annotations[key];
 
             //if we have an annotation
-            if (!annotation.empty())
-            {
-                if (targetCellDist < 4)
-                {
+            if (!annotation.empty()) {
+                if (targetCellDist < 4) {
                     if (c2n[targetCell] != -1)
                         continue;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
                     int annCell = n2c[annotation[0].first];
                     int annDist = annotation[0].second + 1;
                     int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
-                    if (tAnnDist == annDist)
-                    {
-                        if (c2n[targetCell] == -1)
-                        {
+                    if (tAnnDist == annDist) {
+                        if (c2n[targetCell] == -1) {
                             c2n[targetCell] = b;
                             n2c[b] = targetCell;
                             ++swaps;
@@ -164,22 +222,19 @@ ReportData saBase(Graph& g)
                         continue;
                     }
                     int modDist = abs(annDist - tAnnDist);
-                    if (modDist < betterCellDist && c2n[targetCell] == -1)
-                    {
+                    if (modDist < betterCellDist && c2n[targetCell] == -1) {
                         betterCellDist = modDist;
                         betterCell = targetCell;
                     }
                     continue;
                 }
-                if (betterCell > -1)
-                {
+                if (betterCell > -1) {
                     c2n[betterCell] = b;
                     n2c[b] = betterCell;
                     ++swaps;
                     break;
                 }
-                if (c2n[targetCell] == -1)
-                {
+                if (c2n[targetCell] == -1) {
                     c2n[targetCell] = b;
                     n2c[b] = targetCell;
                     ++swaps;
@@ -191,8 +246,7 @@ ReportData saBase(Graph& g)
 #ifdef YOTO_BASE_ZZ_CACHE
             cacheMisses += cacheC2N.checkCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
@@ -226,5 +280,5 @@ ReportData saBase(Graph& g)
         c2n,
         n2c
     );
-    return report;
+    return report;*/
 }
