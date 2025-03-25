@@ -4,7 +4,8 @@
 #include "yottBase.h"
 
 
-ReportData saBase(Graph &g) {
+ReportData saBase(Graph& g)
+{
     const string alg_type = "SA";
     int cacheMisses = 0;
     int tries = 0;
@@ -13,7 +14,7 @@ ReportData saBase(Graph &g) {
     const int nCells = g.nCells;
     const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
-    const vector<pair<int, int> > ed = g.gEdges;
+    const vector<pair<int, int>> ed = g.gEdges;
 
 
     vector<int> c2n(nCells, -1);
@@ -33,8 +34,10 @@ ReportData saBase(Graph &g) {
 
 
     int idx = 0;
-    for (int node: ioNodes) {
-        if (c2n[inOutCells[idx]] == -1) {
+    for (int node : ioNodes)
+    {
+        if (c2n[inOutCells[idx]] == -1)
+        {
             c2n[inOutCells[idx]] = node;
             n2c[node] = inOutCells[idx];
             idx++;
@@ -45,15 +48,17 @@ ReportData saBase(Graph &g) {
     vector<int> clbNodes = g.clbNodes;
 
     idx = 0;
-    for (int node: clbNodes) {
-        if (c2n[clbCells[idx]] == -1) {
+    for (int node : clbNodes)
+    {
+        if (c2n[clbCells[idx]] == -1)
+        {
             c2n[clbCells[idx]] = node;
             n2c[node] = clbCells[idx];
             idx++;
         }
     }
 
-    std::vector<std::vector<int> > neighbors = g.neighbors;
+    std::vector<std::vector<int>> neighbors = g.neighbors;
 
     static random_device rd;
     static mt19937 gen(rd());
@@ -67,14 +72,18 @@ ReportData saBase(Graph &g) {
 
     auto start = chrono::high_resolution_clock::now();
 
-    while (t >= t_min) {
-        for (int cellA = 1; cellA < nCells; cellA++) {
-            // Check if cellA is nor allowed, go to next
-            if (is_invalid_cell(cellA, nCellsSqrt))
-                continue;
+    while (t >= t_min)
+    {
+        for (int cellA = 1; cellA < nCells; cellA++)
+        {
+            for (int cellB = 1; cellB < nCells; cellB++)
+            {
+                tries++;
 
-            for (int cellB = 1; cellB < nCells; cellB++) {
                 if (cellA == cellB)
+                    continue;
+                // Check if cellA is nor allowed, go to next
+                if (is_invalid_cell(cellA, nCellsSqrt))
                     continue;
                 if (is_invalid_cell(cellB, nCellsSqrt))
                     continue;
@@ -106,20 +115,21 @@ ReportData saBase(Graph &g) {
 
                 double rnd = dis(gen);
 
-                if ((costAfter < costBefore) || (rnd <= value)) {
-                    if (a != -1) {
+                if ((costAfter < costBefore) || (rnd <= value))
+                {
+                    if (a != -1)
+                    {
                         n2c[a] = cellB;
                     }
-                    if (b != -1) {
+                    if (b != -1)
+                    {
                         n2c[b] = cellA;
                     }
                     c2n[cellA] = b;
                     c2n[cellB] = a;
-
+                    swaps++;
                     //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
-                    int hhh = 1;
                 }
-
             }
             t *= 0.999;
         }
@@ -142,7 +152,7 @@ ReportData saBase(Graph &g) {
         _time,
         g.dotName,
         g.dotPath,
-        "yotoBase",
+        "SABase",
         cacheMisses,
         tries,
         swaps,
@@ -156,40 +166,51 @@ ReportData saBase(Graph &g) {
 
 
 void getSwapCost(
-    const std::vector<int> &n2c,
+    const std::vector<int>& n2c,
     const int a,
     const int b,
     const int cellA,
     const int cellB,
     const int nCellsSqrt,
-    const std::vector<std::vector<int> > &neighbors,
-    int &costABefore,
-    int &costAAfter,
-    int &costBBefore,
-    int &costBAfter
-) {
+    const std::vector<std::vector<int>>& neighbors,
+    int& costABefore,
+    int& costAAfter,
+    int& costBBefore,
+    int& costBAfter
+)
+{
     costABefore = 0;
     costAAfter = 0;
     costBBefore = 0;
     costBAfter = 0;
 
-    if (a != -1) {
-        for (const int node: neighbors[a]) {
+    if (a != -1)
+    {
+        for (const int node : neighbors[a])
+        {
             costABefore += getManhattanDist(cellA, n2c[node], nCellsSqrt);
-            if (cellB == n2c[node]) {
+            if (cellB == n2c[node])
+            {
                 costAAfter += getManhattanDist(cellA, cellB, nCellsSqrt);
-            } else {
+            }
+            else
+            {
                 costAAfter += getManhattanDist(cellB, n2c[node], nCellsSqrt);
             }
         }
     }
 
-    if (b != -1) {
-        for (const int node: neighbors[b]) {
+    if (b != -1)
+    {
+        for (const int node : neighbors[b])
+        {
             costBBefore += getManhattanDist(cellB, n2c[node], nCellsSqrt);
-            if (cellA == n2c[node]) {
+            if (cellA == n2c[node])
+            {
                 costBAfter += getManhattanDist(cellB, cellA, nCellsSqrt);
-            } else {
+            }
+            else
+            {
                 costBAfter += getManhattanDist(cellA, n2c[node], nCellsSqrt);
             }
         }

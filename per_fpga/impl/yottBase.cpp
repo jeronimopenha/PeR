@@ -214,7 +214,7 @@ ReportData yottBase(Graph& g)
         _time,
         g.dotName,
         g.dotPath,
-        "yotoBase",
+        "yottBase",
         cacheMisses,
         tries,
         swaps,

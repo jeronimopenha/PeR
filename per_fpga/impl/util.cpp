@@ -246,6 +246,9 @@ void writeVprData(const string &basePath, const string &fileName, const ReportDa
 #elifdef YOTT_BASE
         file << "Netlist file: reports/fpga/yott_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
             "-n1.xml" << endl;
+#elifdef SA_BASE
+        file << "Netlist file: reports/fpga/sa_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
+            "-n1.xml" << endl;
 #endif
 
 
