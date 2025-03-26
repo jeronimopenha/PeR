@@ -1,31 +1,25 @@
 #include "cache.h"
 
-Cache::Cache(const int cacheLinesExp, const int cacheColumnsExp) {
-    this->cacheLinesExp = cacheLinesExp;
-    this->cacheLines = 1 << this->cacheLinesExp;
-
-    this->cacheColumnsExp = cacheColumnsExp;
-    this->cacheColumns = 1 << cacheColumnsExp;
-
-    this->cacheValid = std::vector(cacheLines, false);
-    this->cacheTag = std::vector<int>(cacheLines);
-    this->cacheData = vector(cacheLines, vector<int>(cacheColumns));
+Cache::Cache() {
+    this->cacheValid = std::vector(CACHE_LINES, false);
+    this->cacheTag = std::vector<int>(CACHE_LINES);
+    this->cacheData = vector(CACHE_LINES, vector<int>(CACHE_COLUMNS));
 }
 
 int Cache::readCache(const int address, const vector<int> &vec) {
-    const int tag = address >> (cacheLinesExp + cacheColumnsExp);
-    int column = address & (cacheColumns - 1);
-    const int line = (address >> cacheColumnsExp) & (cacheLines - 1);
+    const int tag = address >> (CACHE_LINES_EXP + CACHE_COLUMNS_EXP);
+    int column = address & (CACHE_COLUMNS - 1);
+    const int line = (address >> CACHE_LINES_EXP) & (CACHE_LINES - 1);
 
     const bool cacheMiss = !cacheValid[line] | (cacheTag[line] != tag);
 
     if (cacheMiss) {
-        const int readAddressoffset = (address >> cacheColumnsExp) << cacheColumnsExp;
-        const int readTag = readAddressoffset >> (cacheLinesExp + cacheColumnsExp);
+        const int readAddressoffset = (address >> CACHE_COLUMNS_EXP) << CACHE_COLUMNS_EXP;
+        const int readTag = readAddressoffset >> (CACHE_LINES_EXP + CACHE_COLUMNS_EXP);
         cacheTag[line] = readTag;
         cacheValid[line] = true;
 
-        for (int i = 0; i < cacheColumns; i++) {
+        for (int i = 0; i < CACHE_COLUMNS; i++) {
             int readAddress = readAddressoffset + i;
             if (readAddress < vec.size())
                 cacheData[line][i] = vec[readAddressoffset + i];

@@ -1,18 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-//Choose a type of total cost
-#define TOTAL_COST
-//#define LP_COST
-
-//Choose the algorithm to be run
-//#define YOTO_BASE_DF
-//#define YOTO_BASE_DF_P
-//#define YOTO_BASE_ZZ
-//#define YOTO_BASE_ZZ_CACHE
-#define YOTT_BASE
-//#define SA_BASE
-
 #include <filesystem>
 #include <iostream>
 #include <fstream>
@@ -114,7 +102,11 @@ int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
 void savePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSqrt,
                    const string &filename);
 
-void writeJson(const string &basePath, const string &fileName, const ReportData &data);
+void writeJson(const string &basePath,
+    const string &reportPath,
+    const string &algPath,
+    const string &fileName,
+    const ReportData &data);
 
 void writeVprData(const string &basePath, const string &fileName, const ReportData &data, Graph g);
 

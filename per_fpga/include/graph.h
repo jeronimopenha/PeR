@@ -1,10 +1,8 @@
-//
-// Created by jeronimo on 27/12/24.
-//
 
 #ifndef GRAPH_H
 #define GRAPH_H
 
+//*******************************
 #include <string>
 #include <vector>
 #include <utility>
@@ -83,4 +81,4 @@ public:
 };
 
 
-#endif //GRAPH_H
+#endif

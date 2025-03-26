@@ -22,13 +22,5 @@ include_directories(include)
 
 add_executable(PeRMain PeRMain.cpp ${SRCS})
 
-#add_executable(yotoBaseDf yotoBaseDfMain.cpp ${SRCS})
-
-#add_executable(yotoBaseDfP yotoBaseDfPMain.cpp ${SRCS})
-
-#add_executable(yotoBaseZz yotoBaseZzMain.cpp ${SRCS})
-
-#add_executable(yotoBaseZzCache yotoBaseZzCacheMain.cpp ${SRCS})
-
 add_executable(chDotStrToN chDotStrToNMain.cpp ${SRCS})
 

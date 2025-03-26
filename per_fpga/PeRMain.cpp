@@ -1,8 +1,19 @@
+#include "parameters.h"
 #include  "util.h"
 #include  "graph.h"
-#include "yotoBase.h"
-#include "yottBase.h"
-#include "saBase.h"
+
+#if defined(YOTO_DF) || defined(YOTO_DF_PRIO) || defined(YOTO_ZZ)
+#include "yoto.h"
+#endif
+
+#if defined(YOTT)
+#include "yott.h"
+#endif
+
+#if defined(SA)
+#include "sa.h"
+#endif
+
 #include <omp.h>
 
 using namespace std;
@@ -11,10 +22,17 @@ using namespace std;
 int main() {
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
-    cout << rootPath << endl;
+    const string benchExt = ".dot";
+
     const string benchPath = "benchmarks/fpga/eval/";
     //const string benchPath = "benchmarks/fpga/bench_test/";
-    const string benchExt = ".dot";
+
+    const string reportPath = "reports/fpga";
+    string algPath;
+
+
+    cout << rootPath << endl;
+
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
     // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
@@ -28,23 +46,31 @@ int main() {
         g.getGraphDataInt();
         g.findLongestPath();
 
+        int nExec;
         //execution parameters
-#ifdef YOTO_BASE_DF
-        string outBaseFolder = "reports/fpga/yoto_base/";
-#elifdef YOTO_BASE_DF_P
-        string outBaseFolder = "reports/fpga/yoto_base_p/";
-#elifdef YOTO_BASE_ZZ
-        string outBaseFolder = "reports/fpga/yoto_base_zz/";
-#elifdef YOTO_BASE_ZZ_CACHE
-        string outBaseFolder = "reports/fpga/yoto_base_zz_cache/";
-#elifdef YOTT_BASE
-        string outBaseFolder = "reports/fpga_total_cost_metric/yott_base/";
-        //string outBaseFolder = "reports/fpga/yott_base/";
-#elifdef SA_BASE
-        string outBaseFolder = "reports/fpga/sa_base/";
+#ifdef YOTO_DF
+        algPath = "/yoto_df";
+#elifdef YOTO_DF_PRIO
+        algFolder =  "/yoto_df_prio";
+#elifdef YOTO_ZZ
+        algFolder  = "/yoto_zz";
+#elifdef YOTT
+        algFolder  = "/yott";
+#elifdef SA
+        algFolder = "/sa";
 #endif
 
-        int nExec = 100;
+#ifdef CACHE
+            algFolder += "_cache";
+#endif
+
+
+#ifdef SA
+            nExec = 100;
+#else
+        nExec = 1000;
+#endif
+
         vector<ReportData> reports;
 
         int nThreads = max(1, omp_get_num_procs() - 1);
@@ -55,7 +81,7 @@ int main() {
 #pragma omp for schedule(dynamic)
             for (int exec = 0; exec < nExec; exec++) {
                 ReportData report;
-#if defined(YOTO_BASE_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_BASE_ZZ)||defined(YOTO_BASE_ZZ_CACHE)
+#if defined(YOTO_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_ZZ)||defined(CACHE)
                 report = yotoBase(g);
 #elifdef YOTT_BASE
                 report = yottBase(g);
@@ -80,10 +106,12 @@ int main() {
             cout << g.dotName << endl;
             string reportName = g.dotName + "_" + to_string(i);
             //save reports for the 10 better placements
-            writeJson(rootPath + outBaseFolder, reportName, reports[i]);
+            //TODO !!!!!!! Consertar os saves e implementar a criação automática de pastas
+            writeJson(rootPath, reportPath, algPath, reportName, reports[i]);
             //generate reports and files for vpr
-#ifndef YOTO_BASE_ZZ_CACHE
-            writeVprData(rootPath + outBaseFolder, reportName, reports[i], g);
+#ifndef CACHE
+            //TODO Revisar todo o código e rodar tudo novamente agora mais organizado
+            writeVprData(rootPath + reportPath, reportName, reports[i], g);
 #endif
         }
     }
