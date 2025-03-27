@@ -12,8 +12,8 @@ ReportData yotoBase(Graph &g) {
     vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 #ifdef CACHE
-    Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
-    Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+    Cache cacheC2N = Cache();
+    Cache cacheN2C = Cache();
 #endif
     randomVector(inOutCells);
 
@@ -87,6 +87,9 @@ ReportData yotoBase(Graph &g) {
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
+#ifdef CACHE
+        cacheMisses += cacheN2C.readCache(a, n2c);
+#endif
         const int lA = n2c[a] / nCellsSqrt;
         const int cA = n2c[a] % nCellsSqrt;
 

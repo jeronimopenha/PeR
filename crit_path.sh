@@ -1,46 +1,47 @@
 #!/bin/bash
 
-# Diretório contendo os arquivos
-input_folder="reports/fpga/yoto_base_zz/rep"
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Uso: $0 <subpasta> <nome_base>"
+    exit 1
+fi
 
-# Verificar se o diretório existe
+subfolder="$1"
+name_base="$2"
+input_folder="reports/fpga/$subfolder/rep"
+
 if [ ! -d "$input_folder" ]; then
     echo "Erro: Diretório '$input_folder' não existe."
     exit 1
 fi
 
-# Verificar se o usuário informou a string base
-if [ -z "$1" ]; then
-    echo "Uso: $0 <nome_base>"
-    exit 1
-fi
+values=()
 
-# Base para os nomes dos arquivos
-name_base="$1"
-
-# Variável para armazenar os números
-result_line=""
-
-# Iterar sobre os arquivos que começam com a string base e têm extensão .rep
 for file in "$input_folder"/${name_base}*.rep; do
-    # Verificar se o arquivo existe (proteção contra casos sem correspondência)
     if [ -f "$file" ]; then
-        # Extrair a linha com "Critical Path:"
         critical_path=$(grep -oP 'Critical Path:\s+\K[0-9.e-]+' "$file")
-
         if [ ! -z "$critical_path" ]; then
-            # Substituir "." por ","
             critical_path=$(echo "$critical_path" | tr '.' ',')
-
-            # Adicionar o valor à linha de resultados
-            result_line+="$critical_path\t"
+            values+=("$critical_path")
         fi
     fi
 done
 
-# Imprimir os resultados removendo o tab extra no final
-if [ ! -z "$result_line" ]; then
-    echo -e "${result_line%\\t}"
+if [ ${#values[@]} -gt 0 ]; then
+    for ((i = 0; i < ${#values[@]}; i++)); do
+        printf "%s" "${values[i]}"
+        # Se não for o último da linha, imprime ";"
+        if (( (i + 1) % 10 != 0 && i != ${#values[@]} - 1 )); then
+            printf ";"
+        fi
+        # Se for o décimo, imprime quebra de linha
+        if (( (i + 1) % 10 == 0 )); then
+            printf "\n"
+        fi
+    done
+    # Se o último grupo tiver menos de 10, quebra linha final
+    if (( ${#values[@]} % 10 != 0 )); then
+        printf "\n"
+    fi
 else
     echo "Nenhum arquivo correspondente ou valor encontrado."
 fi

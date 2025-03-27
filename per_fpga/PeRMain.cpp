@@ -19,7 +19,8 @@
 using namespace std;
 
 //Choose the algorithm in util.h defines
-int main() {
+int main()
+{
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
@@ -39,7 +40,8 @@ int main() {
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
     // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
-    for (const auto &[fst, snd]: files) {
+    for (const auto& [fst, snd] : files)
+    {
         cout << fst << endl;
 
         //Creating graph important variables
@@ -63,7 +65,7 @@ int main() {
 #endif
 
 #ifdef CACHE
-            algPath += "_cache";
+        algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP);
 #endif
 
 #ifdef PLACE_IO_FIRST
@@ -89,7 +91,8 @@ int main() {
         {
 #pragma omp for schedule(dynamic)
 #endif
-        for (int exec = 0; exec < nExec; exec++) {
+        for (int exec = 0; exec < nExec; exec++)
+        {
             ReportData report;
 #if defined(YOTO_DF)||defined(YOTO_DF_PRIO)||defined(YOTO_ZZ)
             report = yotoBase(g);
@@ -110,11 +113,13 @@ int main() {
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements
-        sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
+        sort(reports.begin(), reports.end(), [](const ReportData& a, const ReportData& b)
+        {
             return a.totalCost < b.totalCost;
         });
         int limit = (10 < reports.size()) ? 10 : reports.size();
-        for (int i = 0; i < limit; i++) {
+        for (int i = 0; i < limit; i++)
+        {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(i);
@@ -128,6 +133,5 @@ int main() {
 #endif
         }
     }
-    return
-            0;
+    return 0;
 }

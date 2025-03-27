@@ -11,8 +11,8 @@ ReportData yottBase(Graph &g) {
     vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 #ifdef CACHE
-    Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
-    Cache cacheN2C = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
+    Cache cacheC2N = Cache();
+    Cache cacheN2C = Cache();
 #endif
     randomVector(inOutCells);
 
