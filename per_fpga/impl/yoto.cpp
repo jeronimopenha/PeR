@@ -28,7 +28,7 @@ ReportData yotoBase(Graph &g) {
     ed = g.getEdgesZigzag(convergence);
     alg_type = "ZIG_ZAG";
 #elifdef YOTO_DF_PRIO
-    ed = getEdgesDepthFirstPriority();
+    ed = g.getEdgesDepthFirstPriority();
     alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef YOTO_DF
     ed = g.getEdgesDepthFirst();
@@ -37,7 +37,7 @@ ReportData yotoBase(Graph &g) {
 
     int lastIdxIOCellUsed = 0;
 
-#ifdef PLACE_IO_FIRST
+#ifndef YOTO_ZZ
     //for Deptfh First Search with or without priority
     //I need to place every input at the beginning of execution
     for (int n: g.inputNodes) {

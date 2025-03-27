@@ -15,17 +15,16 @@
 #define CACHE_COLUMNS (1 << CACHE_COLUMNS_EXP)
 //*******************************
 
-//choose if IO will be placed - for YOTO and YOTT
-#define PLACE_IO_FIRST
+//choose if IO will be placed - for YOTT??? Not done yet and i dont know if it will be implemented
+//#define PLACE_IO_FIRST
 //*******************************
 
-//todo debugged only the YOTO_DF with and without placeiofirst
-//todo debugged the yoto without placeiofirst. with the placeio i need to add annotations]
-//todo the othrt algorithms need to me debugged yet
+//todo debugged the yott without placeiofirst. with the placeio i need to add annotations]
+//todo the other algorithms need to me debugged yet
 
 //Choose the algorithm to be run
-#define YOTO_DF
-//#define YOTO_DF_PRIO
+//#define YOTO_DF
+#define YOTO_DF_PRIO
 //#define YOTO_ZZ
 //#define YOTT
 //#define SA

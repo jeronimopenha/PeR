@@ -9,8 +9,14 @@ configs=(
         "apex4 yott 16"
         "ex5p yott 16"
         "misex3 yott 16"
-        "ex1010 yott 16"
+        "too-lrg yoto_df 16"
+        "alu4 yoto_df 16"
+        "apex2 yoto_df 16"
+        "apex4 yoto_df 16"
+        "ex5p yoto_df 16"
+        "misex3 yoto_df 16"
 )
+#"ex1010 yott 16"
 
 # Caminho para o script principal
 SCRIPT="./run_vpr.sh"
