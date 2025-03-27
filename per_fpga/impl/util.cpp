@@ -165,7 +165,10 @@ void writeJson(const string &basePath,
                const string &algPath,
                const string &fileName,
                const ReportData &data) {
-    string jsonFile = basePath + reportPath + algPath + "/json/" + fileName + ".json";
+    string finalPath = basePath + reportPath + algPath + "/json/";
+    string jsonFile = finalPath + fileName + ".json";
+
+    createDir(finalPath);
 
     ofstream file(jsonFile);
 
@@ -177,9 +180,21 @@ void writeJson(const string &basePath,
     }
 }
 
-void writeVprData(const string &basePath, const string &fileName, const ReportData &data, Graph g) {
-    string placeFile = basePath + "place/" + fileName + ".place";
-    string netFile = basePath + "net/" + fileName + ".net";
+void writeVprData(const string &basePath,
+                  const string &reportPath,
+                  const string &algPath,
+                  const string &fileName,
+                  const ReportData &data,
+                  Graph g) {
+    string placePath = basePath + reportPath + algPath + "/place/";
+    string placeFile = placePath + fileName + ".place";
+
+    string netBasePath = reportPath + algPath + "/net/";
+    string netPath = basePath + netBasePath;
+    string netFile = netPath + fileName + ".net";
+
+    createDir(placePath);
+    createDir(netPath);
 
     int k = 3;
 
@@ -238,23 +253,8 @@ void writeVprData(const string &basePath, const string &fileName, const ReportDa
     }
     file = ofstream(placeFile);
     if (file.is_open()) {
-#ifdef YOTO_DF
-        file << "Netlist file: reports/fpga/yoto_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
+        file << "Netlist file: " + netBasePath << fileName << ".net Architecture file: arch/k" << k <<
                 "-n1.xml" << endl;
-#elifdef YOTO_BASE_DF_WITH_IO_PLACED_PRIO
-        file << "Netlist file: reports/fpga/yoto_base_p/net/" << fileName << ".net Architecture file: arch/k" << k <<
-                "-n1.xml" << endl;
-#elifdef YOTO_BASE_ZZ_WHITOUT_IO_PLACED
-        file << "Netlist file: reports/fpga/yoto_base_zz/net/" << fileName << ".net Architecture file: arch/k" << k <<
-                "-n1.xml" << endl;
-#elifdef YOTT
-        file << "Netlist file: reports/fpga/yott_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
-            "-n1.xml" << endl;
-#elifdef SA_BASE
-        file << "Netlist file: reports/fpga/sa_base/net/" << fileName << ".net Architecture file: arch/k" << k <<
-            "-n1.xml" << endl;
-#endif
-
 
         file << "Array size: " << g.nCellsSqrt - 2 << " x " << g.nCellsSqrt - 2 << " logic blocks " << endl;
         file << "#block name\tX\tY\tsubblk\tblock_number\n" << endl;
@@ -349,4 +349,14 @@ bool isIOCell(const int cell, const int nCellsSqrt) {
     const int l = cell / nCellsSqrt;
     const int c = cell % nCellsSqrt;
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
+}
+
+void createDir(const fs::path &caminho) {
+    if (!fs::exists(caminho)) {
+        if (fs::create_directories(caminho)) {
+            std::cout << "Pastas criadas: " << caminho << "\n";
+        } else {
+            std::cerr << "Erro ao criar o diretório: " << caminho << "\n";
+        }
+    }
 }

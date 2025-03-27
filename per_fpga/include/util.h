@@ -12,6 +12,8 @@
 
 
 using namespace std;
+namespace fs = std::filesystem;
+
 
 struct ReportData {
     float _time;
@@ -103,17 +105,24 @@ void savePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSqrt,
                    const string &filename);
 
 void writeJson(const string &basePath,
-    const string &reportPath,
-    const string &algPath,
-    const string &fileName,
-    const ReportData &data);
+               const string &reportPath,
+               const string &algPath,
+               const string &fileName,
+               const ReportData &data);
 
-void writeVprData(const string &basePath, const string &fileName, const ReportData &data, Graph g);
+void writeVprData(const string &basePath,
+               const string &reportPath,
+               const string &algPath,
+               const string &fileName,
+               const ReportData &data,
+               Graph g);
 
 vector<vector<int> > getAdjCellsDist(int nCellsSqrt);
 
-bool isInvalidCell(int cell, int nCellsSqrt) ;
+bool isInvalidCell(int cell, int nCellsSqrt);
 
-bool isIOCell(int cell, int nCellsSqrt) ;
+bool isIOCell(int cell, int nCellsSqrt);
+
+void createDir(const fs::path &caminho);
 
 #endif //UTIL_H

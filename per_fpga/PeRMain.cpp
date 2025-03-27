@@ -24,9 +24,11 @@ int main() {
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
 
-    const string benchPath = "benchmarks/fpga/eval/";
-    //const string benchPath = "benchmarks/fpga/bench_test/";
-
+#ifdef DEBUG
+    const string benchPath = "benchmarks/fpga/bench_test/";
+#else
+        const string benchPath = "benchmarks/fpga/eval/";
+#endif
     const string reportPath = "reports/fpga";
     string algPath;
 
@@ -51,69 +53,82 @@ int main() {
 #ifdef YOTO_DF
         algPath = "/yoto_df";
 #elifdef YOTO_DF_PRIO
-        algFolder =  "/yoto_df_prio";
+        algPath =  "/yoto_df_prio";
 #elifdef YOTO_ZZ
-        algFolder  = "/yoto_zz";
+        algPath  = "/yoto_zz";
 #elifdef YOTT
-        algFolder  = "/yott";
+        algPath = "/yott";
 #elifdef SA
-        algFolder = "/sa";
+        algPath = "/sa";
 #endif
 
 #ifdef CACHE
-            algFolder += "_cache";
+            algPath += "_cache";
 #endif
 
+#ifdef PLACE_IO_FIRST
+        algPath += "_io_placed";
+#endif
 
-#ifdef SA
+#ifdef DEBUG
+        nExec = 1;
+#elifdef  SA
             nExec = 100;
 #else
         nExec = 1000;
 #endif
 
+
         vector<ReportData> reports;
 
+#ifndef DEBUG
         int nThreads = max(1, omp_get_num_procs() - 1);
         omp_set_num_threads(nThreads);
 
 #pragma omp parallel
         {
 #pragma omp for schedule(dynamic)
-            for (int exec = 0; exec < nExec; exec++) {
-                ReportData report;
-#if defined(YOTO_DF)||defined(YOTO_BASE_DF_P)||defined(YOTO_ZZ)||defined(CACHE)
-                report = yotoBase(g);
-#elifdef YOTT_BASE
-                report = yottBase(g);
-#elifdef SA_BASE
+#endif
+        for (int exec = 0; exec < nExec; exec++) {
+            ReportData report;
+#if defined(YOTO_DF)||defined(YOTO_DF_PRIO)||defined(YOTO_ZZ)
+            report = yotoBase(g);
+#elifdef YOTT
+            report = yottBase(g);
+#elifdef SA
                 report = saBase(g);
 #endif
+#ifndef DEBUG
 #pragma omp critical
-                {
-                    reports.push_back(report);
-                }
+#endif
+            {
+                reports.push_back(report);
             }
         }
+#ifndef DEBUG
+    }
+#endif
 
         //sort the reports by total cost because I want only the 10 better placements
         sort(reports.begin(), reports.end(), [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;
         });
-
-        //todo tries and swaps SA!!!
-        for (int i = 0; i < 10; i++) {
+        int limit = (10 < reports.size()) ? 10 : reports.size();
+        for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
-            string reportName = g.dotName + "_" + to_string(i);
+            string fileName = g.dotName + "_" + to_string(i);
+#ifndef DEBUG
             //save reports for the 10 better placements
-            //TODO !!!!!!! Consertar os saves e implementar a criação automática de pastas
-            writeJson(rootPath, reportPath, algPath, reportName, reports[i]);
+            writeJson(rootPath, reportPath, algPath, fileName, reports[i]);
+#endif
+#if !defined(CACHE) && !defined (DEBUG)
             //generate reports and files for vpr
-#ifndef CACHE
-            //TODO Revisar todo o código e rodar tudo novamente agora mais organizado
-            writeVprData(rootPath + reportPath, reportName, reports[i], g);
+            writeVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif
         }
     }
-    return 0;
+
+    return
+            0;
 }

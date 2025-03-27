@@ -1,15 +1,15 @@
 #include "yoto.h"
 
+//todo cache parts
 
-ReportData yotoBase(Graph& g)
-{
+ReportData yotoBase(Graph &g) {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
-    vector<vector<int>> distCells = getAdjCellsDist(nCellsSqrt);
+    vector<vector<int> > distCells = getAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 #ifdef CACHE
     Cache cacheC2N = Cache(CACHE_LINES_EXP, CACHE_COLUMNS_EXP);
@@ -22,23 +22,22 @@ ReportData yotoBase(Graph& g)
     int swaps = 0;
 
     string alg_type;
-    vector<pair<int, int>> ed;
-#if defined(YOTO_BASE_ZZ) || defined(CACHE)
+    vector<pair<int, int> > ed;
+#if defined(YOTO_ZZ)
     vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
     alg_type = "ZIG_ZAG";
-#elifdef YOTO_BASE_DF_PRIO
+#elifdef YOTO_DF_PRIO
     ed = getEdgesDepthFirstPriority();
     alg_type = "DEPTH_FIRST_PRIORITY";
-#elifdef YOTO_BASE_DF
+#elifdef YOTO_DF
     ed = g.getEdgesDepthFirst();
     alg_type = "DEPTH_FIRST";
 #endif
 
-    //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
 
-#if defined(YOTO_BASE_DF) || defined(YOTO_BASE_DF_PRIO)
+#ifdef PLACE_IO_FIRST
     //for Deptfh First Search with or without priority
     //I need to place every input at the beginning of execution
     for (int n: g.inputNodes) {
@@ -53,10 +52,11 @@ ReportData yotoBase(Graph& g)
         }
     }
 #endif
+
+    //time counting
     auto start = chrono::high_resolution_clock::now();
 
-    for (auto [a,b] : ed)
-    {
+    for (auto [a,b]: ed) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
@@ -64,21 +64,15 @@ ReportData yotoBase(Graph& g)
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
 
-        if (n2c[a] == -1)
-        {
-            for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++)
-            {
-                int ioCell = inOutCells[i];
+        if (n2c[a] == -1) {
+            int ioCell = inOutCells[lastIdxIOCellUsed];
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                if (c2n[ioCell] == -1)
-                {
-                    c2n[ioCell] = a;
-                    n2c[a] = ioCell;
-                    lastIdxIOCellUsed = i;
-                    break;
-                }
+            if (c2n[ioCell] == -1) {
+                c2n[ioCell] = a;
+                n2c[a] = ioCell;
+                lastIdxIOCellUsed ++;
             }
         }
 
@@ -86,8 +80,7 @@ ReportData yotoBase(Graph& g)
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(b, n2c);
 #endif
-        if (n2c[b] != -1)
-        {
+        if (n2c[b] != -1) {
             continue;
         }
 
@@ -99,8 +92,7 @@ ReportData yotoBase(Graph& g)
 
         //bool placed = false;
         //Then I will look for a cell next to A's cell
-        for (const auto& ij : distCells)
-        {
+        for (const auto &ij: distCells) {
             ++tries;
             const int lB = lA + ij[0];
             const int cB = cA + ij[1];
@@ -118,19 +110,14 @@ ReportData yotoBase(Graph& g)
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
-            if (isTargetCellIO)
-            {
+            if (isTargetCellIO) {
                 // 'targetCell' is a IO cell
-                if (!IsBIoNode)
-                {
+                if (!IsBIoNode) {
                     continue;
                 }
-            }
-            else
-            {
+            } else {
                 // 'targetCell' is not in possible_positions
-                if (IsBIoNode)
-                {
+                if (IsBIoNode) {
                     continue;
                 }
             }
@@ -139,8 +126,7 @@ ReportData yotoBase(Graph& g)
 #ifdef CACHE
             cacheMisses += cacheC2N.readCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
@@ -165,7 +151,7 @@ ReportData yotoBase(Graph& g)
         _time,
         g.dotName,
         g.dotPath,
-        "yotoBase",
+        "yoto",
         cacheMisses,
         tries,
         swaps,

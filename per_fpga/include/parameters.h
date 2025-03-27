@@ -16,8 +16,12 @@
 //*******************************
 
 //choose if IO will be placed - for YOTO and YOTT
-//#define PLACE_IO_FIRST
+#define PLACE_IO_FIRST
 //*******************************
+
+//todo debugged only the YOTO_DF with and without placeiofirst
+//todo debugged the yoto without placeiofirst. with the placeio i need to add annotations]
+//todo the othrt algorithms need to me debugged yet
 
 //Choose the algorithm to be run
 #define YOTO_DF
@@ -27,4 +31,8 @@
 //#define SA
 //*******************************
 
+
+//debugging defines
+//#define DEBUG
+//*******************************
 #endif //PARAMETERS_H
