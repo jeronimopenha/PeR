@@ -23,8 +23,8 @@
 //todo the other algorithms need to me debugged yet
 
 //Choose the algorithm to be run
-//#define YOTO_DF
-#define YOTO_DF_PRIO
+#define YOTO_DF
+//#define YOTO_DF_PRIO
 //#define YOTO_ZZ
 //#define YOTT
 //#define SA
