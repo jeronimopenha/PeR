@@ -1,7 +1,7 @@
 #include "yott.h"
 #include <cache.h>
 
-ReportData yottBase(Graph &g) {
+ReportData yott(Graph &g) {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;

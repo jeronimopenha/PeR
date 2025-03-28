@@ -2,7 +2,7 @@
 
 //todo cache parts
 
-ReportData yotoBase(Graph &g) {
+ReportData yoto(Graph &g) {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;

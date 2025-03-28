@@ -1,6 +1,6 @@
 #include "sa.h"
 
-ReportData saBase(Graph& g)
+ReportData sa(Graph& g)
 {
     const string alg_type = "SA";
     int cacheMisses = 0;

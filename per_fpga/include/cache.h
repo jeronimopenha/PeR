@@ -19,4 +19,4 @@ public:
 };
 
 
-#endif //CACHE_H
+#endif

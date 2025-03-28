@@ -99,7 +99,7 @@ int main()
 #elifdef YOTT
             report = yottBase(g);
 #elifdef SA
-                report = saBase(g);
+                report = sa(g);
 #endif
 #ifndef DEBUG
 #pragma omp critical
