@@ -7,7 +7,7 @@
 //*******************************
 
 //Choose if Cache will be used
-#define CACHE
+//#define CACHE
 //Cache Parameters
 #define CACHE_LINES_EXP 10
 #define CACHE_LINES (1 << CACHE_LINES_EXP)
@@ -27,8 +27,8 @@
 //#define YOTO_DF_PRIO
 //#define YOTO_ZZ
 //#define YOTT
-//#define YOTT_IO
-#define SA
+#define YOTT_IO
+//#define SA
 //*******************************
 
 

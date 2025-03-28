@@ -532,6 +532,43 @@ vector<pair<int, int>> Graph::clearEdges(const vector<pair<int, int>>& edges)
     return new_edges;
 }
 
+void Graph::getIOAnnotations(unordered_map<string, vector<pair<int, int>>>& annotations,
+                             const vector<pair<int, int>>& edges)
+{
+    // Copy input nodes and shuffle if needed
+    vector<int> inputList = inputNodes;
+
+    randomVector(inputList);
+
+    vector<int> inputStack(inputList);
+    queue<int> queue; // Initialize stack with input_list
+
+    while (!inputStack.empty())
+    {
+        int a = inputStack.back();
+        inputStack.pop_back();
+
+
+        for (int i = 0; i < nNodes; i++)
+            if (successors[a][i])
+                queue.push(i);
+
+        while (!queue.empty())
+        {
+            int n = queue.front();
+            queue.pop();
+
+            for (auto [fst,snd] : edges)
+            {
+                if (snd == n)
+                {
+                    string annKey = funcKey(to_string(fst),to_string(snd));
+                    annotations[annKey].emplace_back(a, 0);
+                }
+            }
+        }
+    }
+}
 
 unordered_map<string, vector<pair<int, int>>> Graph::getGraphAnnotations(
     const vector<pair<int, int>>& edges,

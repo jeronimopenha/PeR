@@ -6,7 +6,7 @@
 #include "yoto.h"
 #endif
 
-#if defined(YOTT)
+#if defined(YOTT) || defined(YOTT_IO)
 #include "yott.h"
 #endif
 
@@ -60,6 +60,8 @@ int main()
         algPath  = "/yoto_zz";
 #elifdef YOTT
         algPath = "/yott";
+#elifdef YOTT_IO
+        algPath = "/yott_io";
 #elifdef SA
         algPath = "/sa";
 #endif
@@ -96,8 +98,8 @@ int main()
             ReportData report;
 #if defined(YOTO_DF)||defined(YOTO_DF_PRIO)||defined(YOTO_ZZ)
             report = yotoBase(g);
-#elifdef YOTT
-            report = yottBase(g);
+#elif  defined(YOTT) || defined(YOTT_IO)
+            report = yott(g);
 #elifdef SA
                 report = sa(g);
 #endif
