@@ -26,9 +26,9 @@
 //#define YOTO_DF
 //#define YOTO_DF_PRIO
 //#define YOTO_ZZ
-#define YOTT
+//#define YOTT
 //#define YOTT_IO
-//#define SA
+#define SA
 //*******************************
 
 

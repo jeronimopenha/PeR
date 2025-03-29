@@ -53,7 +53,7 @@ ReportData yott(Graph &g) {
 
     for (auto [a,b]: ed) {
 #ifdef DEBUG
-        savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+        savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
         //Verify if A is placed
@@ -205,7 +205,7 @@ ReportData yott(Graph &g) {
         }
     }
 #ifdef DEBUG
-    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
