@@ -1,7 +1,7 @@
 #include "yott.h"
 #include <cache.h>
 
-ReportData yottBase(Graph &g) {
+ReportData yott(Graph &g) {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
@@ -26,17 +26,34 @@ ReportData yottBase(Graph &g) {
     vector<pair<int, int> > convergence;
     ed = g.getEdgesZigzag(convergence);
     unordered_map<string, vector<pair<int, int> > > annotations = g.getGraphAnnotations(ed, convergence);
+#ifdef YOTT_IO
+    g.getIOAnnotations(annotations, ed);
+#endif
     alg_type = "ZIG_ZAG";
 
 
     //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
+#ifdef YOTT_IO
+    //for Deptfh First Search with or without priority
+    //I need to place every input at the beginning of execution
+    for (int n : g.inputNodes)
+    {
+        int ioCell = inOutCells[lastIdxIOCellUsed];
+        if (c2n[ioCell] == -1)
+        {
+            c2n[ioCell] = n;
+            n2c[n] = ioCell;
+            lastIdxIOCellUsed++;
+        }
+    }
+#endif
 
     auto start = chrono::high_resolution_clock::now();
 
     for (auto [a,b]: ed) {
 #ifdef DEBUG
-        savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+        savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
         //Verify if A is placed
@@ -123,13 +140,23 @@ ReportData yottBase(Graph &g) {
                     if (c2n[targetCell] != -1)
                         continue;
 
-                    int modDist = 0;
+                    int modDist = targetCellDist;
                     bool found = true;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
                     for (auto [fst, snd]: annotation) {
-                        int annCell = n2c[fst];
-                        int annDist = snd + 1;
-                        int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
+                        int annCell;
+                        int annDist;
+                        int tAnnDist;
+
+                        if (fst == -1) {
+                            annDist = 1;
+                            tAnnDist = minBorderDist(targetCell, nCellsSqrt);
+                        } else {
+                            annCell = n2c[fst];
+                            annDist = snd + 1;
+                            tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
+                        }
+
                         if (tAnnDist != annDist) {
                             found = false;
                             modDist += abs(annDist - tAnnDist);
@@ -178,7 +205,7 @@ ReportData yottBase(Graph &g) {
         }
     }
 #ifdef DEBUG
-    savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;

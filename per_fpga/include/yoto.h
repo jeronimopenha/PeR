@@ -9,6 +9,6 @@
 
 using namespace std;
 
-ReportData yotoBase(Graph& g);
+ReportData yoto(Graph& g);
 
 #endif

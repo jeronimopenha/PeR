@@ -351,12 +351,24 @@ bool isIOCell(const int cell, const int nCellsSqrt) {
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
 }
 
-void createDir(const fs::path &caminho) {
-    if (!fs::exists(caminho)) {
-        if (fs::create_directories(caminho)) {
-            std::cout << "Pastas criadas: " << caminho << "\n";
+void createDir(const fs::path &pth) {
+    if (!fs::exists(pth)) {
+        if (fs::create_directories(pth)) {
+            std::cout << "Pastas criadas: " << pth << "\n";
         } else {
-            std::cerr << "Erro ao criar o diretório: " << caminho << "\n";
+            std::cerr << "Erro ao criar o diretório: " << pth << "\n";
         }
     }
+}
+
+int minBorderDist(const int cell, const int nCellsSqrt) {
+    const int line = cell / nCellsSqrt;
+    const int column = cell % nCellsSqrt;
+
+    int d_top    = line;
+    int d_bottom = nCellsSqrt - 1 - line;
+    int d_left   = column;
+    int d_right  = nCellsSqrt - 1 - column;
+
+    return std::min({d_top, d_bottom, d_left, d_right});
 }

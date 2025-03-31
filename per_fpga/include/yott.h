@@ -11,7 +11,7 @@
 
 using namespace std;
 
-ReportData yottBase(Graph& g);
+ReportData yott(Graph& g);
 
 
 #endif

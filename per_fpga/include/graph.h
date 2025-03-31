@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <queue>
 
 using namespace std;
 
@@ -69,6 +70,8 @@ public:
     vector<pair<int, int> > getEdgesZigzag(vector<pair<int, int> > &convergence);
 
     vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges);
+
+    void getIOAnnotations(unordered_map<string, vector<pair<int, int>>>& annotations, const vector<pair<int, int>>& edges);
 
     unordered_map<string, vector<pair<int, int> > > getGraphAnnotations(
         const vector<pair<int, int> > &edges,

@@ -1,4 +1,3 @@
-
 #ifndef SA_H
 #define SA_H
 
@@ -8,7 +7,7 @@
 
 using namespace std;
 
-ReportData saBase(Graph &g);
+ReportData sa(Graph &g);
 
 void getSwapCost(
     const std::vector<int> &n2c,

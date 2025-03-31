@@ -111,11 +111,11 @@ void writeJson(const string &basePath,
                const ReportData &data);
 
 void writeVprData(const string &basePath,
-               const string &reportPath,
-               const string &algPath,
-               const string &fileName,
-               const ReportData &data,
-               Graph g);
+                  const string &reportPath,
+                  const string &algPath,
+                  const string &fileName,
+                  const ReportData &data,
+                  Graph g);
 
 vector<vector<int> > getAdjCellsDist(int nCellsSqrt);
 
@@ -123,6 +123,7 @@ bool isInvalidCell(int cell, int nCellsSqrt);
 
 bool isIOCell(int cell, int nCellsSqrt);
 
-void createDir(const fs::path &caminho);
+void createDir(const fs::path &pth);
 
-#endif //UTIL_H
+int minBorderDist(int cell, int nCellsSqrt);
+#endif
