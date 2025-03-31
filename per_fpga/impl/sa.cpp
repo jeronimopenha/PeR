@@ -1,7 +1,6 @@
 #include "sa.h"
 
-ReportData sa(Graph& g)
-{
+ReportData sa(Graph &g) {
     const string alg_type = "SA";
     int cacheMisses = 0;
     int tries = 0;
@@ -10,7 +9,7 @@ ReportData sa(Graph& g)
     const int nCells = g.nCells;
     const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
-    const vector<pair<int, int>> ed = g.gEdges;
+    const vector<pair<int, int> > ed = g.gEdges;
 
 
     vector<int> c2n(nCells, -1);
@@ -30,10 +29,8 @@ ReportData sa(Graph& g)
 
 
     int idx = 0;
-    for (int node : ioNodes)
-    {
-        if (c2n[inOutCells[idx]] == -1)
-        {
+    for (int node: ioNodes) {
+        if (c2n[inOutCells[idx]] == -1) {
             c2n[inOutCells[idx]] = node;
             n2c[node] = inOutCells[idx];
             idx++;
@@ -44,23 +41,23 @@ ReportData sa(Graph& g)
     vector<int> clbNodes = g.clbNodes;
 
     idx = 0;
-    for (int node : clbNodes)
-    {
-        if (c2n[clbCells[idx]] == -1)
-        {
+    for (int node: clbNodes) {
+        if (c2n[clbCells[idx]] == -1) {
             c2n[clbCells[idx]] = node;
             n2c[node] = clbCells[idx];
             idx++;
         }
     }
 
-    std::vector<std::vector<int>> neighbors = g.neighbors;
+    std::vector<std::vector<int> > neighbors = g.neighbors;
 
     static random_device rd;
     static mt19937 gen(rd());
     static uniform_real_distribution<> dis(0.0, 1.0);
 
-    //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+#ifdef DEBUG
+    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
 
     //begin of SA algorithm
     const float t_min = 0.001;
@@ -68,12 +65,9 @@ ReportData sa(Graph& g)
 
     auto start = chrono::high_resolution_clock::now();
 
-    while (t >= t_min)
-    {
-        for (int cellA = 1; cellA < nCells; cellA++)
-        {
-            for (int cellB = 1; cellB < nCells; cellB++)
-            {
+    while (t >= t_min) {
+        for (int cellA = 1; cellA < nCells; cellA++) {
+            for (int cellB = 1; cellB < nCells; cellB++) {
                 tries++;
 
                 if (cellA == cellB)
@@ -101,7 +95,7 @@ ReportData sa(Graph& g)
                 int costABefore, costAAfter;
                 int costBBefore, costBAfter;
 
-                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costABefore,
+                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
                             costBAfter);
 
                 int costAfter = costAAfter + costBAfter;
@@ -111,28 +105,28 @@ ReportData sa(Graph& g)
 
                 double rnd = dis(gen);
 
-                if ((costAfter < costBefore) || (rnd <= value))
-                {
-                    if (a != -1)
-                    {
+                if ((costAfter < costBefore) || (rnd <= value)) {
+                    if (a != -1) {
                         n2c[a] = cellB;
                     }
-                    if (b != -1)
-                    {
+                    if (b != -1) {
                         n2c[b] = cellA;
                     }
                     c2n[cellA] = b;
                     c2n[cellB] = a;
                     swaps++;
+#ifdef DEBUG
                     //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
                 }
             }
             t *= 0.999;
         }
     }
 
-    //savePlacedDot(n2c, ed, nCellsSqrt, "/home/jeronimo/placed.dot");
-
+#ifdef DEBUG
+    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
     float _time = duration.count();
@@ -162,51 +156,40 @@ ReportData sa(Graph& g)
 
 
 void getSwapCost(
-    const std::vector<int>& n2c,
+    const std::vector<int> &n2c,
     const int a,
     const int b,
     const int cellA,
     const int cellB,
     const int nCellsSqrt,
-    const std::vector<std::vector<int>>& neighbors,
-    int& costABefore,
-    int& costAAfter,
-    int& costBBefore,
-    int& costBAfter
-)
-{
+    const std::vector<std::vector<int> > &neighbors,
+    int &costABefore,
+    int &costAAfter,
+    int &costBBefore,
+    int &costBAfter
+) {
     costABefore = 0;
     costAAfter = 0;
     costBBefore = 0;
     costBAfter = 0;
 
-    if (a != -1)
-    {
-        for (const int node : neighbors[a])
-        {
+    if (a != -1) {
+        for (const int node: neighbors[a]) {
             costABefore += getManhattanDist(cellA, n2c[node], nCellsSqrt);
-            if (cellB == n2c[node])
-            {
+            if (cellB == n2c[node]) {
                 costAAfter += getManhattanDist(cellA, cellB, nCellsSqrt);
-            }
-            else
-            {
+            } else {
                 costAAfter += getManhattanDist(cellB, n2c[node], nCellsSqrt);
             }
         }
     }
 
-    if (b != -1)
-    {
-        for (const int node : neighbors[b])
-        {
+    if (b != -1) {
+        for (const int node: neighbors[b]) {
             costBBefore += getManhattanDist(cellB, n2c[node], nCellsSqrt);
-            if (cellA == n2c[node])
-            {
+            if (cellA == n2c[node]) {
                 costBAfter += getManhattanDist(cellB, cellA, nCellsSqrt);
-            }
-            else
-            {
+            } else {
                 costBAfter += getManhattanDist(cellA, n2c[node], nCellsSqrt);
             }
         }

@@ -123,6 +123,7 @@ bool isInvalidCell(int cell, int nCellsSqrt);
 
 bool isIOCell(int cell, int nCellsSqrt);
 
-void createDir(const fs::path &caminho);
+void createDir(const fs::path &pth);
 
+int minBorderDist(int cell, int nCellsSqrt);
 #endif
