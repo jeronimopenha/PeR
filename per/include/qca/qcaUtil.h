@@ -1,13 +1,11 @@
 #ifndef QCA_UTIL_H
 #define QCA_UTIL_H
 
-#include <filesystem>
+/*#include <fstream>
 #include <iostream>
-//#include <fstream>
-//#include <string>
+#include <filesystem>
 #include <vector>
 #include <random>
-//#include <algorithm>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -41,7 +39,7 @@ int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
 
 
 
-void createDir(const fs::path& pth);
+void createDir(const fs::path& pth);*/
 
 
 #endif

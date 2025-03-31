@@ -1,6 +1,7 @@
 #include <qca/qcaYoto.h>
 
 
+/*
 ReportData qcaYoto(Graph &g) {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
@@ -165,3 +166,4 @@ ReportData qcaYoto(Graph &g) {
     );
     return report;
 }
+*/

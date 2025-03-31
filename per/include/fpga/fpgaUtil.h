@@ -1,5 +1,7 @@
 #ifndef FPGA_UTIL_H
-#define FPGAU_TIL_H
+#define FPGA_UTIL_H
+
+#include <algorithm>
 #include <fpga/fpgaGraph.h>
 #include <common/util.h>
 

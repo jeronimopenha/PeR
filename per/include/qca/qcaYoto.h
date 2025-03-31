@@ -9,6 +9,6 @@
 
 using namespace std;
 
-QCAReportData qcaYoto(Graph& g);
+//QCAReportData qcaYoto(Graph& g);
 
 #endif

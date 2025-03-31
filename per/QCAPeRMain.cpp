@@ -36,7 +36,7 @@ int main()
         //Creating graph important variables
         FPGAGraph g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
-        g.getGraphDataInt();
+        g.readGraphData();
         g.balanceGraph();
 
         int nExec;
