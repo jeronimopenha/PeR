@@ -1,13 +1,13 @@
-#ifndef SA_H
-#define SA_H
+#ifndef FPGA_SA_H
+#define FPGA_SA_H
 
 #include <common/parameters.h>
-#include <common/util.h>
-#include <common/graph.h>
+#include <fpga/fpgaGraph.h>
+#include <fpga/fpgaUtil.h>
 
 using namespace std;
 
-ReportData fpgaSa(Graph &g);
+FpgaReportData fpgaSa(FPGAGraph &g);
 
 void getSwapCost(
     const std::vector<int> &n2c,

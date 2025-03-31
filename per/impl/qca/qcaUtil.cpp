@@ -1,4 +1,4 @@
-#include <common/util.h>
+#include <qca/qcaUtil.h>
 
 
 string getProjectRoot()

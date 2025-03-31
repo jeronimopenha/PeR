@@ -1,14 +1,14 @@
-#ifndef YOTO_H
-#define YOTO_H
+#ifndef QCA_YOTO_H
+#define QCA_YOTO_H
 
 #include <common/parameters.h>
-#include <common/util.h>
+#include <qca/qcaUtil.h>
 #include <common/cache.h>
-#include <common/graph.h>
+#include <qca/qcaGraph.h>
 #include <vector>
 
 using namespace std;
 
-ReportData qcaYoto(Graph& g);
+QCAReportData qcaYoto(Graph& g);
 
 #endif

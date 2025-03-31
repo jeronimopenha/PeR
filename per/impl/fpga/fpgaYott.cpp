@@ -1,7 +1,8 @@
 #include <fpga/fpgaYoto.h>
 
 
-ReportData fpgaYott(Graph& g)
+
+FpgaReportData fpgaYott(FPGAGraph& g)
 {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
@@ -9,7 +10,7 @@ ReportData fpgaYott(Graph& g)
 
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
-    vector<vector<int>> distCells = getAdjCellsDist(nCellsSqrt);
+    vector<vector<int>> distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 
     randomVector(inOutCells);
@@ -36,7 +37,7 @@ ReportData fpgaYott(Graph& g)
     for (auto [a,b] : ed)
     {
 #ifdef DEBUG
-        savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+        fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
         //Verify if A is placed
@@ -139,7 +140,7 @@ ReportData fpgaYott(Graph& g)
                         if (fst == -1)
                         {
                             annDist = 1;
-                            tAnnDist = minBorderDist(targetCell, nCellsSqrt);
+                            tAnnDist = fpgaMinBorderDist(targetCell, nCellsSqrt);
                         }
                         else
                         {
@@ -201,7 +202,7 @@ ReportData fpgaYott(Graph& g)
         }
     }
 #ifdef DEBUG
-    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
@@ -210,12 +211,12 @@ ReportData fpgaYott(Graph& g)
     int tc = 0;
     // commented to take the cost of the longest path
 #ifdef FPGA_TOTAL_COST
-    tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
 #elifdef FPGA_LP_COST
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    ReportData report = ReportData(
+    FpgaReportData report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,

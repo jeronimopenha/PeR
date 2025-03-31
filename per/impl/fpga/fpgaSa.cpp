@@ -1,6 +1,6 @@
 #include <fpga/fpgaSa.h>
 
-ReportData fpgaSa(Graph &g) {
+FpgaReportData fpgaSa(FPGAGraph &g) {
     const string alg_type = "SA";
     int cacheMisses = 0;
     int tries = 0;
@@ -56,7 +56,7 @@ ReportData fpgaSa(Graph &g) {
     static uniform_real_distribution<> dis(0.0, 1.0);
 
 #ifdef DEBUG
-    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
     //begin of SA algorithm
@@ -125,7 +125,7 @@ ReportData fpgaSa(Graph &g) {
     }
 
 #ifdef DEBUG
-    savePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
@@ -134,12 +134,12 @@ ReportData fpgaSa(Graph &g) {
     int tc = 0;
     // commented to take the cost of the longest path
 #ifdef FPGA_TOTAL_COST
-    tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
 #elifdef FPGA_LP_COST
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    ReportData report = ReportData(
+    FpgaReportData report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,

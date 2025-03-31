@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef QCA_UTIL_H
+#define QCA_UTIL_H
 
 #include <filesystem>
 #include <iostream>

@@ -1,0 +1,11 @@
+yosys -p "
+  read_verilog xor5_r1.v;
+  hierarchy -check;
+  proc;
+  flatten;
+  techmap;
+  opt;
+  write_blif circuito.blif;
+"
+
+abc -c "read_blif circuito.blif; write_dot circuito.dot"

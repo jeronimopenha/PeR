@@ -16,7 +16,6 @@
 #define CACHE_COLUMNS (1 << CACHE_COLUMNS_EXP)
 //*******************************
 
-
 //Choose the algorithm to be run
 //#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
@@ -27,9 +26,13 @@
 //###############################
 
 //PER QCA PARAMETERS
-
+//Choose the algorithm to be run
+#define QCA_YOTO_DF
+//#define QCA_YOTT
+//#define QCA_SA
 //###############################
+
 //debugging defines
-//#define DEBUG
+#define DEBUG
 //*******************************
 #endif //PARAMETERS_H

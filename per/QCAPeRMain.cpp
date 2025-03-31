@@ -1,18 +1,7 @@
 #include <common/parameters.h>
 #include  <common/util.h>
-#include  <common/graph.h>
-
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
-#include "fpga/yoto.h"
-#endif
-
-#if defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
-#include "fpga/yott.h"
-#endif
-
-#if defined(FPGA_SA)
-#include "fpga/sa.h"
-#endif
+#include  <fpga/fpgaGraph.h>
+#include <qca/qcaYoto.h>
 
 #include <omp.h>
 
@@ -26,11 +15,11 @@ int main()
     const string benchExt = ".dot";
 
 #ifdef DEBUG
-    const string benchPath = "benchmarks/fpga/bench_test/";
+    const string benchPath = "benchmarks/qca/bench_test/";
 #else
-        const string benchPath = "benchmarks/fpga/eval/";
+        const string benchPath = "benchmarks/qca/eval_dot/";
 #endif
-    const string reportPath = "reports/fpga";
+    const string reportPath = "reports/fqca";
     string algPath;
 
 
@@ -45,31 +34,16 @@ int main()
         cout << fst << endl;
 
         //Creating graph important variables
-        Graph g = Graph(fst, snd.substr(0, snd.size() - 4));
+        FPGAGraph g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
         g.getGraphDataInt();
-        g.findLongestPath();
+        g.balanceGraph();
 
         int nExec;
         //execution parameters
-#ifdef FPGA_YOTO_DF
+#ifdef QCA_YOTO_DF
         algPath = "/yoto_df";
-#elifdef FPGA_YOTO_DF_PRIO
-        algPath =  "/yoto_df_prio";
-#elifdef FPGA_YOTO_ZZ
-        algPath  = "/yoto_zz";
-#elifdef FPGA_YOTT
-        algPath = "/yott";
-#elifdef FPGA_YOTT_IO
-        algPath = "/yott_io";
-#elifdef FPGA_SA
-        algPath = "/sa";
 #endif
-
-#ifdef CACHE
-        algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP);
-#endif
-
 
 #ifdef DEBUG
         nExec = 1;
@@ -78,7 +52,6 @@ int main()
 #else
         nExec = 1000;
 #endif
-
 
         vector<ReportData> reports;
 
@@ -93,13 +66,10 @@ int main()
         for (int exec = 0; exec < nExec; exec++)
         {
             ReportData report;
-#if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
-            report = yotoBase(g);
-#elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
-            report = yott(g);
-#elifdef SA
-                report = sa(g);
+#if defined(QCA_YOTO_DF)
+            report = qcaYoto(g);
 #endif
+
 #ifndef DEBUG
 #pragma omp critical
 #endif
@@ -126,7 +96,7 @@ int main()
             //save reports for the 10 better placements
             writeJson(rootPath, reportPath, algPath, fileName, reports[i]);
 #endif
-#if !defined(CACHE) && !defined (DEBUG)
+#if !defined (DEBUG)
             //generate reports and files for vpr
             writeVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif

@@ -1,6 +1,6 @@
 #include <common/parameters.h>
-#include  <common/util.h>
-#include  <common/graph.h>
+#include  <fpga/fpgaUtil.h>
+#include  <fpga/fpgaGraph.h>
 #include "fpga/fpgaYoto.h"
 #include "fpga/fpgaYott.h"
 #include "fpga/fpgaSa.h"
@@ -37,7 +37,7 @@ int main()
         cout << fst << endl;
 
         //Creating graph important variables
-        Graph g = Graph(fst, snd.substr(0, snd.size() - 4));
+        FPGAGraph g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
         g.getGraphDataInt();
         g.findLongestPath();
@@ -72,7 +72,7 @@ int main()
 #endif
 
 
-        vector<ReportData> reports;
+        vector<FpgaReportData> reports;
 
 #ifndef DEBUG
         int nThreads = max(1, omp_get_num_procs() - 1);
@@ -84,7 +84,7 @@ int main()
 #endif
         for (int exec = 0; exec < nExec; exec++)
         {
-            ReportData report;
+            FpgaReportData report;
 #if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
             report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
@@ -104,7 +104,7 @@ int main()
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements
-        sort(reports.begin(), reports.end(), [](const ReportData& a, const ReportData& b)
+        sort(reports.begin(), reports.end(), [](const FpgaReportData& a, const FpgaReportData& b)
         {
             return a.totalCost < b.totalCost;
         });

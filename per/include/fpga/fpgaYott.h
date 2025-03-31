@@ -1,14 +1,15 @@
-#ifndef YOTT_H
-#define YOTT_H
+#ifndef FPGA_YOTT_H
+#define FPGA_YOTT_H
 
 #include <common/parameters.h>
-#include <common/util.h>
-#include <common/graph.h>
 #include <common/cache.h>
+#include <fpga/fpgaUtil.h>
+#include <fpga/fpgaGraph.h>
+
 
 using namespace std;
 
-ReportData fpgaYott(Graph& g);
+FpgaReportData fpgaYott(FPGAGraph& g);
 
 
 #endif

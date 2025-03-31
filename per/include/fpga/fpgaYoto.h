@@ -1,14 +1,14 @@
-#ifndef YOTO_H
-#define YOTO_H
+#ifndef FPGA_YOTO_H
+#define FPGA_YOTO_H
 
 #include <common/parameters.h>
-#include <common/util.h>
 #include <common/cache.h>
-#include <common/graph.h>
+#include <fpga/fpgaUtil.h>
+#include <fpga/fpgaGraph.h>
 #include <vector>
 
 using namespace std;
 
-ReportData fpgaYoto(Graph& g);
+FpgaReportData fpgaYoto(FPGAGraph& g);
 
 #endif
