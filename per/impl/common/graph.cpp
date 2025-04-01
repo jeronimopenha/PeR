@@ -1,14 +1,6 @@
 #include <common/graph.h>
 
 
-Graph::Graph(const string &dotPath, const string &dotName) {
-    this->dotPath = dotPath;
-    this->dotName = dotName;
-
-    readGraphData();
-}
-
-
 /*void Graph::readGraphDataStr() {
     unordered_set<string> nodesStr;
     vector<pair<string, string> > edgesStr;
@@ -111,7 +103,22 @@ Graph::Graph(const string &dotPath, const string &dotName) {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }*/
 
-void Graph::readEdges() {
+Graph::Graph(const string &dotPath, const string &dotName) {
+    this->dotPath = dotPath;
+    this->dotName = dotName;
+
+    readEdgesNodes();
+    updateG();
+}
+
+void Graph::updateG() {
+    readAdjList();
+    readSuccPred();
+    readIONodes();
+    findLongestPath();
+}
+
+void Graph::readEdgesNodes() {
     unordered_set<int> nodes;
 
     ifstream dotFile(dotPath);
@@ -156,12 +163,25 @@ void Graph::readEdges() {
     dotFile.close();
     nEdges = static_cast<int>(gEdges.size());
     nNodes = static_cast<int>(nodes.size());
+
+    //input and output nodes
+    for (int i = 0; i < nNodes; i++)
+        gNodes.push_back(i);
 }
 
-void Graph::readNodes() {
+void Graph::readAdjList() {
+    adjList.clear();
+    for (auto [fst, snd]: gEdges) {
+        adjList[fst].push_back(snd);
+    }
+}
+
+void Graph::readIONodes() {
     //input and output nodes
+    outputNodes.clear();
+    inputNodes.clear();
+    otherNodes.clear();
     for (int i = 0; i < nNodes; i++) {
-        gNodes.push_back(i);
         if (nSuccV[i] == 0) {
             outputNodes.push_back(i);
             continue;
@@ -187,7 +207,8 @@ void Graph::readSuccPred() {
     predecessors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
 
     for (const auto &[fst, snd]: gEdges) {
-        int fromN = fst, toN = snd;
+        const int fromN = fst;
+        const int toN = snd;
 
         successors[fromN][toN] = true;
         predecessors[toN][fromN] = true;
@@ -195,13 +216,6 @@ void Graph::readSuccPred() {
         nSuccV[fromN] += 1;
         nPredV[toN] += 1;
     }
-}
-
-void Graph::readGraphData() {
-    readEdges();
-    readSuccPred();
-    readNodes();
-    findLongestPath();
 }
 
 vector<pair<int, int> > Graph::getEdgesDepthFirst() {

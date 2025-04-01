@@ -48,13 +48,15 @@ public:
 
     //void readGraphDataStr();
 
-    void readEdges();
+    void updateG();
 
-    void readNodes();
+    void readEdgesNodes();
+
+    void readAdjList();
+
+    void readIONodes();
 
     void readSuccPred();
-
-    void readGraphData();
 
     vector<pair<int, int> > getEdgesDepthFirst();
 

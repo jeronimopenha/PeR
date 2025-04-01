@@ -1,7 +1,7 @@
 #ifndef QCA_UTIL_H
 #define QCA_UTIL_H
 
-/*#include <fstream>
+#include <fstream>
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -11,35 +11,28 @@ using namespace std;
 namespace fs = std::filesystem;
 
 
-template <typename T>
-void randomVector(vector<T>& vec)
+struct QcaReportData
 {
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(vec.begin(), vec.end(), g);
-}
+    float _time;
+    string dotName;
+    string dotPath;
+    string placer;
+    int cacheMisses;
+    int tries;
+    int swaps;
+    string edgesAlgorithm;
+    int totalCost;
+    vector<int> placement;
+    vector<int> n2c;
 
-string getProjectRoot();
+    QcaReportData();
+    QcaReportData(float _time, const string& dot_name, const string& dot_path,
+               const string& placer, int cacheMisses, int tries, int swaps,
+               const string& edges_algorithm, int total_cost,
+               const vector<int>& placement, const vector<int>& n2c);
 
-string verifyPath(const string& path);
-
-vector<pair<string, string>> getFilesListByExtension(
-    const string& path,
-    const string& file_extension
-);
-
-string funcKey(const string& a, const string& b);
-
-
-
-void saveToDot(const vector<pair<int, int>>& edges, const string& filename);
-
-
-int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
-
-
-
-void createDir(const fs::path& pth);*/
+    string to_json() const;
+};
 
 
 #endif
