@@ -262,7 +262,7 @@ vector<pair<int, int> > Graph::getEdgesDepthFirstPriority() {
     auto it = std::find(inputList.begin(), inputList.end(), longestPath[0]);
 
     if (it != inputList.end()) {
-        int valor = *it;
+        const int valor = *it;
         inputList.erase(it); // remove node
         inputList.push_back(valor); // add it on last position
     }
@@ -412,7 +412,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
     return clearEdges(edges);
 }
 
-vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) {
+vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) const {
     vector placedNodes(nNodes, false); // Set to track placed nodes
     vector<pair<int, int> > new_edges; // Vector to store filtered edges
 
@@ -451,8 +451,8 @@ void Graph::findLongestPath() {
     for (int i = 0; i < nNodes; ++i)
         dist[i] = 0; // cada nó pode iniciar um caminho de comprimento 0
 
-    for (int u: topo_order) {
-        for (int v: adj[u]) {
+    for (const int u: topo_order) {
+        for (const int v: adj[u]) {
             if (dist[u] + 1 > dist[v]) {
                 dist[v] = dist[u] + 1;
                 parent[v] = u;
@@ -480,7 +480,7 @@ void Graph::findLongestPath() {
 
 void Graph::dfs(const int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order) {
     visited[idx] = true;
-    for (int v: adj[idx]) {
+    for (const int v: adj[idx]) {
         if (!visited[v]) {
             dfs(v, adj, visited, topo_order);
         }

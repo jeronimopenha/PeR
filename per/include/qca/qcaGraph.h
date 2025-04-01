@@ -4,23 +4,30 @@
 #include <unordered_map>
 #include <common/graph.h>
 
-class QCAGraph : public Graph {
+class QCAGraph : public Graph
+{
 public:
-    int minOutputLevel;
+    int nCells = 0;
+    int nCellsSqrt = 0;
+
+    int minOutputLevel = 0;
     unordered_map<int, int> level;
     unordered_map<int, string> dummyMap;
-    unordered_map<int, vector<int> > levelSuccessors;
-    unordered_map<int, vector<int> > levelPredecessors;
+    unordered_map<int, vector<int>> levelSuccessors;
+    unordered_map<int, vector<int>> levelPredecessors;
 
-    QCAGraph(const string &dotPath, const string &dotName);
+    QCAGraph(const string& dotPath, const string& dotName);
+    void calcMatrix();
+    void fixFanout();
+    void fixFanin();
 
     void computeLevels();
 
     void balanceGraphAll();
 
-    void exportUpGToDot(const string &filename);
+    void exportUpGToDot(const string& filename);
 
-    void saveDummyMap(const string &filename);
+    void saveDummyMap(const string& filename);
 
     void insertDummyLayerAtLevel(int targetLevel);
 };

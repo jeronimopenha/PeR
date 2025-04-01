@@ -64,7 +64,7 @@ public:
 
     vector<pair<int, int> > getEdgesZigzag(vector<pair<int, int> > &convergence);
 
-    vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges);
+    vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges) const;
 
     void dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order);
 

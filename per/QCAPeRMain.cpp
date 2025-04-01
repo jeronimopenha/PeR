@@ -31,7 +31,7 @@ int main() {
         cout << fst << endl;
 
         //Creating graph important variables
-        QCAGraph g = QCAGraph(fst, snd.substr(0, snd.size() - 4));
+        auto g = QCAGraph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
 
         int nExec;
@@ -61,7 +61,7 @@ int main() {
         for (int exec = 0; exec < nExec; exec++) {
             QcaReportData report;
 #if defined(QCA_YOTO_DF)
-            //report = qcaYoto(g);
+            report = qcaYoto(g);
 #endif
 
 #ifndef DEBUG

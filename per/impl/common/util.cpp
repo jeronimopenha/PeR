@@ -76,3 +76,18 @@ void createDir(const fs::path &pth) {
         }
     }
 }
+
+int getX(const int cellIndex, const int nCellsSqrt)
+{
+    return cellIndex % nCellsSqrt;
+}
+
+int getY(const int cellIndex, const int nCellsSqrt)
+{
+    return cellIndex / nCellsSqrt;
+}
+
+int getCellIndex(const int x, const int y, const int nCellsSqrt)
+{
+    return y * nCellsSqrt + x;
+}

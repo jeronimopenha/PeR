@@ -37,7 +37,7 @@ int main()
         cout << fst << endl;
 
         //Creating graph important variables
-        FPGAGraph g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
+        auto g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
 
         int nExec;
         //execution parameters

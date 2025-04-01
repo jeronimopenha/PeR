@@ -17,11 +17,11 @@
 //*******************************
 
 //Choose the algorithm to be run
-//#define FPGA_YOTO_DF
+#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
 //#define FPGA_YOTO_ZZ
 //#define FPGA_YOTT
-#define FPGA_SA
+//#define FPGA_SA
 //*******************************
 //###############################
 

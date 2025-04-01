@@ -1,36 +1,42 @@
 #include <qca/qcaUtil.h>
-
+#include <iostream>
+#include <random>
+#include <common/util.h>
 
 QcaReportData::QcaReportData()
-    : _time(0), cacheMisses(0), tries(0), swaps(0), totalCost(0) {
+    : _time(0), cacheMisses(0), tries(0), swaps(0), totalCost(0)
+{
 }
 
 // Constructor for easy initialization
-QcaReportData::QcaReportData(float _time, const string &dot_name, const string &dot_path,
-                               const string &placer, int cacheMisses, int tries, int swaps,
-                               const string &edges_algorithm,
-                               int total_cost, const vector<int> &placement, const vector<int> &n2c)
+QcaReportData::QcaReportData(float _time, const string& dot_name, const string& dot_path,
+                             const string& placer, int cacheMisses, int tries, int swaps,
+                             const string& edges_algorithm,
+                             int total_cost, const vector<int>& placement, const vector<int>& n2c)
     : _time(_time), dotName(dot_name), dotPath(dot_path), placer(placer), cacheMisses(cacheMisses), tries(tries),
-      swaps(swaps), edgesAlgorithm(edges_algorithm), totalCost(total_cost), placement(placement), n2c(n2c) {
+      swaps(swaps), edgesAlgorithm(edges_algorithm), totalCost(total_cost), placement(placement), n2c(n2c)
+{
 }
 
 // Serialize ReportData to a JSON string
-string QcaReportData::to_json() const {
+string QcaReportData::to_json() const
+{
     ostringstream oss;
     oss << "{\n"
-            << "  \"time\": " << _time << ",\n"
-            << "  \"dotName\": \"" << dotName << "\",\n"
-            << "  \"dotPath\": \"" << dotPath << "\",\n"
-            << "  \"placer\": \"" << placer << "\",\n"
-            << "  \"cacheMisses\": " << cacheMisses << ",\n"
-            << "  \"tries\": " << tries << ",\n"
-            << "  \"swaps\": " << swaps << ",\n"
-            << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
-            << "  \"totalCost\": " << totalCost << ",\n"
-            << "  \"placement\": [";
+        << "  \"time\": " << _time << ",\n"
+        << "  \"dotName\": \"" << dotName << "\",\n"
+        << "  \"dotPath\": \"" << dotPath << "\",\n"
+        << "  \"placer\": \"" << placer << "\",\n"
+        << "  \"cacheMisses\": " << cacheMisses << ",\n"
+        << "  \"tries\": " << tries << ",\n"
+        << "  \"swaps\": " << swaps << ",\n"
+        << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
+        << "  \"totalCost\": " << totalCost << ",\n"
+        << "  \"placement\": [";
 
     // Serialize vector<int> placement
-    for (size_t i = 0; i < placement.size(); ++i) {
+    for (size_t i = 0; i < placement.size(); ++i)
+    {
         oss << placement[i];
         if (i < placement.size() - 1) oss << ", ";
     }
@@ -38,7 +44,8 @@ string QcaReportData::to_json() const {
 
     // Serialize vector<int> n2c
     oss << "  \"n2c\": [";
-    for (size_t i = 0; i < n2c.size(); ++i) {
+    for (size_t i = 0; i < n2c.size(); ++i)
+    {
         oss << n2c[i];
         if (i < n2c.size() - 1) oss << ", ";
     }
@@ -48,126 +55,190 @@ string QcaReportData::to_json() const {
     return oss.str();
 }
 
-/*string getProjectRoot() {
-    filesystem::path path = filesystem::current_path();
-    for (int i = 0; i < 2; ++i) {
-        path = path.parent_path();
-    }
-    return path.string();
-}
-
-string verifyPath(const string &path) {
-    if (!path.empty() && path.back() != '/') {
-        return path + '/';
-    }
-    return path;
-}
-
-vector<pair<string, string> > getFilesListByExtension(
-    const string &path, const string &file_extension) {
-    vector<pair<string, string> > files_list_by_extension;
-
-    for (const auto &entry: filesystem::recursive_directory_iterator(path)) {
-        if (entry.is_regular_file() && entry.path().extension() == file_extension) {
-            string file_path = entry.path().string();
-            string file_name = entry.path().filename().string();
-            files_list_by_extension.emplace_back(file_path, file_name);
+// Returns the relative offset vectors for input directions of a cell at (x, y)
+vector<pair<int, int>> qcaGetOutputDirections(const int x, const int y)
+{
+    vector<pair<int, int>> directions;
+    if (y % 2 == 0)
+    {
+        // Even row: alternate horizontally
+        if (x % 2 == 0)
+        {
+            directions.emplace_back(0, -1); // top
+            directions.emplace_back(-1, 0); // left
+        }
+        else
+        {
+            directions.emplace_back(-1, 0); // left
+            directions.emplace_back(0, 1); // bottom
         }
     }
-
-    return files_list_by_extension;
+    else
+    {
+        // Odd row: alternate horizontally
+        if (x % 2 == 0)
+        {
+            directions.emplace_back(1, 0); // right
+            directions.emplace_back(0, -1); // top
+        }
+        else
+        {
+            directions.emplace_back(0, 1); // bottom
+            directions.emplace_back(1, 0); // right
+        }
+    }
+    return directions;
 }
 
-string funcKey(const string &a, const string &b) {
-    return a + " " + b;
+// Returns the relative offset vectors for output directions of a cell at (x, y)
+vector<pair<int, int>> qcaGetInputDirections(const int x, const int y)
+{
+    vector<pair<int, int>> directions;
+    if (y % 2 == 0)
+    {
+        // Even row: alternate horizontally
+        if (x % 2 == 0)
+        {
+            directions.emplace_back(1, 0); // right
+            directions.emplace_back(0, 1); // bottom
+        }
+        else
+        {
+            directions.emplace_back(0, -1); // top
+            directions.emplace_back(1, 0); // right
+        }
+    }
+    else
+    {
+        // Odd row: alternate horizontally
+        if (x % 2 == 0)
+        {
+            directions.emplace_back(-1, 0); // left
+            directions.emplace_back(0, 1); // bottom
+        }
+        else
+        {
+            directions.emplace_back(0, -1); // top
+            directions.emplace_back(-1, 0); // left
+        }
+    }
+    return directions;
 }
 
-void saveToDot(const vector<pair<int, int> > &edges, const string &filename) {
+
+bool qcaIsInvalidCell(const int x, const int y, const int nCellsSqrt)
+{
+    const bool outOfBounds = (x < 0 || x >= nCellsSqrt || y < 0 || y >= nCellsSqrt);
+    return outOfBounds;
+}
+
+void qcaExportUSEToDot(const string& filename, const vector<int>& n2c, int nCellsSqrt)
+{
     ofstream file(filename);
-    if (!file) {
+    if (!file)
+    {
         cerr << "Error!" << endl;
         return;
     }
 
-    // write the dot header
-    file << "digraph G {" << endl;
+    vector<int> cells(nCellsSqrt * nCellsSqrt, -1);
 
-    // write the edges
-    for (const auto &[fst, snd]: edges) {
-        file << "    " << fst << " -> " << snd << ";" << endl;
+    for (int i = 0; i < n2c.size(); i++)
+    {
+        if (n2c[i] > -1)
+            cells[n2c[i]] = i;
     }
+
+    // write the dot header
+    file << "digraph layout{" << endl;
+    file << "rankdir=TB; \n" << endl;
+    file << "splines=ortho; \n" << endl;
+    file << "node [style=filled shape=square fixedsize=true width=0.6];" << endl;
+
+    for (int i = 0; i < cells.size(); i++)
+    {
+        if (cells[i] == -1)
+        {
+            file << i << "[label=\"\", fontsize=8, fillcolor=\"#ffffff\"];" << endl;
+        }
+        else
+        {
+            file << i << "[label=\"" << cells[i] << "\", fontsize=8, fillcolor=\"#a9ccde\"];" << endl;
+        }
+    }
+    file << "edge [constraint=false, style=vis];" << endl;
+    //normal edges
+    int nCells = static_cast<int>(pow(nCellsSqrt, 2));
+    for (int cell = 0; cell < nCells; cell++)
+    {
+        int x0 = getX(cell, nCellsSqrt);
+        int y0 = getY(cell, nCellsSqrt);
+        vector<pair<int, int>> direction = qcaGetOutputDirections(x0, y0);
+        int x1 = x0 + direction[0].first;
+        int y1 = y0 + direction[0].second;
+        int x2 = x0 + direction[1].first;
+        int y2 = y0 + direction[1].second;
+
+        int cell1 = getCellIndex(x1, y1, nCellsSqrt);
+        int cell2 = getCellIndex(x2, y2, nCellsSqrt);
+
+        if (!qcaIsInvalidCell(x1, y1, nCellsSqrt))
+        {
+            file << cell << " -> " << cell1;
+            if (cells[cell1] == -1)
+                file << " [color=\"#cccccc\"];" << endl;
+            else
+                file << ";" << endl;
+        }
+        if (!qcaIsInvalidCell(x2, y2, nCellsSqrt))
+        {
+            file << cell << " -> " << cell2;
+            if (cells[cell2] == -1)
+                file << " [color=\"#cccccc\"];" << endl;
+            else
+                file << ";" << endl;
+        }
+    }
+
+
+    file << "edge [constraint=true, style=invis];" << endl;
+    //structural edges
+    for (int j = 0; j < nCellsSqrt; j++)
+    {
+        for (int i = 0; i < nCellsSqrt; i++)
+        {
+            int c = j + i * nCellsSqrt;
+            if (i == nCellsSqrt - 1)
+            {
+                file << c << ";" << endl;
+            }
+            else
+            {
+                file << c << " -> ";
+            }
+        }
+    }
+
+    for (int i = 0; i < nCellsSqrt; i++)
+    {
+        file << "rank = same { ";
+        for (int j = 0; j < nCellsSqrt; j++)
+        {
+            int c = i * nCellsSqrt + j;
+            if (j == nCellsSqrt - 1)
+            {
+                file << c << ";";
+            }
+            else
+            {
+                file << c << " -> ";
+            }
+        }
+        file << "};" << endl;
+    }
+
 
     // write the dot footer
     file << "}" << endl;
-
     file.close();
-    cout << "File " << filename << " saved!" << endl;
 }
-
-
-int fpgaCalcGraphTotalDistance(const vector<int> &n2c, const vector<pair<int, int> > &edges,
-                               const int nCellsSqrt) {
-    int totalDist = -static_cast<int>(edges.size());
-
-    for (const auto &[fst, snd]: edges) {
-        const int tempDist = getManhattanDist(n2c[fst], n2c[snd], nCellsSqrt);
-
-        // Acc the total distance
-        totalDist += tempDist;
-    }
-
-    return totalDist;
-}
-
-int fpgaCalcGraphLPDistance(const vector<int> &longestPath, const vector<int> &n2c, const int nCellsSqrt) {
-    int totalDist = 0;
-
-    for (int idx = 0; idx < longestPath.size() - 1; idx++) {
-        const int tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx + 1]], nCellsSqrt);
-
-        // Acc the total distance
-        totalDist += tempDist;
-    }
-
-    return totalDist;
-}
-
-int getManhattanDist(const int cell1, const int cell2, const int n_cells_sqrt) {
-    const int cell1_x = cell1 % n_cells_sqrt;
-    const int cell1_y = cell1 / n_cells_sqrt;
-    const int cell2_x = cell2 % n_cells_sqrt;
-    const int cell2_y = cell2 / n_cells_sqrt;
-    return abs(cell1_y - cell2_y) + abs(cell1_x - cell2_x);
-}
-
-
-bool isInvalidCell(const int cell, const int nCellsSqrt) {
-    const int l = cell / nCellsSqrt;
-    const int c = cell % nCellsSqrt;
-
-    bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
-
-    const bool isCorner =
-            (l == 0 && c == 0) ||
-            (l == 0 && c == nCellsSqrt - 1) ||
-            (l == nCellsSqrt - 1 && c == 0) ||
-            (l == nCellsSqrt - 1 && c == nCellsSqrt - 1);
-
-    return outOfBounds || isCorner;
-}
-
-bool isIOCell(const int cell, const int nCellsSqrt) {
-    const int l = cell / nCellsSqrt;
-    const int c = cell % nCellsSqrt;
-    return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
-}
-
-void createDir(const fs::path &pth) {
-    if (!exists(pth)) {
-        if (create_directories(pth)) {
-            cout << "Pastas criadas: " << pth << "\n";
-        } else {
-            cerr << "Erro ao criar o diretório: " << pth << "\n";
-        }
-    }
-}*/

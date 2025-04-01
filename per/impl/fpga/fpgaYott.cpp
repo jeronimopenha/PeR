@@ -86,10 +86,10 @@ FpgaReportData fpgaYott(FPGAGraph& g)
             const int targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
             // Check if the target cell is nor allowed, go to next
-            if (isInvalidCell(targetCell, nCellsSqrt))
+            if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
                 continue;
 
-            const bool isTargetCellIO = isIOCell(targetCell, nCellsSqrt);
+            const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
@@ -216,7 +216,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    FpgaReportData report = FpgaReportData(
+    auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
