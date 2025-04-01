@@ -323,3 +323,25 @@ void writeVprData(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
 }
+bool isInvalidCell(const int cell, const int nCellsSqrt)
+{
+    const int l = cell / nCellsSqrt;
+    const int c = cell % nCellsSqrt;
+
+    bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
+
+    const bool isCorner =
+        (l == 0 && c == 0) ||
+        (l == 0 && c == nCellsSqrt - 1) ||
+        (l == nCellsSqrt - 1 && c == 0) ||
+        (l == nCellsSqrt - 1 && c == nCellsSqrt - 1);
+
+    return outOfBounds || isCorner;
+}
+
+bool isIOCell(const int cell, const int nCellsSqrt)
+{
+    const int l = cell / nCellsSqrt;
+    const int c = cell % nCellsSqrt;
+    return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
+}

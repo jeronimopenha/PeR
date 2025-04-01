@@ -33,12 +33,10 @@ vector<pair<string, string>> getFilesListByExtension(
 string funcKey(const string& a, const string& b);
 
 
-
 void saveToDot(const vector<pair<int, int>>& edges, const string& filename);
 
 
 int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
-
 
 
 void createDir(const fs::path& pth);

@@ -197,11 +197,11 @@ void Graph::readSuccPred() {
     }
 }
 
-
 void Graph::readGraphData() {
     readEdges();
-    readNodes();
     readSuccPred();
+    readNodes();
+    findLongestPath();
 }
 
 vector<pair<int, int> > Graph::getEdgesDepthFirst() {
