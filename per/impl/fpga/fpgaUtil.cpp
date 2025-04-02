@@ -197,7 +197,7 @@ int fpgaMinBorderDist(const int cell, const int nCellsSqrt) {
     return std::min({d_top, d_bottom, d_left, d_right});
 }
 
-void writeJson(const string &basePath,
+void fpgaWriteJson(const string &basePath,
                const string &reportPath,
                const string &algPath,
                const string &fileName,
@@ -217,7 +217,7 @@ void writeJson(const string &basePath,
     }
 }
 
-void writeVprData(const string &basePath,
+void fpgaWriteVprData(const string &basePath,
                   const string &reportPath,
                   const string &algPath,
                   const string &fileName,
@@ -323,12 +323,12 @@ void writeVprData(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
 }
-bool isInvalidCell(const int cell, const int nCellsSqrt)
+bool fpgaIsInvalidCell(const int cell, const int nCellsSqrt)
 {
     const int l = cell / nCellsSqrt;
     const int c = cell % nCellsSqrt;
 
-    bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
+    const bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
 
     const bool isCorner =
         (l == 0 && c == 0) ||
@@ -339,7 +339,7 @@ bool isInvalidCell(const int cell, const int nCellsSqrt)
     return outOfBounds || isCorner;
 }
 
-bool isIOCell(const int cell, const int nCellsSqrt)
+bool fpgaIsIOCell(const int cell, const int nCellsSqrt)
 {
     const int l = cell / nCellsSqrt;
     const int c = cell % nCellsSqrt;

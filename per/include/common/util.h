@@ -41,5 +41,10 @@ int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
 
 void createDir(const fs::path& pth);
 
+int getX(int cellIndex, int nCellsSqrt);
+
+int getY(int cellIndex, int nCellsSqrt);
+
+int getCellIndex(int x, int y,int nCellsSqrt);
 
 #endif

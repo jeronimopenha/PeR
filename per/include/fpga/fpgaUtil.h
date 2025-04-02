@@ -39,19 +39,19 @@ int fpgaCalcGraphTotalDistance(const vector<int>& n2c, const vector<pair<int, in
 
 int fpgaCalcGraphLPDistance(const vector<int>& longestPath, const vector<int>& n2c, const int nCellsSqrt);
 
-bool isInvalidCell(int cell, int nCellsSqrt);
+bool fpgaIsInvalidCell(int cell, int nCellsSqrt);
 
-bool isIOCell(int cell, int nCellsSqrt);
+bool fpgaIsIOCell(int cell, int nCellsSqrt);
 
 int fpgaMinBorderDist(int cell, int nCellsSqrt);
 
-void writeJson(const string& basePath,
+void fpgaWriteJson(const string& basePath,
                const string& reportPath,
                const string& algPath,
                const string& fileName,
                const FpgaReportData& data);
 
-void writeVprData(const string& basePath,
+void fpgaWriteVprData(const string& basePath,
                   const string& reportPath,
                   const string& algPath,
                   const string& fileName,

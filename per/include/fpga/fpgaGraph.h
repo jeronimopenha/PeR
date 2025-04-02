@@ -26,9 +26,9 @@ public:
 
     void calcMatrix();
 
-    vector<int> getInOutPos();
+    vector<int> getInOutPos() const;
 
-    vector<int> getClbPos();
+    vector<int> getClbPos() const;
 
     unordered_map<string, vector<pair<int, int> > > getGraphAnnotations(
         const vector<pair<int, int> > &edges,

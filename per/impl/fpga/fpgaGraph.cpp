@@ -20,21 +20,22 @@ void FPGAGraph::readNeighbors() {
 }
 
 void FPGAGraph::calcMatrix() {
-    int totalInOut = static_cast<int>(inputNodes.size() + outputNodes.size());
-    int nBaseNodes = nNodes - totalInOut;
+    const int totalInOut = static_cast<int>(inputNodes.size() + outputNodes.size());
+    const int nBaseNodes = nNodes - totalInOut;
     int nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     int nBorderCells = nCellsBaseSqrt * 4;
     while (totalInOut > nBorderCells) {
         nCellsBaseSqrt += 2;
         nBorderCells = nCellsBaseSqrt * 4;
     }
-    int nCellsBase = static_cast<int>(pow(nCellsBaseSqrt, 2));
-    int totalCells = nCellsBase + nBorderCells;
+    const int nCellsBase = static_cast<int>(pow(nCellsBaseSqrt, 2));
+    const int totalCells = nCellsBase + nBorderCells;
     nCellsSqrt = ceil(sqrt(totalCells));
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
-vector<int> FPGAGraph::getInOutPos() {
+vector<int> FPGAGraph::getInOutPos() const
+{
     vector<int> possibleInOut;
 
     // Append positions in the first range
@@ -59,11 +60,11 @@ vector<int> FPGAGraph::getInOutPos() {
     return possibleInOut;
 }
 
-vector<int> FPGAGraph::getClbPos() {
+vector<int> FPGAGraph::getClbPos() const {
     vector<int> pos;
     for (int i = 1; i < nCellsSqrt - 1; i++) {
-        int start = i * nCellsSqrt + 1;
-        int end = (i + 1) * nCellsSqrt - 1;
+        const int start = i * nCellsSqrt + 1;
+        const int end = (i + 1) * nCellsSqrt - 1;
         for (int j = start; j < end; j++) {
             pos.push_back(j);
         }

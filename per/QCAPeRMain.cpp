@@ -1,6 +1,6 @@
 #include <common/parameters.h>
 #include  <common/util.h>
-#include  <fpga/fpgaGraph.h>
+#include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>
 
 #include <omp.h>
@@ -8,8 +8,7 @@
 using namespace std;
 
 //Choose the algorithm in util.h defines
-int main()
-{
+int main() {
     // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
@@ -22,22 +21,18 @@ int main()
     const string reportPath = "reports/fqca";
     string algPath;
 
-
     cout << rootPath << endl;
 
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
     // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
-    for (const auto& [fst, snd] : files)
-    {
+    for (const auto &[fst, snd]: files) {
         cout << fst << endl;
 
         //Creating graph important variables
-        FPGAGraph g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
+        auto g = QCAGraph(fst, snd.substr(0, snd.size() - 4));
         //reading graph variables
-        g.readGraphData();
-        g.balanceGraph();
 
         int nExec;
         //execution parameters
@@ -53,7 +48,7 @@ int main()
         nExec = 1000;
 #endif
 
-        vector<ReportData> reports;
+        vector<QcaReportData> reports;
 
 #ifndef DEBUG
         int nThreads = max(1, omp_get_num_procs() - 1);
@@ -63,9 +58,8 @@ int main()
         {
 #pragma omp for schedule(dynamic)
 #endif
-        for (int exec = 0; exec < nExec; exec++)
-        {
-            ReportData report;
+        for (int exec = 0; exec < nExec; exec++) {
+            QcaReportData report;
 #if defined(QCA_YOTO_DF)
             report = qcaYoto(g);
 #endif
@@ -82,13 +76,11 @@ int main()
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements
-        sort(reports.begin(), reports.end(), [](const ReportData& a, const ReportData& b)
-        {
+        sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
             return a.totalCost < b.totalCost;
         });
         int limit = (10 < reports.size()) ? 10 : reports.size();
-        for (int i = 0; i < limit; i++)
-        {
+        for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(i);

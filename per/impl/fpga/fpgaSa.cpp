@@ -73,15 +73,15 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
                 if (cellA == cellB)
                     continue;
                 // Check if cellA is nor allowed, go to next
-                if (isInvalidCell(cellA, nCellsSqrt))
+                if (fpgaIsInvalidCell(cellA, nCellsSqrt))
                     continue;
-                if (isInvalidCell(cellB, nCellsSqrt))
+                if (fpgaIsInvalidCell(cellB, nCellsSqrt))
                     continue;
 
                 //prevents IO nodes to be not put in IO cells
                 //and put a non IO node in an IO cell
-                const bool isCellAIO = isIOCell(cellA, nCellsSqrt);
-                const bool isCellBIO = isIOCell(cellB, nCellsSqrt);
+                const bool isCellAIO = fpgaIsIOCell(cellA, nCellsSqrt);
+                const bool isCellBIO = fpgaIsIOCell(cellB, nCellsSqrt);
 
                 if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;
@@ -139,7 +139,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    FpgaReportData report = FpgaReportData(
+    auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,

@@ -104,11 +104,11 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             int targetCell = lB * nCellsSqrt + cB;
 
             // Check if the target cell is nor allowed, go to next
-            if (isInvalidCell(targetCell, nCellsSqrt))
+            if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
                 continue;
 
 
-            const bool isTargetCellIO = isIOCell(targetCell, nCellsSqrt);
+            const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
@@ -139,6 +139,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         }
     }
 
+#ifdef DEBUG
+    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
+
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
     float _time = duration.count();
@@ -151,7 +155,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    FpgaReportData report = FpgaReportData(
+    auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,

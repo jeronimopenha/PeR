@@ -1,77 +1,293 @@
 #include <algorithm>
 #include <queue>
 #include <qca/qcaGraph.h>
+#include<common/parameters.h>
 
 
-QCAGraph::QCAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
+QCAGraph::QCAGraph(const string& dotPath, const string& dotName): Graph(dotPath, dotName)
+{
+    exportUpGToDot("/home/jeronimo/qca.dot");
+    fixFanout();
+    fixFanin();
+    balanceGraphAll();
 }
 
-// find the level of each node from the input nodes
-unordered_map<int, int> QCAGraph::computeLevels(const vector<int> &inputNodes, const vector<pair<int, int> > &edges) {
-    unordered_map<int, vector<int> > graph;
-    unordered_map<int, int> inDegree;
-    unordered_map<int, int> level;
+void QCAGraph::calcMatrix()
+{
+    nCellsSqrt = static_cast<int>(ceil(sqrt(nNodes))) * 2;
+    nCells = static_cast<int>(pow(nCellsSqrt, 2));
+}
 
-    // build the graph and initialize the auxiliar variables
-    for (auto [fst, snd]: edges) {
-        graph[fst].push_back(snd);
-        inDegree[snd]++;
-        level[fst] = 0;
-        level[snd] = 0;
+void QCAGraph::fixFanout()
+{
+    unordered_map<int, vector<int>> fanouts;
+    for (auto [fst, snd] : gEdges)
+    {
+        fanouts[fst].push_back(snd);
     }
 
-    // queue for the topological order processing
+    vector<pair<int, int>> newEdges;
+    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    int dummyCount = 0;
+
+    for (auto& [fst, outs] : fanouts)
+    {
+        if (outs.size() <= 2)
+        {
+            for (int snd : outs) newEdges.emplace_back(fst, snd);
+            continue;
+        }
+
+        queue<int> leaves;
+        for (int snd : outs) leaves.push(snd);
+
+        vector<int> dummyNodes;
+
+        while (leaves.size() > 1)
+        {
+            int a = leaves.front();
+            leaves.pop();
+            int b = leaves.front();
+            leaves.pop();
+
+            int dummy = nextId++;
+            gNodes.push_back(dummy);
+            dummyMap[dummy] = "dummy" + to_string(dummyCount++);
+
+            newEdges.emplace_back(dummy, a);
+            newEdges.emplace_back(dummy, b);
+
+            leaves.push(dummy);
+            dummyNodes.push_back(dummy);
+        }
+
+        int root = leaves.front();
+        newEdges.emplace_back(fst, root);
+    }
+
+    gEdges = newEdges;
+    nEdges = static_cast<int>(gEdges.size());
+    nNodes = nextId;
+    updateG();
+
+#ifdef DEBUG
+    exportUpGToDot("/home/jeronimo/qca.dot");
+#endif
+}
+
+void QCAGraph::fixFanin()
+{
+    unordered_map<int, vector<int>> fanins;
+    for (auto [fst, snd] : gEdges)
+    {
+        fanins[snd].push_back(fst);
+    }
+
+    vector<pair<int, int>> newEdges;
+    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    int dummyCount = 0;
+
+    for (auto& [snd, ins] : fanins)
+    {
+        if (ins.size() <= 2)
+        {
+            for (int fst : ins) newEdges.emplace_back(fst, snd);
+            continue;
+        }
+
+        queue<int> leaves;
+        for (int fst : ins) leaves.push(fst);
+
+        while (leaves.size() > 1)
+        {
+            int a = leaves.front();
+            leaves.pop();
+            int b = leaves.front();
+            leaves.pop();
+
+            int dummy = nextId++;
+            gNodes.push_back(dummy);
+            dummyMap[dummy] = "dummy" + to_string(dummyCount++);
+
+            newEdges.emplace_back(a, dummy);
+            newEdges.emplace_back(b, dummy);
+
+            leaves.push(dummy);
+        }
+
+        int root = leaves.front();
+        newEdges.emplace_back(root, snd);
+    }
+
+    gEdges = newEdges;
+    nEdges = static_cast<int>(gEdges.size());
+    nNodes = nextId;
+    updateG();
+#ifdef DEBUG
+    exportUpGToDot("/home/jeronimo/qca.dot");
+#endif
+}
+
+void QCAGraph::computeLevels()
+{
+    level.clear();
+    levelSuccessors.clear();
+    levelPredecessors.clear();
+
+    unordered_map<int, int> inDegree;
+
+    for (auto [fst, snd] : gEdges)
+    {
+        inDegree[snd]++;
+    }
+
     queue<int> q;
-    for (int node: inputNodes) {
+    for (int node : inputNodes)
+    {
         q.push(node);
         level[node] = 0;
     }
 
-    while (!q.empty()) {
+    while (!q.empty())
+    {
         int fst = q.front();
         q.pop();
-        for (int v: graph[fst]) {
-            level[v] = max(level[v], level[fst] + 1);
-            if (--inDegree[v] == 0)
-                q.push(v);
+        for (int snd : adjList[fst])
+        {
+            level[snd] = max(level[snd], level[fst] + 1);
+            if (--inDegree[snd] == 0)
+                q.push(snd);
         }
     }
 
-    return level;
+    for (auto [fst, snd] : gEdges)
+    {
+        levelSuccessors[level[fst]].push_back(snd);
+        levelPredecessors[level[snd]].push_back(fst);
+    }
+    minOutputLevel = numeric_limits<int>::max();
+    for (int out : outputNodes)
+    {
+        if (level.count(out))
+        {
+            minOutputLevel = min(minOutputLevel, level[out]);
+        }
+    }
+    calcMatrix();
 }
 
-// balance the graph inserting delay nodes
-void QCAGraph::balanceGraph() {
-    // Step 1: Compute level (depth) of each node starting from the inputs
-    unordered_map<int, int> level = computeLevels(inputNodes, gEdges);
+// Balance entire graph by inserting dummy nodes
+void QCAGraph::balanceGraphAll()
+{
+    computeLevels();
 
-    // Prepare new edge list and ID counter for new dummy nodes
-    vector<pair<int, int> > newEdges;
-    int nextNodeId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    vector<pair<int, int>> newEdges;
+    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    int dummyCount = 0;
 
-    for (const auto &[fst, snd]: gEdges) {
-        int lu = level[fst];
-        int lv = level[snd];
+    for (auto [fst, snd] : gEdges)
+    {
+        const int lfst = level[fst];
+        int lsnd = level[snd];
 
-        if (lv == lu + 1) {
-            // Edge is already balanced (no delay needed)
+        if (lsnd == lfst + 1)
+        {
             newEdges.emplace_back(fst, snd);
-        } else if (lv > lu + 1) {
-            // Path from u to v is too short, insert dummy nodes
+        }
+        else if (lsnd > lfst + 1)
+        {
             int last = fst;
-            for (int i = 0; i < lv - lu - 1; ++i) {
-                int dummy = nextNodeId++;
+            for (int i = 0; i < lsnd - lfst - 1; ++i)
+            {
+                int dummy = nextId++;
                 gNodes.push_back(dummy);
+                dummyMap[dummy] = "dummy" + to_string(dummyCount++);
                 newEdges.emplace_back(last, dummy);
                 last = dummy;
             }
             newEdges.emplace_back(last, snd);
-        } else {
-            // This should not happen in a valid DAG (Backward edge?)
-            cerr << "⚠️ Warning: inconsistent level between " << fst << " and " << snd << endl;
+        }
+    }
+    gEdges = newEdges;
+    nEdges = static_cast<int>(gEdges.size());
+    nNodes = nextId;
+
+
+    updateG();
+    computeLevels();
+
+#ifdef DEBUG
+    exportUpGToDot("/home/jeronimo/qca.dot");
+#endif
+}
+
+// Insert dummy layer between nodes at level L and L+1
+void QCAGraph::insertDummyLayerAtLevel(const int targetLevel)
+{
+    computeLevels();
+
+    vector<pair<int, int>> newEdges;
+    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    int dummyCount = 0;
+
+    for (auto [fst, snd] : gEdges)
+    {
+        const int lfst = level[fst];
+        int lsnd = level[snd];
+
+        if (lfst == targetLevel && lsnd == targetLevel + 1)
+        {
+            int dummy = nextId++;
+            gNodes.push_back(dummy);
+            dummyMap[dummy] = "dummy" + to_string(dummyCount++);
+            newEdges.emplace_back(fst, dummy);
+            newEdges.emplace_back(dummy, snd);
+        }
+        else
+        {
+            newEdges.emplace_back(fst, snd);
         }
     }
 
-    // Replace the old edge list with the new balanced one
     gEdges = newEdges;
+    nEdges = static_cast<int>(gEdges.size());
+    nNodes = nextId;
+
+    updateG();
+    computeLevels();
+
+#ifdef DEBUG
+    exportUpGToDot("/home/jeronimo/qca.dot");
+#endif
+}
+
+// Export graph as DOT format
+void QCAGraph::exportUpGToDot(const string& filename)
+{
+    ofstream fout(filename);
+    fout << "digraph network {\n";
+    for (auto [fst, snd] : gEdges)
+    {
+        fout << "  " << fst << " -> " << snd;
+        if (dummyMap.count(fst) || dummyMap.count(snd))
+        {
+            fout << " [color=gray, style=dashed]";
+        }
+        fout << ";\n";
+    }
+    fout << "}\n";
+    fout.close();
+    //cout << "DOT file exported to: " << filename << endl;
+}
+
+// Save dummy node map
+void QCAGraph::saveDummyMap(const string& filename)
+{
+    ofstream fout(filename);
+    for (auto& [id, name] : dummyMap)
+    {
+        fout << id << " " << name << "\n";
+    }
+    fout.close();
+    cout << "Dummy map saved to: " << filename << endl;
 }
