@@ -414,8 +414,8 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
     edges = clearEdges(edges);
 
     if (edgeTypes) {
-        vector<tuple<int, int, string>> cleaned;
-        for (const auto& t : *edgeTypes) {
+        vector<tuple<int, int, string> > cleaned;
+        for (const auto &t: *edgeTypes) {
             int a = get<0>(t);
             int b = get<1>(t);
             if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end()) {

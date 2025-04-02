@@ -118,18 +118,14 @@ QcaReportData qcaYoto(QCAGraph &g) {
             break;
     }
 
-    /*const auto end = chrono::high_resolution_clock::now();
+
+    const auto end = chrono::high_resolution_clock::now();
     const chrono::duration<double, milli> duration = end - start;
     double _time = duration.count();
 
-    int tc = 0;
-    // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#endif
+    //if this placement valid?
 
+    bool validPlacement = g.verifyPlacement(n2c);
     ReportData report = ReportData(
         _time,
         g.dotName,

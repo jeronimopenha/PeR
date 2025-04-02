@@ -11,6 +11,9 @@ public:
     int nCellsSqrt = 0;
 
     int minOutputLevel = 0;
+    int extraLayers = 0;
+    vector<int> extraLayersLevels;
+
     unordered_map<int, int> level;
     unordered_map<int, string> dummyMap;
     unordered_map<int, vector<int>> levelSuccessors;
@@ -28,6 +31,8 @@ public:
     void exportUpGToDot(const string& filename);
 
     void saveDummyMap(const string& filename);
+
+    bool verifyPlacement(const vector<int> &n2c);
 
     void insertDummyLayerAtLevel(int targetLevel);
 };
