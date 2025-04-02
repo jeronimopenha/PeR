@@ -62,7 +62,9 @@ public:
 
     vector<pair<int, int> > getEdgesDepthFirstPriority();
 
-    vector<pair<int, int> > getEdgesZigzag(vector<pair<int, int> > &convergence);
+    vector<pair<int, int> > getEdgesZigzag(
+        vector<pair<int, int> > &convergence,
+        vector<tuple<int, int, string> > *edgeTypes = nullptr);
 
     vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges) const;
 

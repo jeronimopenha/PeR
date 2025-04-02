@@ -1,4 +1,6 @@
 #include <common/graph.h>
+#include <tuple>
+#include <algorithm>
 
 
 /*void Graph::readGraphDataStr() {
@@ -306,16 +308,16 @@ vector<pair<int, int> > Graph::getEdgesDepthFirstPriority() {
     return edges;
 }
 
-vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergence) {
+vector<pair<int, int> > Graph::getEdgesZigzag(
+    vector<pair<int, int> > &convergence,
+    vector<tuple<int, int, string> > *edgeTypes) {
     vector<pair<int, string> > outputList;
 
     for (const auto &node: outputNodes) {
         outputList.emplace_back(node, "IN");
     }
 
-    // if (make_shuffle) {
     randomVector(outputList);
-    // }
 
     vector stack(outputList.begin(), outputList.end());
     vector<pair<int, int> > edges;
@@ -359,7 +361,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                //edges.emplace_back({a, b, "OUT"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             } else if (!fanIn[a].empty()) {
                 const int b = fanIn[a].back();
@@ -373,7 +375,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                // edges.push_back({a, b, "IN"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             }
         } else {
@@ -390,7 +392,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                //edges.push_back({a, b, "IN"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             } else if (!fanOut[a].empty()) {
                 int b = fanOut[a].back();
@@ -404,10 +406,23 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                // edges.push_back({a, b, "OUT"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             }
         }
+    }
+    edges = clearEdges(edges);
+
+    if (edgeTypes) {
+        vector<tuple<int, int, string>> cleaned;
+        for (const auto& t : *edgeTypes) {
+            int a = get<0>(t);
+            int b = get<1>(t);
+            if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end()) {
+                cleaned.push_back(t);
+            }
+        }
+        *edgeTypes = cleaned;
     }
     return clearEdges(edges);
 }

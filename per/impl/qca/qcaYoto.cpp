@@ -3,10 +3,9 @@
 #include <vector>
 
 
-QcaReportData qcaYoto(QCAGraph& g)
-{
+QcaReportData qcaYoto(QCAGraph &g) {
     const int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
+    const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
 
     vector<int> c2n(nCells, -1);
@@ -24,11 +23,13 @@ QcaReportData qcaYoto(QCAGraph& g)
     int swaps = 0;
 
     string alg_type;
-    vector<pair<int, int>> ed;
+    vector<pair<int, int> > ed;
 
-#ifdef QCA_YOTO_DF
-    ed = g.getEdgesDepthFirst();
-    alg_type = "DEPTH_FIRST";
+#ifdef QCA_YOTO_ZZ
+    vector<pair<int, int> > convergence;
+    vector<tuple<int, int, string> > edzz;
+    g.getEdgesZigzag(convergence, &edzz);
+    alg_type = "ZIGZAG";
 #endif
 
     int lastCellIdxUsed = 0;
@@ -36,24 +37,24 @@ QcaReportData qcaYoto(QCAGraph& g)
     //time counting
     const auto start = chrono::high_resolution_clock::now();
 
+#ifdef QCA_YOTO_ZZ
+    for (const auto& [a,b,dir]: edzz)
+#else
     for (auto [a,b] : ed)
+#endif
     {
         //Verify if A is placed
         //if it is not placed, then place in a random unused cell.
         //the variable lastCellIdxUsed is for optimize future looks
-        if (n2c[a] == -1)
-        {
+        if (n2c[a] == -1) {
             bool found = false;
-            while (!found)
-            {
+            while (!found) {
                 int cell = cells[lastCellIdxUsed];
-                while (cell == -1)
-                {
+                while (cell == -1) {
                     lastCellIdxUsed++;
                     cell = cells[lastCellIdxUsed];
                 }
-                if (c2n[cell] == -1)
-                {
+                if (c2n[cell] == -1) {
                     c2n[cell] = a;
                     n2c[a] = cell;
                     cells[lastCellIdxUsed] = -1;
@@ -68,8 +69,7 @@ QcaReportData qcaYoto(QCAGraph& g)
 #endif
 
         //Now, if B is placed, go to next edge
-        if (n2c[b] != -1)
-        {
+        if (n2c[b] != -1) {
             continue;
         }
 
@@ -79,17 +79,23 @@ QcaReportData qcaYoto(QCAGraph& g)
         const int xA = getX(n2c[a], nCellsSqrt);
         const int yA = getY(n2c[a], nCellsSqrt);
 
-        vector<pair<int, int>> distCells = qcaGetOutputDirections(xA, yA);
+        vector<pair<int, int> > distCells;
+#ifdef QCA_YOTO_ZZ
+        if (dir == "IN")
+            distCells = qcaGetInputDirections(xA, yA);
+        else
+            distCells = qcaGetOutputDirections(xA, yA);
+#endif
+
         bool placed = false;
         //Then I will look for a cell next to A's cell
-        for (const auto& dist : distCells)
-        {
+        for (const auto &[fst, snd]: distCells) {
             ++tries;
-            const int xB = xA + dist.first;
-            const int yB = yA + dist.second;
+            const int xB = xA + fst;
+            const int yB = yA + snd;
 
             //find the idx for the target cell
-            int targetCell = yB * nCellsSqrt + xB;
+            const int targetCell = yB * nCellsSqrt + xB;
 
             // Check if the target cell is nor allowed, go to next
             if (qcaIsInvalidCell(xB, yB, nCellsSqrt))
@@ -97,8 +103,7 @@ QcaReportData qcaYoto(QCAGraph& g)
 
 
             // Place the node if `placement[targetCell]` is unoccupied
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;

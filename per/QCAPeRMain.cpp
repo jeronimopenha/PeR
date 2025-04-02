@@ -36,7 +36,7 @@ int main() {
 
         int nExec;
         //execution parameters
-#ifdef QCA_YOTO_DF
+#ifdef QCA_YOTO_ZZ
         algPath = "/yoto_df";
 #endif
 
@@ -60,7 +60,7 @@ int main() {
 #endif
         for (int exec = 0; exec < nExec; exec++) {
             QcaReportData report;
-#if defined(QCA_YOTO_DF)
+#if defined(QCA_YOTO_ZZ)
             report = qcaYoto(g);
 #endif
 

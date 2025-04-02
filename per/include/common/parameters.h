@@ -27,7 +27,7 @@
 
 //PER QCA PARAMETERS
 //Choose the algorithm to be run
-#define QCA_YOTO_DF
+#define QCA_YOTO_ZZ
 //#define QCA_YOTT
 //#define QCA_SA
 //###############################
