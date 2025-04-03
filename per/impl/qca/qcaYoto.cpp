@@ -15,7 +15,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
     iota(cells.begin(), cells.end(), 0);
     randomVector(cells);
 
-#ifdef DEBUG
+#ifdef PRINT
     qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
 #endif
 
@@ -64,7 +64,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
             }
         }
 
-#ifdef DEBUG
+#ifdef PRINT
         qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
 #endif
 
@@ -109,7 +109,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
                 n2c[b] = targetCell;
                 ++swaps;
                 placed = true;
-#ifdef DEBUG
+#ifdef PRINT
                 qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
 #endif
                 break;

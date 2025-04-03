@@ -2,6 +2,7 @@
 #include  <common/util.h>
 #include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>
+#include <qca/qcaSa.h>
 
 #include <omp.h>
 
@@ -16,7 +17,7 @@ int main() {
 #ifdef DEBUG
     const string benchPath = "benchmarks/qca/bench_test/";
 #else
-        const string benchPath = "benchmarks/qca/eval_dot/";
+    const string benchPath = "benchmarks/qca/eval_dot/";
 #endif
     const string reportPath = "reports/fqca";
     string algPath;
@@ -38,43 +39,62 @@ int main() {
         //execution parameters
 #ifdef QCA_YOTO_ZZ
         algPath = "/yoto_df";
+#elifdef QCA_SA
+        algPath = "/sa";
 #endif
 
 #ifdef DEBUG
-        nExec = 1;
-#elifdef  FPGA_SA
+        nExec = 100;
+#elifdef  QCA_SA
             nExec = 100;
 #else
         nExec = 1000;
 #endif
-
+        int nExtraLayers = 0;
+        bool found = false;
         vector<QcaReportData> reports;
 
+        while (nExtraLayers < MAX_EXTRA_LAYERS && !found) {
+            reports.clear();
 #ifndef DEBUG
-        int nThreads = max(1, omp_get_num_procs() - 1);
-        omp_set_num_threads(nThreads);
+            int nThreads = max(1, omp_get_num_procs() - 1);
+            omp_set_num_threads(nThreads);
 
 #pragma omp parallel
-        {
+            {
 #pragma omp for schedule(dynamic)
 #endif
-        for (int exec = 0; exec < nExec; exec++) {
-            QcaReportData report;
+            for (int exec = 0; exec < nExec; exec++) {
+                QcaReportData report;
 #if defined(QCA_YOTO_ZZ)
-            report = qcaYoto(g);
+                report = qcaYoto(g);
+#elif  defined(QCA_SA)
+                report = qcaSa(g);
 #endif
 
 #ifndef DEBUG
 #pragma omp critical
 #endif
-            {
-                reports.push_back(report);
+                {
+                    reports.push_back(report);
+                }
+            }
+#ifndef DEBUG
+            }
+#endif
+            reports.erase(
+                remove_if(reports.begin(), reports.end(), [](const QcaReportData &r) {
+                    return !r.success;
+                }),
+                reports.end()
+            );
+            if (!reports.empty())
+                found = true;
+            else {
+                g.insertDummyLayerAtLevel(randomInt(1,g.minOutputLevel));
+                nExtraLayers++;
             }
         }
-#ifndef DEBUG
-    }
-#endif
-
         //sort the reports by total cost because I want only the 10 better placements
         // sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
         //     return a.totalCost < b.totalCost;
@@ -84,14 +104,6 @@ int main() {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(i);
-#ifndef DEBUG
-            //save reports for the 10 better placements
-            writeJson(rootPath, reportPath, algPath, fileName, reports[i]);
-#endif
-#if !defined (DEBUG)
-            //generate reports and files for vpr
-            writeVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
-#endif
         }
     }
     return 0;

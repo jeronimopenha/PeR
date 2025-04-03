@@ -6,7 +6,9 @@
 
 
 QCAGraph::QCAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
+#ifdef PRINT
     exportUpGToDot("/home/jeronimo/qca.dot");
+#endif
     fixFanout();
     fixFanin();
     balanceGraphAll();
@@ -64,7 +66,7 @@ void QCAGraph::fixFanout() {
     nNodes = nextId;
     updateG();
 
-#ifdef DEBUG
+#ifdef PRINT
     exportUpGToDot("/home/jeronimo/qca.dot");
 #endif
 }
@@ -112,7 +114,7 @@ void QCAGraph::fixFanin() {
     nEdges = static_cast<int>(gEdges.size());
     nNodes = nextId;
     updateG();
-#ifdef DEBUG
+#ifdef PRINT
     exportUpGToDot("/home/jeronimo/qca.dot");
 #endif
 }
@@ -191,7 +193,7 @@ void QCAGraph::balanceGraphAll() {
     updateG();
     computeLevels();
 
-#ifdef DEBUG
+#ifdef PRINT
     exportUpGToDot("/home/jeronimo/qca.dot");
 #endif
 }
@@ -227,7 +229,7 @@ void QCAGraph::insertDummyLayerAtLevel(const int targetLevel) {
     computeLevels();
     extraLayers++;
     extraLayersLevels.push_back(targetLevel);
-#ifdef DEBUG
+#ifdef PRINT
     exportUpGToDot("/home/jeronimo/qca.dot");
 #endif
 }

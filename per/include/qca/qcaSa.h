@@ -1,15 +1,15 @@
-#ifndef FPGA_SA_H
-#define FPGA_SA_H
+#ifndef QCA_SA_H
+#define QCA_SA_H
 
 #include <common/parameters.h>
-#include <fpga/fpgaGraph.h>
-#include <fpga/fpgaUtil.h>
+#include <qca/qcaGraph.h>
+#include <qca/qcaUtil.h>
 
 using namespace std;
 
-FpgaReportData fpgaSa(FPGAGraph &g);
+QcaReportData qcaSa(QCAGraph &g);
 
-void fpgaGetSwapCost(
+void qcaGetSwapCost(
     const std::vector<int> &n2c,
     int a,
     int b,

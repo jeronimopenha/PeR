@@ -1,8 +1,7 @@
-#include <fpga/fpgaSa.h>
+#include <qca/qcaSa.h>
 
-FpgaReportData fpgaSa(FPGAGraph &g) {
+QcaReportData qcaSa(QCAGraph &g) {
     const string alg_type = "SA";
-    int cacheMisses = 0;
     int tries = 0;
     int swaps = 0;
 
@@ -11,48 +10,27 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     const int nNodes = g.nNodes;
     const vector<pair<int, int> > ed = g.gEdges;
 
-
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
 
-    vector<int> inOutCells = g.getInOutPos();
-    randomVector(inOutCells);
+    vector<int> cells(nCells);
+    iota(cells.begin(), cells.end(), 0);
+    randomVector(cells);
 
-    vector<int> clbCells = g.getClbPos();
-    randomVector(clbCells);
-
-    //place the io nodes to their initial positions
-    vector<int> ioNodes;
-    ioNodes.reserve(g.inputNodes.size() + g.outputNodes.size());
-    ioNodes.insert(ioNodes.end(), g.inputNodes.begin(), g.inputNodes.end());
-    ioNodes.insert(ioNodes.end(), g.outputNodes.begin(), g.outputNodes.end());
-
-
+    //place the nodes to their initial positions
     int idx = 0;
-    for (int node: ioNodes) {
-        if (c2n[inOutCells[idx]] == -1) {
-            c2n[inOutCells[idx]] = node;
-            n2c[node] = inOutCells[idx];
+    for (int node = 0; node < nNodes; node++) {
+        if (c2n[cells[idx]] == -1) {
+            c2n[cells[idx]] = node;
+            n2c[node] = cells[idx];
             idx++;
         }
     }
 
-    //place the clb nodes to their initial positions
-    vector<int> clbNodes = g.clbNodes;
+    //std::vector<std::vector<int> > neighbors = g.neighbors;
 
-    idx = 0;
-    for (int node: clbNodes) {
-        if (c2n[clbCells[idx]] == -1) {
-            c2n[clbCells[idx]] = node;
-            n2c[node] = clbCells[idx];
-            idx++;
-        }
-    }
-
-    std::vector<std::vector<int> > neighbors = g.neighbors;
-
-#ifdef DEBUG
-    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#ifdef PRINT
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
 #endif
 
     //begin of SA algorithm
@@ -61,7 +39,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 
     auto start = chrono::high_resolution_clock::now();
 
-    while (t >= t_min) {
+    /*while (t >= t_min) {
         for (int cellA = 1; cellA < nCells; cellA++) {
             for (int cellB = 1; cellB < nCells; cellB++) {
                 tries++;
@@ -91,15 +69,15 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
                 int costABefore, costAAfter;
                 int costBBefore, costBAfter;
 
-                fpgaGetSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
-                                costBAfter);
+                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
+                            costBAfter);
 
                 int costAfter = costAAfter + costBAfter;
                 int costBefore = costABefore + costBBefore;
 
-                double value = exp((-1.0 * (costAfter - costBefore) / t));
+                double value = exp((-1 * (costAfter - costBefore) / t));
 
-                const double rnd = randomFloat(0.0f, 1.0f);
+                double rnd = dis(gen);
 
                 if ((costAfter < costBefore) || (rnd <= value)) {
                     if (a != -1) {
@@ -148,11 +126,11 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         c2n,
         n2c
     );
-    return report;
+    return report;*/
 }
 
 
-void fpgaGetSwapCost(
+void qcaGetSwapCost(
     const std::vector<int> &n2c,
     const int a,
     const int b,
