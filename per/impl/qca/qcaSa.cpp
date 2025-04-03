@@ -39,25 +39,12 @@ QcaReportData qcaSa(QCAGraph &g) {
 
     auto start = chrono::high_resolution_clock::now();
 
-    /*while (t >= t_min) {
+    while (t >= t_min) {
         for (int cellA = 1; cellA < nCells; cellA++) {
             for (int cellB = 1; cellB < nCells; cellB++) {
                 tries++;
 
                 if (cellA == cellB)
-                    continue;
-                // Check if cellA is nor allowed, go to next
-                if (fpgaIsInvalidCell(cellA, nCellsSqrt))
-                    continue;
-                if (fpgaIsInvalidCell(cellB, nCellsSqrt))
-                    continue;
-
-                //prevents IO nodes to be not put in IO cells
-                //and put a non IO node in an IO cell
-                const bool isCellAIO = fpgaIsIOCell(cellA, nCellsSqrt);
-                const bool isCellBIO = fpgaIsIOCell(cellB, nCellsSqrt);
-
-                if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;
 
                 int a = c2n[cellA];
@@ -69,15 +56,16 @@ QcaReportData qcaSa(QCAGraph &g) {
                 int costABefore, costAAfter;
                 int costBBefore, costBAfter;
 
-                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
-                            costBAfter);
+                const float totalCost = qcaGetSwapCost(n2c, a, b) *;
+
 
                 int costAfter = costAAfter + costBAfter;
                 int costBefore = costABefore + costBBefore;
 
-                double value = exp((-1 * (costAfter - costBefore) / t));
+                const auto delta = static_cast<float>(costAfter - costBefore);
+                const double value = exp((-delta / t));
 
-                double rnd = dis(gen);
+                const double rnd = randomFloat(0.0f, 1.0f);
 
                 if ((costAfter < costBefore) || (rnd <= value)) {
                     if (a != -1) {
@@ -98,52 +86,44 @@ QcaReportData qcaSa(QCAGraph &g) {
         }
     }
 
-#ifdef DEBUG
-    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double, milli> duration = end - start;
-    float _time = duration.count();
+    /*#ifdef DEBUG
+        fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    #endif
+        auto end = chrono::high_resolution_clock::now();
+        chrono::duration<double, milli> duration = end - start;
+        float _time = duration.count();
 
-    int tc = 0;
-    // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#endif
+        int tc = 0;
+        // commented to take the cost of the longest path
+    #ifdef FPGA_TOTAL_COST
+        tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    #elifdef FPGA_LP_COST
+        tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+    #endif
 
-    auto report = FpgaReportData(
-        _time,
-        g.dotName,
-        g.dotPath,
-        "SABase",
-        cacheMisses,
-        tries,
-        swaps,
-        alg_type,
-        tc,
-        c2n,
-        n2c
-    );
-    return report;*/
+        auto report = FpgaReportData(
+            _time,
+            g.dotName,
+            g.dotPath,
+            "SABase",
+            cacheMisses,
+            tries,
+            swaps,
+            alg_type,
+            tc,
+            c2n,
+            n2c
+        );
+        return report;*/
 }
 
 
-void qcaGetSwapCost(
+float qcaGetSwapCost(
     const std::vector<int> &n2c,
-    const int a,
-    const int b,
-    const int cellA,
-    const int cellB,
-    const int nCellsSqrt,
-    const std::vector<std::vector<int> > &neighbors,
-    int &costABefore,
-    int &costAAfter,
-    int &costBBefore,
-    int &costBAfter
+    int a,
+    int b
 ) {
-    costABefore = 0;
+    /*costABefore = 0;
     costAAfter = 0;
     costBBefore = 0;
     costBAfter = 0;
@@ -168,5 +148,5 @@ void qcaGetSwapCost(
                 costBAfter += getManhattanDist(cellA, n2c[node], nCellsSqrt);
             }
         }
-    }
+    }*/
 }
