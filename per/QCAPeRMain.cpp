@@ -76,9 +76,9 @@ int main() {
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements
-        sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
-            return a.totalCost < b.totalCost;
-        });
+        // sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
+        //     return a.totalCost < b.totalCost;
+        // });
         int limit = (10 < reports.size()) ? 10 : reports.size();
         for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");

@@ -10,6 +10,7 @@ namespace fs = std::filesystem;
 
 
 struct QcaReportData {
+    bool success;
     float _time;
     string dotName;
     string dotPath;
@@ -25,7 +26,7 @@ struct QcaReportData {
 
     QcaReportData();
 
-    QcaReportData(float _time, string dotName, string dotPath, string placer,
+    QcaReportData(bool success, float _time, string dotName, string dotPath, string placer,
                   int wires, int nodes, int tries, int swaps,
                   int extraLayers, vector<int> extraLayersLevels, vector<int> placement,
                   vector<int> n2c);

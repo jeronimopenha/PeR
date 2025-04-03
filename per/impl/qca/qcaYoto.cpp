@@ -38,7 +38,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
     const auto start = chrono::high_resolution_clock::now();
 
 #ifdef QCA_YOTO_ZZ
-    for (const auto& [a,b,dir]: edzz)
+    for (const auto &[a,b,dir]: edzz)
 #else
     for (auto [a,b] : ed)
 #endif
@@ -86,6 +86,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
         else
             distCells = qcaGetOutputDirections(xA, yA);
 #endif
+        randomVector(distCells);
 
         bool placed = false;
         //Then I will look for a cell next to A's cell
@@ -125,20 +126,35 @@ QcaReportData qcaYoto(QCAGraph &g) {
 
     //if this placement valid?
 
-    bool validPlacement = g.verifyPlacement(n2c);
-    ReportData report = ReportData(
+    bool success = g.verifyPlacement(n2c);
+    auto report = QcaReportData(
+        success,
         _time,
         g.dotName,
         g.dotPath,
-        "yoto",
-        cacheMisses,
+        "YOTO",
+        g.dummyMap.size(),
+        g.nNodes - g.dummyMap.size(),
         tries,
         swaps,
-        alg_type,
-        tc,
+        g.extraLayers,
+        g.extraLayersLevels,
         c2n,
         n2c
     );
+    /*
+    * float _time;
+    * string dotName;
+    * string dotPath;
+    * string placer;
+    * int wires;
+    * int nodes;
+    * int tries;
+    * int swaps;
+    * int extraLayers;
+    * vector<int> extraLayersLevels;
+    * vector<int> placement;
+    * vector<int> n2c;
+     */
     return report;
-    */
 }

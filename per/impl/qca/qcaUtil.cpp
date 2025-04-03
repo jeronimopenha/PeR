@@ -9,11 +9,12 @@ QcaReportData::QcaReportData()
 }
 
 // Constructor for easy initialization
-QcaReportData::QcaReportData(const float _time, string dotName, string dotPath, string placer,
+QcaReportData::QcaReportData(const bool success, const float _time, string dotName, string dotPath, string placer,
                              const int wires, const int nodes, const int tries, const int swaps,
                              const int extraLayers, vector<int> extraLayersLevels, vector<int> placement,
                              vector<int> n2c)
-    : _time(_time),
+    : success(success),
+      _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
       placer(std::move(placer)),
@@ -31,6 +32,7 @@ QcaReportData::QcaReportData(const float _time, string dotName, string dotPath, 
 string QcaReportData::to_json() const {
     ostringstream oss;
     oss << "{\n"
+            << "  \"success\": " << success << ",\n"
             << "  \"time\": " << _time << ",\n"
             << "  \"dotName\": \"" << dotName << "\",\n"
             << "  \"dotPath\": \"" << dotPath << "\",\n"
