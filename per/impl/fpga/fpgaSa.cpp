@@ -49,7 +49,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         }
     }
 
-    std::vector<std::vector<int> > neighbors = g.neighbors;
+    vector<vector<int> > neighbors = g.neighbors;
 
 #ifdef DEBUG
     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");

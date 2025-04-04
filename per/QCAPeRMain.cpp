@@ -44,7 +44,7 @@ int main() {
 #endif
 
 #ifdef DEBUG
-        nExec = 100;
+        nExec = 2;
 #elifdef  QCA_SA
             nExec = 100;
 #else

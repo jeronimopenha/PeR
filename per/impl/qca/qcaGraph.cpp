@@ -14,8 +14,28 @@ QCAGraph::QCAGraph(const string &dotPath, const string &dotName): Graph(dotPath,
     balanceGraphAll();
 }
 
+void QCAGraph::updateG() {
+    Graph::updateG();
+    outNeighbors = std::vector<std::vector<int> >(nNodes);
+    inNeighbors = std::vector<std::vector<int> >(nNodes);
+    updateNeighbors();
+}
+
+void QCAGraph::updateNeighbors() {
+    for (int node = 0; node< nNodes; node++) {
+        for (int neigh = 0; neigh < nNodes; neigh++) {
+            if (successors[node][neigh]) {
+                outNeighbors[node].push_back(neigh);
+            }
+            if (predecessors[node][neigh]) {
+                inNeighbors[node].push_back(neigh);
+            }
+        }
+    }
+}
+
 void QCAGraph::calcMatrix() {
-    nCellsSqrt = static_cast<int>(ceil(sqrt(nNodes))) * 2;
+    nCellsSqrt = static_cast<int>(ceil(sqrt(nNodes))) + 2;
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
@@ -238,13 +258,21 @@ void QCAGraph::insertDummyLayerAtLevel(const int targetLevel) {
 void QCAGraph::exportUpGToDot(const string &filename) {
     ofstream fout(filename);
     fout << "digraph network {\n";
-    for (auto [fst, snd]: gEdges) {
-        fout << "  " << fst << " -> " << snd;
-        if (dummyMap.count(fst) || dummyMap.count(snd)) {
-            fout << " [color=gray, style=dashed]";
+
+    // Declara os nós com estilo
+    for (int node : gNodes) {
+        fout << "  " << node;
+        if (dummyMap.count(node)) {
+            fout << " [style=dashed]";
         }
         fout << ";\n";
     }
+
+    // Escreve as arestas normalmente
+    for (auto [fst, snd]: gEdges) {
+        fout << "  " << fst << " -> " << snd << ";\n";
+    }
+
     fout << "}\n";
     fout.close();
     //cout << "DOT file exported to: " << filename << endl;

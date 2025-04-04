@@ -9,10 +9,13 @@ using namespace std;
 
 QcaReportData qcaSa(QCAGraph &g);
 
-float qcaGetSwapCost(
-    const std::vector<int> &n2c,
-    int a,
-    int b
+pair<float, float> qcaGetSwapCost(
+    int cellNode1,
+    int cellNode2,
+    int node1,
+    int node2,
+    const vector<int>& n2c,
+    const QCAGraph &g
 );
 
 #endif

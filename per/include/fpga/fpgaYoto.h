@@ -9,6 +9,6 @@
 
 using namespace std;
 
-FpgaReportData fpgaYoto(FPGAGraph& g);
+FpgaReportData fpgaYoto( FPGAGraph& g);
 
 #endif
