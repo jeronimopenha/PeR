@@ -7,6 +7,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
     const int nCells = g.nCells;
     const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
+    const vector<pair<int,int>> ed = g.gEdges;
 
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
@@ -16,14 +17,14 @@ QcaReportData qcaYoto(QCAGraph &g) {
     randomVector(cells);
 
 #ifdef PRINT
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
 
     int tries = 0;
     int swaps = 0;
 
     string alg_type;
-    vector<pair<int, int> > ed;
+    //vector<pair<int, int> > ed;
 
 #ifdef QCA_YOTO_ZZ
     vector<pair<int, int> > convergence;
@@ -65,7 +66,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
         }
 
 #ifdef PRINT
-        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
 
         //Now, if B is placed, go to next edge
@@ -110,7 +111,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
                 ++swaps;
                 placed = true;
 #ifdef PRINT
-                qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+                qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
                 break;
             }

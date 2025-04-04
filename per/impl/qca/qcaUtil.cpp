@@ -128,7 +128,8 @@ bool qcaIsInvalidCell(const int x, const int y, const int nCellsSqrt) {
     return outOfBounds;
 }
 
-void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, int nCellsSqrt) {
+void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vector<pair<int, int> > &edges,
+                       int nCellsSqrt) {
     ofstream file(filename);
     if (!file) {
         cerr << "Error!" << endl;
@@ -172,20 +173,31 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, int nCell
 
         if (!qcaIsInvalidCell(x1, y1, nCellsSqrt)) {
             file << cell << " -> " << cell1;
-            if (cells[cell1] == -1)
+            file << " [color=\"#cccccc\"];" << endl;
+            /*if (cells[cell1] == -1)
                 file << " [color=\"#cccccc\"];" << endl;
             else
-                file << ";" << endl;
+                file << ";" << endl;*/
         }
         if (!qcaIsInvalidCell(x2, y2, nCellsSqrt)) {
             file << cell << " -> " << cell2;
-            if (cells[cell2] == -1)
+            file << " [color=\"#cccccc\"];" << endl;
+            /*if (cells[cell2] == -1)
                 file << " [color=\"#cccccc\"];" << endl;
             else
-                file << ";" << endl;
+                file << ";" << endl;*/
         }
     }
 
+    for (const auto &[u, v]: edges) {
+        if (u >= 0 && v >= 0 && u < n2c.size() && v < n2c.size()) {
+            int cellU = n2c[u];
+            int cellV = n2c[v];
+            if (cellU != -1 && cellV != -1) {
+                file << cellU << " -> " << cellV << ";" << endl;
+            }
+        }
+    }
 
     file << "edge [constraint=true, style=invis];" << endl;
     //structural edges
@@ -212,6 +224,8 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, int nCell
         }
         file << "};" << endl;
     }
+
+
 
 
     // write the dot footer

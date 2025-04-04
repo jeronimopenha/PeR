@@ -88,12 +88,12 @@ int main() {
                 }),
                 reports.end()
             );
-            if (!reports.empty())
-                found = true;
-            else {
-                g.insertDummyLayerAtLevel(randomInt(1,g.minOutputLevel));
+            // if (!reports.empty())
+            //     found = true;
+            // else {
+                g.insertDummyLayerAtLevel(randomInt(0,g.minOutputLevel));
                 nExtraLayers++;
-            }
+            //}
         }
         //sort the reports by total cost because I want only the 10 better placements
         // sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {

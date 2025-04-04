@@ -29,7 +29,7 @@ QcaReportData qcaSa(QCAGraph &g) {
 
 
 #ifdef PRINT
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c,ed, nCellsSqrt);
 #endif
 
     //begin of SA algorithm
@@ -52,18 +52,21 @@ QcaReportData qcaSa(QCAGraph &g) {
                 if (a == -1 && b == -1)
                     continue;
 
-                auto [costABefore, costAAfter] = qcaGetSwapCost(cellA, cellB, a, b, n2c, g);
-                auto [costBBefore, costBAfter] = qcaGetSwapCost(cellB, cellA, b, a, n2c, g);
+                //auto [costABefore, costAAfter] = qcaGetSwapCost(cellA, cellB, a, b, n2c, g);
+                //auto [costBBefore, costBAfter] = qcaGetSwapCost(cellB, cellA, b, a, n2c, g);
 
-                const float costBefore = costABefore + costBBefore;
-                const float costAfter = costAAfter + costBAfter;
+                auto [costABefore, costAAfter] = qcaGetSwapCostImproved(cellA, cellB, a, b, n2c, g);
+                auto [costBBefore, costBAfter] = qcaGetSwapCostImproved(cellB, cellA, b, a, n2c, g);
+
+                const float costBefore = (costABefore + costBBefore);
+                const float costAfter = (costAAfter + costBAfter);
 
                 const auto delta = costAfter - costBefore;
-                const double value = exp((-delta / t));
+                const double value = exp(-1 * delta / t);
 
                 const double rnd = randomFloat(0.0f, 1.0f);
 
-                if ((costAfter < costBefore)){// || (rnd <= value)) {
+                if ((costAfter < costBefore) || (rnd <= value)) {
                     if (a != -1) {
                         n2c[a] = cellB;
                     }
@@ -73,14 +76,28 @@ QcaReportData qcaSa(QCAGraph &g) {
                     c2n[cellA] = b;
                     c2n[cellB] = a;
                     swaps++;
+                    bool success = g.verifyPlacement(n2c);
+                    if (success) {
+                        int asdf = 1;
+                    }
+#ifdef PRINT
+                    //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+                    int asd = 1;
+#endif
                 }
             }
-
-            t *= 0.999;
+#ifdef PRINT
+        if (t <= 1) {
+            //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+            int asd = 1;
         }
+#endif
+        t *= 0.999;
+        }
+
     }
 #ifdef PRINT
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
     const auto end = chrono::high_resolution_clock::now();
     const chrono::duration<double, milli> duration = end - start;
@@ -172,6 +189,8 @@ pair<float, float> qcaGetSwapCost(
             // Penaliza 1.0 se estiver fora da direção esperada
             // Penaliza parcialmente se estiver na direção mas distante
             costB += min(dist, 3); // ou: costB += dist;
+            //costB += dist; // ou: costB += dist;
+            //costB += 1; // ou: costB += dist;
         }
     }
 
@@ -195,6 +214,8 @@ pair<float, float> qcaGetSwapCost(
             // Penaliza 1.0 se estiver fora da direção esperada
             // Penaliza parcialmente se estiver na direção mas distante
             costB += min(dist, 3); // ou: costB += dist;
+            //costB += dist; // ou: costB += dist;
+            //costB += 1; // ou: costB += dist;
         }
     }
 
@@ -242,6 +263,8 @@ pair<float, float> qcaGetSwapCost(
             // Penaliza 1.0 se estiver fora da direção esperada
             // Penaliza parcialmente se estiver na direção mas distante
             costA += min(dist, 3); // ou: costB += dist;
+            //costA += dist; // ou: costB += dist;
+            //costA += 1; // ou: costB += dist;
         }
     }
 
@@ -265,10 +288,120 @@ pair<float, float> qcaGetSwapCost(
             // Penaliza 1.0 se estiver fora da direção esperada
             // Penaliza parcialmente se estiver na direção mas distante
             costA += min(dist, 3); // ou: costB += dist;
+            //costA += dist; // ou: costB += dist;
+            //costA += 1; // ou: costB += dist;
         }
     }
+    //float totalCostB = static_cast<float>(costB) / static_cast<float>(totalNeigh * (2 * nCellsSqrt));
+    //float totalCostA = static_cast<float>(costA) / static_cast<float>(totalNeigh * (2 * nCellsSqrt));
+
     float totalCostB = static_cast<float>(costB) / static_cast<float>(totalNeigh * 3);
     float totalCostA = static_cast<float>(costA) / static_cast<float>(totalNeigh * 3);
 
     return {totalCostB, totalCostA};
+    //return {costB, costA};
+}
+
+QcaCost computeQcaCostForNode(
+    int node,
+    int nodeCell,
+    int otherNode,
+    int otherCell,
+    const vector<int> &n2c,
+    const QCAGraph &g
+) {
+    QcaCost cost;
+
+    if (node == -1) return cost;
+
+    const int nCellsSqrt = g.nCellsSqrt;
+    const int x = getX(nodeCell, nCellsSqrt);
+    const int y = getY(nodeCell, nCellsSqrt);
+
+    const auto inDirs = qcaGetInputDirections(x, y);
+    const auto outDirs = qcaGetOutputDirections(x, y);
+
+    unordered_set<int> expectedInputs, expectedOutputs;
+    for (auto [dx, dy]: inDirs) {
+        int cx = x + dx, cy = y + dy;
+        if (!qcaIsInvalidCell(cx, cy, nCellsSqrt)) {
+            expectedInputs.insert(getCellIndex(cx, cy, nCellsSqrt));
+        }
+    }
+    for (auto [dx, dy]: outDirs) {
+        int cx = x + dx, cy = y + dy;
+        if (!qcaIsInvalidCell(cx, cy, nCellsSqrt)) {
+            expectedOutputs.insert(getCellIndex(cx, cy, nCellsSqrt));
+        }
+    }
+
+    // Verifica entradas
+    for (int pred: g.inNeighbors[node]) {
+        int cell = (pred == otherNode) ? otherCell : n2c[pred];
+        if (cell == -1) continue;
+
+        if (expectedInputs.count(cell)) {
+            int dx = abs(getX(cell, nCellsSqrt) - x);
+            int dy = abs(getY(cell, nCellsSqrt) - y);
+            int dist = dx + dy;
+            if (dist == 1)
+                cost.bonus += 1.0f;
+            else
+                cost.distancePenalty += min(dist - 1, 3);
+        } else {
+            cost.directionPenalty += 3.0f;
+        }
+    }
+
+    // Verifica saídas
+    for (int succ: g.outNeighbors[node]) {
+        int cell = (succ == otherNode) ? otherCell : n2c[succ];
+        if (cell == -1) continue;
+
+        if (expectedOutputs.count(cell)) {
+            int dx = abs(getX(cell, nCellsSqrt) - x);
+            int dy = abs(getY(cell, nCellsSqrt) - y);
+            int dist = dx + dy;
+            if (dist == 1)
+                cost.bonus += 1.0f;
+            else
+                cost.distancePenalty += min(dist - 1, 3);
+        } else {
+            cost.directionPenalty += 3.0f;
+        }
+    }
+
+    // Penalidade por inversão direta
+    if (otherNode != -1)
+        if ((g.successors[node][otherNode] || g.successors[otherNode][node]) && node != otherNode) {
+            cost.inversionPenalty += 2.0f; // ajustável
+        }
+
+    return cost;
+}
+
+// Função para calcular custo total da troca
+tuple<float, float> qcaGetSwapCostImproved(
+    int cellA, int cellB,
+    int nodeA, int nodeB,
+    const vector<int> &n2c,
+    const QCAGraph &g
+) {
+    if (nodeA == -1) return {0.0f, 0.0f};
+
+    auto costABefore = computeQcaCostForNode(nodeA, cellA, nodeB, cellB, n2c, g);
+    auto costBBefore = computeQcaCostForNode(nodeB, cellB, nodeA, cellA, n2c, g);
+    auto costAAfter = computeQcaCostForNode(nodeA, cellB, nodeB, cellA, n2c, g);
+    auto costBAfter = computeQcaCostForNode(nodeB, cellA, nodeA, cellB, n2c, g);
+
+    float before = costABefore.total() + costBBefore.total();
+    float after = costAAfter.total() + costBAfter.total();
+
+    // Normaliza entre 0 e 1 assumindo custo máximo realista por nó
+    size_t totalNeigh = g.inNeighbors[nodeA].size() + g.outNeighbors[nodeA].size();
+    float normFactor = static_cast<float>(std::max<size_t>(totalNeigh, 1)) * 4.0f;
+    before = before / normFactor;
+    after = after / normFactor;
+
+    return {before, after};
 }

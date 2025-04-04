@@ -40,6 +40,7 @@ vector<pair<int, int> > qcaGetOutputDirections(int x, int y);
 
 bool qcaIsInvalidCell(int x, int y, int nCellsSqrt);
 
-void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, int nCellsSqrt);
+void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vector<pair<int, int> > &edges,
+                       int nCellsSqrt);
 
 #endif
