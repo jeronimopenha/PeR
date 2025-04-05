@@ -26,7 +26,7 @@
 //###############################
 
 //PER QCA PARAMETERS
-#define  MAX_EXTRA_LAYERS 10
+#define  MAX_EXTRA_LAYERS 5
 
 //Choose the algorithm to be run
 //#define QCA_YOTO_ZZ
@@ -36,6 +36,6 @@
 
 //debugging defines
 #define DEBUG
-#define PRINT
+//#define PRINT
 //*******************************
 #endif //PARAMETERS_H

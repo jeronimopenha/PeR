@@ -5,13 +5,15 @@
 #include <common/util.h>
 
 QcaReportData::QcaReportData()
-    : _time(0), extraLayers(0), wires(0), nodes(0), tries(0), swaps(0) {
+    : success(false), _time(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0), area(0), usedAreaPercentage(0),
+      extraLayers(0) {
 }
 
 // Constructor for easy initialization
 QcaReportData::QcaReportData(const bool success, const float _time, string dotName, string dotPath, string placer,
-                             const int wires, const int nodes, const int tries, const int swaps,
-                             const int extraLayers, vector<int> extraLayersLevels, vector<int> placement,
+                             const int wires, const int nNodes, const int tries, const int swaps,
+                             const int wrongEdges, const int area, const int usedAreaPercentage, const int extraLayers,
+                             vector<int> extraLayersLevels, vector<int> placement,
                              vector<int> n2c)
     : success(success),
       _time(_time),
@@ -19,9 +21,12 @@ QcaReportData::QcaReportData(const bool success, const float _time, string dotNa
       dotPath(std::move(dotPath)),
       placer(std::move(placer)),
       wires(wires),
-      nodes(nodes),
+      nNodes(nNodes),
       tries(tries),
       swaps(swaps),
+      wrongEdges(wrongEdges),
+      area(area),
+      usedAreaPercentage(usedAreaPercentage),
       extraLayers(extraLayers),
       extraLayersLevels(std::move(extraLayersLevels)),
       placement(std::move(placement)),
@@ -38,9 +43,12 @@ string QcaReportData::to_json() const {
             << "  \"dotPath\": \"" << dotPath << "\",\n"
             << "  \"placer\": \"" << placer << "\",\n"
             << "  \"wires\": " << wires << ",\n"
-            << "  \"nodes\": " << nodes << ",\n"
+            << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"tries\": " << tries << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
+            << "  \"wrongEdges\": " << extraLayers << ",\n"
+            << "  \"area\": " << extraLayers << ",\n"
+            << "  \"usedAreaPercentage\": " << extraLayers << ",\n"
             << "  \"extraLayers\": " << extraLayers << ",\n"
 
             // Serialize vector<int> extraLayersLevels
@@ -226,9 +234,64 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     }
 
 
-
-
     // write the dot footer
     file << "}" << endl;
     file.close();
+}
+
+AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int>& c2n) {
+    int minRow = numeric_limits<int>::max();
+    int maxRow = -1;
+    int minCol = numeric_limits<int>::max();
+    int maxCol = -1;
+    int totalOccupied = 0;
+
+    for (int idx = 0; idx < c2n.size(); ++idx) {
+        if (c2n[idx] != -1) {
+            int row = idx / nCellsSqrt;
+            int col = idx % nCellsSqrt;
+
+            minRow = min(minRow, row);
+            maxRow = max(maxRow, row);
+            minCol = min(minCol, col);
+            maxCol = max(maxCol, col);
+
+            totalOccupied++;
+        }
+    }
+
+    AreaMetrics result{};
+    result.minRow = minRow;
+    result.maxRow = maxRow;
+    result.minCol = minCol;
+    result.maxCol = maxCol;
+
+    const int height = maxRow - minRow + 1;
+    const int width = maxCol - minCol + 1;
+    result.totalCells = height * width;
+    result.occupiedCells = totalOccupied;
+    result.utilization = result.totalCells > 0 ? static_cast<float>(totalOccupied) / static_cast<float>(result.totalCells) : 0.0f;
+
+    return result;
+}
+
+void qcaWriteJson(const string &basePath,
+                   const string &reportPath,
+                   const string &algPath,
+                   const string &fileName,
+                   const int extraLayers,
+                   const QcaReportData &data) {
+    string finalPath = basePath + reportPath + algPath + "/json/";
+    string jsonFile = finalPath + fileName + ".json";
+
+    createDir(finalPath);
+
+    ofstream file(jsonFile);
+
+    if (file.is_open()) {
+        file << data.to_json();; // Write JSON string to file
+        file.close();
+    } else {
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+    }
 }

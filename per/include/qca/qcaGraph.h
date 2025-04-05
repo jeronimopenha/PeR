@@ -41,7 +41,8 @@ public:
 
     void saveDummyMap(const string &filename);
 
-    bool verifyPlacement(const vector<int> &n2c);
+    bool verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
+                         int *invalidEdgesCount = nullptr) const;
 
     void insertDummyLayerAtLevel(int targetLevel);
 };

@@ -29,12 +29,13 @@ QcaReportData qcaSa(QCAGraph &g) {
 
 
 #ifdef PRINT
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c,ed, nCellsSqrt);
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
 
     //begin of SA algorithm
     const float t_min = 0.001;
     float t = 100;
+    bool success = false;
 
     auto start = chrono::high_resolution_clock::now();
 
@@ -76,52 +77,58 @@ QcaReportData qcaSa(QCAGraph &g) {
                     c2n[cellA] = b;
                     c2n[cellB] = a;
                     swaps++;
-                    bool success = g.verifyPlacement(n2c);
+                    success = g.verifyPlacement(n2c,ed);
                     if (success) {
                         int asdf = 1;
                     }
 #ifdef PRINT
-                    //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
-                    int asd = 1;
+                    //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
                 }
+                if (success) break;
             }
+            if (success) break;
 #ifdef PRINT
-        if (t <= 1) {
-            //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
-            int asd = 1;
-        }
+            if (t <= 1) {
+                //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
+            }
 #endif
-        t *= 0.999;
+            t *= 0.999;
         }
-
+        if (success) break;
     }
 #ifdef PRINT
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
     const auto end = chrono::high_resolution_clock::now();
     const chrono::duration<double, milli> duration = end - start;
     double _time = duration.count();
 
     //if this placement valid?
+    int wrongEdges;
+    success = g.verifyPlacement(n2c,ed,&wrongEdges);
+    AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt,c2n);
 
-    bool success = g.verifyPlacement(n2c);
 
     auto report = QcaReportData(
         success,
         _time,
         g.dotName,
         g.dotPath,
-        "YOTO",
+        "SA",
         g.dummyMap.size(),
         g.nNodes - g.dummyMap.size(),
         tries,
         swaps,
+        wrongEdges,
+        saMetrics.totalCells,
+        saMetrics.utilization,
         g.extraLayers,
         g.extraLayersLevels,
         c2n,
         n2c
     );
+
     return report;
 }
 

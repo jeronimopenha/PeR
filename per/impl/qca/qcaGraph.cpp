@@ -22,7 +22,7 @@ void QCAGraph::updateG() {
 }
 
 void QCAGraph::updateNeighbors() {
-    for (int node = 0; node< nNodes; node++) {
+    for (int node = 0; node < nNodes; node++) {
         for (int neigh = 0; neigh < nNodes; neigh++) {
             if (successors[node][neigh]) {
                 outNeighbors[node].push_back(neigh);
@@ -260,7 +260,7 @@ void QCAGraph::exportUpGToDot(const string &filename) {
     fout << "digraph network {\n";
 
     // Declara os nós com estilo
-    for (int node : gNodes) {
+    for (int node: gNodes) {
         fout << "  " << node;
         if (dummyMap.count(node)) {
             fout << " [style=dashed]";
@@ -288,72 +288,44 @@ void QCAGraph::saveDummyMap(const string &filename) {
     cout << "Dummy map saved to: " << filename << endl;
 }
 
-bool QCAGraph::verifyPlacement(const vector<int> &n2c) {
+bool QCAGraph::verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
+                               int *invalidEdgesCount) const {
     bool valid = true;
-    for (int node = 0; node < nNodes; ++node) {
-        const int nodeCell = n2c[node];
-        if (nodeCell == -1) {
+    int totalInvalid = 0;
+
+    for (const auto &[src, dst]: edges) {
+        const int srcCell = n2c[src];
+        const int dstCell = n2c[dst];
+
+        if (srcCell == -1 || dstCell == -1) {
+            ++totalInvalid;
             valid = false;
-            break;
+            continue;
         }
-        const int nodeX = getX(nodeCell, nCellsSqrt);
-        const int nodeY = getY(nodeCell, nCellsSqrt);
-        const int nNeighIn = static_cast<int>(count(predecessors[node].begin(), predecessors[node].end(), true));
-        const int nNeighOut = static_cast<int>(count(successors[node].begin(), successors[node].end(), true));
-        vector<pair<int, int> > inputDir = qcaGetInputDirections(nodeX, nodeY);
-        vector<pair<int, int> > outputDir = qcaGetOutputDirections(nodeX, nodeY);
 
-        int nFound = 0;
-        for (auto [dX,dY]: inputDir) {
-            if (nNeighIn == 0) break;
+        const int srcX = getX(srcCell, nCellsSqrt);
+        const int srcY = getY(srcCell, nCellsSqrt);
+        const int dstX = getX(dstCell, nCellsSqrt);
+        const int dstY = getY(dstCell, nCellsSqrt);
 
-            const int nCellX = nodeX + dX;
-            const int nCellY = nodeY + dY;
+        vector<pair<int, int> > outputDirs = qcaGetOutputDirections(srcX, srcY);
 
-            if (qcaIsInvalidCell(nCellX, nCellY, nCellsSqrt)) continue;
-
-            const int nCell = getCellIndex(nCellX, nCellY, nCellsSqrt);
-
-            for (int pred = 0; pred < predecessors[node].size(); pred++) {
-                if (predecessors[node][pred]) {
-                    const int predCell = n2c[pred];
-                    if (predCell == nCell) {
-                        nFound++;
-                        break;
-                    }
-                }
+        bool found = false;
+        for (auto [dx, dy]: outputDirs) {
+            if (dstX == srcX + dx && dstY == srcY + dy) {
+                found = true;
+                break;
             }
         }
-        if (nFound != nNeighIn) {
+
+        if (!found) {
+            ++totalInvalid;
             valid = false;
-            return valid;
         }
+    }
 
-        nFound = 0;
-        for (auto [dX,dY]: outputDir) {
-            if (nNeighOut == 0) break;
-
-            const int nCellX = nodeX + dX;
-            const int nCellY = nodeY + dY;
-
-            if (qcaIsInvalidCell(nCellX, nCellY, nCellsSqrt)) continue;
-
-            const int nCell = getCellIndex(nCellX, nCellY, nCellsSqrt);
-
-            for (int succ = 0; succ < successors[node].size(); succ++) {
-                if (successors[node][succ]) {
-                    const int succCell = n2c[succ];
-                    if (succCell == nCell) {
-                        nFound++;
-                        break;
-                    }
-                }
-            }
-        }
-        if (nFound != nNeighOut) {
-            valid = false;
-            return valid;
-        }
+    if (invalidEdgesCount != nullptr) {
+        *invalidEdgesCount = totalInvalid;
     }
     return valid;
 }

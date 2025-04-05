@@ -30,14 +30,14 @@ struct FpgaReportData {
     string to_json() const;
 };
 
-void fpgaSavePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSqrt,
+void fpgaSavePlacedDot(vector<int> n2c, const vector<pair<int, int> >& ed, int nCellsSqrt,
                        const string &filename);
 
 vector<vector<int> > fpgaGetAdjCellsDist(int nCellsSqrt);
 
 int fpgaCalcGraphTotalDistance(const vector<int> &n2c, const vector<pair<int, int> > &edges, int nCellsSqrt);
 
-int fpgaCalcGraphLPDistance(const vector<int> &longestPath, const vector<int> &n2c, const int nCellsSqrt);
+int fpgaCalcGraphLPDistance(const vector<int> &longestPath, const vector<int> &n2c, int nCellsSqrt);
 
 bool fpgaIsInvalidCell(int cell, int nCellsSqrt);
 

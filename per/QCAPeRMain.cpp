@@ -19,21 +19,18 @@ int main() {
 #else
     const string benchPath = "benchmarks/qca/eval_dot/";
 #endif
-    const string reportPath = "reports/fqca";
+    const string reportPath = "reports/qca";
     string algPath;
 
     cout << rootPath << endl;
 
-
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
-    // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
     for (const auto &[fst, snd]: files) {
         cout << fst << endl;
 
         //Creating graph important variables
         auto g = QCAGraph(fst, snd.substr(0, snd.size() - 4));
-        //reading graph variables
 
         int nExec;
         //execution parameters
@@ -51,11 +48,10 @@ int main() {
         nExec = 1000;
 #endif
         int nExtraLayers = 0;
-        bool found = false;
-        vector<QcaReportData> reports;
 
-        while (nExtraLayers < MAX_EXTRA_LAYERS && !found) {
-            reports.clear();
+        vector<vector<QcaReportData> > reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
+
+        while (nExtraLayers < MAX_EXTRA_LAYERS) {
 #ifndef DEBUG
             int nThreads = max(1, omp_get_num_procs() - 1);
             omp_set_num_threads(nThreads);
@@ -66,6 +62,11 @@ int main() {
 #endif
             for (int exec = 0; exec < nExec; exec++) {
                 QcaReportData report;
+                /*QCAGraph gT = g;
+                for (int i = 0; i < nExtraLayers; i++) {
+                    gT.insertDummyLayerAtLevel(randomInt(0, gT.minOutputLevel));
+                }*/
+
 #if defined(QCA_YOTO_ZZ)
                 report = qcaYoto(g);
 #elif  defined(QCA_SA)
@@ -76,35 +77,31 @@ int main() {
 #pragma omp critical
 #endif
                 {
-                    reports.push_back(report);
+                    reports[nExtraLayers][exec] = report;
                 }
             }
 #ifndef DEBUG
             }
 #endif
-            reports.erase(
-                remove_if(reports.begin(), reports.end(), [](const QcaReportData &r) {
-                    return !r.success;
-                }),
-                reports.end()
-            );
-            // if (!reports.empty())
-            //     found = true;
-            // else {
-                g.insertDummyLayerAtLevel(randomInt(0,g.minOutputLevel));
-                nExtraLayers++;
-            //}
+            nExtraLayers++;
+            g.insertDummyLayerAtLevel(randomInt(0, g.minOutputLevel));
         }
-        //sort the reports by total cost because I want only the 10 better placements
-        // sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
-        //     return a.totalCost < b.totalCost;
-        // });
-        int limit = (10 < reports.size()) ? 10 : reports.size();
-        for (int i = 0; i < limit; i++) {
-            //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+
+        //#ifndef DEBUG
+        for (auto &rep: reports) {
+            sort(rep.begin(), rep.end(), [](const QcaReportData &a, const QcaReportData &b) {
+                /*if (a.success != b.success)
+                    return a.success > b.success; // true vem antes de false*/
+                return a.wrongEdges < b.wrongEdges; // menos arestas erradas vem primeiro
+            });
+        }
+
+        for (int extraLayer = 0; extraLayer < MAX_EXTRA_LAYERS; extraLayer++) {
             cout << g.dotName << endl;
-            string fileName = g.dotName + "_" + to_string(i);
+            string fileName = g.dotName + "_" + to_string(extraLayer);
+            qcaWriteJson(rootPath, reportPath, algPath, fileName, extraLayer, reports[extraLayer][0]);
         }
+        //#endif
     }
     return 0;
 }

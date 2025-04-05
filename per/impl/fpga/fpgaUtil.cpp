@@ -47,7 +47,7 @@ string FpgaReportData::to_json() const {
     return oss.str();
 }
 
-void fpgaSavePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSqrt,
+void fpgaSavePlacedDot(vector<int> &n2c, const vector<pair<int, int> > &ed, const int nCellsSqrt,
                        const string &filename) {
     ofstream file(filename);
     if (!file) {
@@ -77,7 +77,7 @@ void fpgaSavePlacedDot(vector<int> n2c, vector<pair<int, int> > ed, int nCellsSq
     }
     file << "edge [constraint=false, style=vis];" << endl;
     //normal edges
-    for (auto [fst,snd]: ed) {
+    for (auto &[fst,snd]: ed) {
         file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
     }
 
@@ -198,10 +198,10 @@ int fpgaMinBorderDist(const int cell, const int nCellsSqrt) {
 }
 
 void fpgaWriteJson(const string &basePath,
-               const string &reportPath,
-               const string &algPath,
-               const string &fileName,
-               const FpgaReportData &data) {
+                   const string &reportPath,
+                   const string &algPath,
+                   const string &fileName,
+                   const FpgaReportData &data) {
     string finalPath = basePath + reportPath + algPath + "/json/";
     string jsonFile = finalPath + fileName + ".json";
 
@@ -218,11 +218,11 @@ void fpgaWriteJson(const string &basePath,
 }
 
 void fpgaWriteVprData(const string &basePath,
-                  const string &reportPath,
-                  const string &algPath,
-                  const string &fileName,
-                  const FpgaReportData &data,
-                  FPGAGraph g) {
+                      const string &reportPath,
+                      const string &algPath,
+                      const string &fileName,
+                      const FpgaReportData &data,
+                      FPGAGraph g) {
     string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
@@ -323,24 +323,23 @@ void fpgaWriteVprData(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
 }
-bool fpgaIsInvalidCell(const int cell, const int nCellsSqrt)
-{
+
+bool fpgaIsInvalidCell(const int cell, const int nCellsSqrt) {
     const int l = cell / nCellsSqrt;
     const int c = cell % nCellsSqrt;
 
     const bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
 
     const bool isCorner =
-        (l == 0 && c == 0) ||
-        (l == 0 && c == nCellsSqrt - 1) ||
-        (l == nCellsSqrt - 1 && c == 0) ||
-        (l == nCellsSqrt - 1 && c == nCellsSqrt - 1);
+            (l == 0 && c == 0) ||
+            (l == 0 && c == nCellsSqrt - 1) ||
+            (l == nCellsSqrt - 1 && c == 0) ||
+            (l == nCellsSqrt - 1 && c == nCellsSqrt - 1);
 
     return outOfBounds || isCorner;
 }
 
-bool fpgaIsIOCell(const int cell, const int nCellsSqrt)
-{
+bool fpgaIsIOCell(const int cell, const int nCellsSqrt) {
     const int l = cell / nCellsSqrt;
     const int c = cell % nCellsSqrt;
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;

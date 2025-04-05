@@ -127,8 +127,9 @@ QcaReportData qcaYoto(QCAGraph &g) {
 
     //if this placement valid?
 
-    bool success = g.verifyPlacement(n2c);
-    auto report = QcaReportData(
+    bool success = g.verifyPlacement(n2c,ed);
+    auto report = QcaReportData();
+    /*auto report = QcaReportData(
         success,
         _time,
         g.dotName,
@@ -142,7 +143,7 @@ QcaReportData qcaYoto(QCAGraph &g) {
         g.extraLayersLevels,
         c2n,
         n2c
-    );
+    );*/
     /*
     * float _time;
     * string dotName;

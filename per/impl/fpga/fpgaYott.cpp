@@ -131,7 +131,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
                     int modDist = targetCellDist;
                     bool found = true;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
-                    for (auto [fst, snd] : annotation)
+                    for (auto &[fst, snd] : annotation)
                     {
                         int annCell;
                         int annDist;
