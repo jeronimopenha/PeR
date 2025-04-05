@@ -17,7 +17,7 @@ int main() {
 #ifdef DEBUG
     const string benchPath = "benchmarks/qca/bench_test/";
 #else
-    const string benchPath = "benchmarks/qca/eval_dot/";
+    const string benchPath = "benchmarks/qca/eval/";
 #endif
     const string reportPath = "reports/qca";
     string algPath;
@@ -41,9 +41,9 @@ int main() {
 #endif
 
 #ifdef DEBUG
-        nExec = 2;
+        nExec = 1;
 #elifdef  QCA_SA
-            nExec = 100;
+        nExec = 10;
 #else
         nExec = 1000;
 #endif
@@ -60,26 +60,26 @@ int main() {
             {
 #pragma omp for schedule(dynamic)
 #endif
-            for (int exec = 0; exec < nExec; exec++) {
-                QcaReportData report;
-                /*QCAGraph gT = g;
-                for (int i = 0; i < nExtraLayers; i++) {
-                    gT.insertDummyLayerAtLevel(randomInt(0, gT.minOutputLevel));
-                }*/
+                for (int exec = 0; exec < nExec; exec++) {
+                    QcaReportData report;
+                    /*QCAGraph gT = g;
+                    for (int i = 0; i < nExtraLayers; i++) {
+                        gT.insertDummyLayerAtLevel(randomInt(0, gT.minOutputLevel));
+                    }*/
 
 #if defined(QCA_YOTO_ZZ)
                 report = qcaYoto(g);
 #elif  defined(QCA_SA)
-                report = qcaSa(g);
+                    report = qcaSa(g);
 #endif
 
 #ifndef DEBUG
 #pragma omp critical
 #endif
-                {
-                    reports[nExtraLayers][exec] = report;
+                    {
+                        reports[nExtraLayers][exec] = report;
+                    }
                 }
-            }
 #ifndef DEBUG
             }
 #endif
@@ -100,6 +100,15 @@ int main() {
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(extraLayer);
             qcaWriteJson(rootPath, reportPath, algPath, fileName, extraLayer, reports[extraLayer][0]);
+
+            auto n2c = reports[extraLayer][0].n2c;
+            auto ed = reports[extraLayer][0].edges;
+            auto nCellsSqrt = reports[extraLayer][0].nCellsSqrt;
+            string finalPath = rootPath + reportPath + algPath + "/dot/";
+            string dotFile = finalPath + fileName + ".dot";
+            createDir(finalPath);
+
+            qcaExportUSEToDot(dotFile, n2c, ed, nCellsSqrt);
         }
         //#endif
     }

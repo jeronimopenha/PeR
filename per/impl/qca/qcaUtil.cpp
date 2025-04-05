@@ -5,21 +5,22 @@
 #include <common/util.h>
 
 QcaReportData::QcaReportData()
-    : success(false), _time(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0), area(0), usedAreaPercentage(0),
-      extraLayers(0) {
+    : success(false), _time(0), nCellsSqrt(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0), area(0),
+      usedAreaPercentage(0), extraLayers(0) {
 }
 
 // Constructor for easy initialization
 QcaReportData::QcaReportData(const bool success, const float _time, string dotName, string dotPath, string placer,
-                             const int wires, const int nNodes, const int tries, const int swaps,
-                             const int wrongEdges, const int area, const int usedAreaPercentage, const int extraLayers,
+                             const int nCellsSqrt, const int wires, const int nNodes, const int tries, const int swaps,
+                             const int wrongEdges, const int area, const float usedAreaPercentage, const int extraLayers,
                              vector<int> extraLayersLevels, vector<int> placement,
-                             vector<int> n2c)
+                             vector<int> n2c, vector<pair<int, int> > edges)
     : success(success),
       _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
       placer(std::move(placer)),
+      nCellsSqrt(nCellsSqrt),
       wires(wires),
       nNodes(nNodes),
       tries(tries),
@@ -30,7 +31,8 @@ QcaReportData::QcaReportData(const bool success, const float _time, string dotNa
       extraLayers(extraLayers),
       extraLayersLevels(std::move(extraLayersLevels)),
       placement(std::move(placement)),
-      n2c(std::move(n2c)) {
+      n2c(std::move(n2c)),
+      edges(std::move(edges)) {
 }
 
 // Serialize ReportData to a JSON string
@@ -46,9 +48,9 @@ string QcaReportData::to_json() const {
             << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"tries\": " << tries << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
-            << "  \"wrongEdges\": " << extraLayers << ",\n"
-            << "  \"area\": " << extraLayers << ",\n"
-            << "  \"usedAreaPercentage\": " << extraLayers << ",\n"
+            << "  \"wrongEdges\": " << wrongEdges << ",\n"
+            << "  \"area\": " << area << ",\n"
+            << "  \"usedAreaPercentage\": " << usedAreaPercentage << ",\n"
             << "  \"extraLayers\": " << extraLayers << ",\n"
 
             // Serialize vector<int> extraLayersLevels
@@ -57,7 +59,7 @@ string QcaReportData::to_json() const {
         oss << extraLayersLevels[i];
         if (i < extraLayersLevels.size() - 1) oss << ", ";
     }
-    oss << "]\n";
+    oss << "],\n";
 
     oss << "  \"placement\": [";
 
@@ -239,7 +241,7 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     file.close();
 }
 
-AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int>& c2n) {
+AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int> &c2n) {
     int minRow = numeric_limits<int>::max();
     int maxRow = -1;
     int minCol = numeric_limits<int>::max();
@@ -270,17 +272,19 @@ AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int>& 
     const int width = maxCol - minCol + 1;
     result.totalCells = height * width;
     result.occupiedCells = totalOccupied;
-    result.utilization = result.totalCells > 0 ? static_cast<float>(totalOccupied) / static_cast<float>(result.totalCells) : 0.0f;
+    result.utilization = result.totalCells > 0
+                             ? static_cast<float>(totalOccupied) / static_cast<float>(result.totalCells)
+                             : 0.0f;
 
     return result;
 }
 
 void qcaWriteJson(const string &basePath,
-                   const string &reportPath,
-                   const string &algPath,
-                   const string &fileName,
-                   const int extraLayers,
-                   const QcaReportData &data) {
+                  const string &reportPath,
+                  const string &algPath,
+                  const string &fileName,
+                  const int extraLayers,
+                  const QcaReportData &data) {
     string finalPath = basePath + reportPath + algPath + "/json/";
     string jsonFile = finalPath + fileName + ".json";
 

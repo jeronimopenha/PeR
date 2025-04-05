@@ -15,25 +15,27 @@ struct QcaReportData {
     string dotName;
     string dotPath;
     string placer;
+    int nCellsSqrt;
     int wires;
     int nNodes;
     int tries;
     int swaps;
     int wrongEdges;
     int area;
-    int usedAreaPercentage;
+    float usedAreaPercentage;
     int extraLayers;
     vector<int> extraLayersLevels;
     vector<int> placement;
     vector<int> n2c;
+    vector<pair<int, int> > edges;
 
     QcaReportData();
 
     QcaReportData(bool success, float _time, string dotName, string dotPath, string placer,
-                  int wires, int nNodes, int tries, int swaps,
-                  int wrongEdges, int area, int usedAreaPercentage, int extraLayers,
+                  int nCellsSqrt, int wires, int nNodes, int tries, int swaps,
+                  int wrongEdges, int area, float usedAreaPercentage, int extraLayers,
                   vector<int> extraLayersLevels, vector<int> placement,
-                  vector<int> n2c);
+                  vector<int> n2c, vector<pair<int, int> > edges);
 
     string to_json() const;
 };
@@ -55,13 +57,13 @@ bool qcaIsInvalidCell(int x, int y, int nCellsSqrt);
 void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vector<pair<int, int> > &edges,
                        int nCellsSqrt);
 
-AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int>& c2n);
+AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int> &c2n);
 
 void qcaWriteJson(const string &basePath,
-                   const string &reportPath,
-                   const string &algPath,
-                   const string &fileName,
-                   const int extraLayers,
-                   const QcaReportData &data);
+                  const string &reportPath,
+                  const string &algPath,
+                  const string &fileName,
+                  const int extraLayers,
+                  const QcaReportData &data);
 
 #endif

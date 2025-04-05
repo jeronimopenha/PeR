@@ -116,6 +116,7 @@ QcaReportData qcaSa(QCAGraph &g) {
         g.dotName,
         g.dotPath,
         "SA",
+        nCellsSqrt,
         g.dummyMap.size(),
         g.nNodes - g.dummyMap.size(),
         tries,
@@ -126,7 +127,8 @@ QcaReportData qcaSa(QCAGraph &g) {
         g.extraLayers,
         g.extraLayersLevels,
         c2n,
-        n2c
+        n2c,
+        ed
     );
 
     return report;
@@ -330,7 +332,8 @@ QcaCost computeQcaCostForNode(
 
     unordered_set<int> expectedInputs, expectedOutputs;
     for (auto [dx, dy]: inDirs) {
-        int cx = x + dx, cy = y + dy;
+        const int cx = x + dx;
+        const int cy = y + dy;
         if (!qcaIsInvalidCell(cx, cy, nCellsSqrt)) {
             expectedInputs.insert(getCellIndex(cx, cy, nCellsSqrt));
         }
