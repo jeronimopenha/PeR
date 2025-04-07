@@ -1,3 +1,5 @@
+#include <common/parameters.h>
+#include <common/cache.h>
 #include <fpga/fpgaYoto.h>
 
 
@@ -133,7 +135,6 @@ FpgaReportData fpgaYott(FPGAGraph& g)
                     //find the distance of the target cell to the annotated cell and compare if they are equal
                     for (auto &[fst, snd] : annotation)
                     {
-                        int annCell;
                         int annDist;
                         int tAnnDist;
 
@@ -144,6 +145,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
                         }
                         else
                         {
+                            int annCell;
                             annCell = n2c[fst];
                             annDist = snd + 1;
                             tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
@@ -206,7 +208,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
-    float _time = duration.count();
+    auto _time = static_cast<float>(duration.count());
 
     int tc = 0;
     // commented to take the cost of the longest path

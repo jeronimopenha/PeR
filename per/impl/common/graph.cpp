@@ -1,6 +1,11 @@
 #include <common/graph.h>
 #include <tuple>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <unordered_set>
 
 
 /*void Graph::readGraphDataStr() {
@@ -238,14 +243,12 @@ vector<pair<int, int> > Graph::getEdgesDepthFirst() {
             continue;
         }
         visited[n] = true;
-        bool flag = false;
         // Process all neighbors
         for (int i = 0; i < nNodes; i++) {
             if (successors[n][i]) {
                 if (!visited[i]) {
                     stack.push_back(i);
                     edges.emplace_back(n, i);
-                    flag = true;
                 }
             }
         }

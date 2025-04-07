@@ -1,4 +1,6 @@
 #include <fpga/fpgaGraph.h>
+#include <algorithm>
+#include <list>
 
 
 FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
@@ -18,7 +20,7 @@ void FPGAGraph::readNeighbors() {
     for (size_t i = 0; i < successors.size(); ++i) {
         for (size_t j = 0; j < successors[i].size(); ++j) {
             if (successors[i][j] || predecessors[i][j]) {
-                neighbors[i].push_back(j);
+                neighbors[i].push_back(static_cast<int>(j));
             }
         }
     }
@@ -99,8 +101,6 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
                 const bool tmp2 = find(placed.begin(), placed.end(), node) != placed.end();
                 if (!tmp2)
                     ioNode = true;
-                else
-                    int asd = 1;
             }
         }
         if (ioNode) {
@@ -118,9 +118,8 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
 
         for (auto it = edges.rbegin(); it != edges.rend(); ++it) {
             const int a = it->first;
-            int b = it->second;
 
-            if (elem_cycle_begin == b && !found_start) {
+            if (int b = it->second; elem_cycle_begin == b && !found_start) {
                 value1 = a;
                 string key = funcKey(to_string(value1), to_string(elem_cycle_begin));
                 walk_key.push_front(key);
@@ -139,9 +138,9 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
                 } else {
                     // Go back and update values
                     const int half_count = count / 2;
-                    auto it = walk_key.begin();
-                    for (int k = 0; k < half_count; ++k, ++it) {
-                        auto &dic_actual = annotations[*it];
+                    auto it2 = walk_key.begin();
+                    for (int k = 0; k < half_count; ++k, ++it2) {
+                        auto &dic_actual = annotations[*it2];
                         for (auto &[fst,snd]: dic_actual) {
                             if (fst == elem_cycle_end) {
                                 snd = k + 1;
