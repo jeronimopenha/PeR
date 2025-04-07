@@ -1,21 +1,21 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include <common/parameters.h>
+
 #include <vector>
 
 using namespace std;
 
-class Cache {
-private:
+class Cache
+{
     vector<bool> cacheValid;
     vector<int> cacheTag;
-    vector<vector<int> > cacheData;
+    vector<vector<int>> cacheData;
 
 public:
     Cache();
 
-    int readCache(int address, const vector<int> &vec);
+    int readCache(int address, const vector<int>& vec);
 };
 
 

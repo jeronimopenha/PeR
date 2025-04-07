@@ -1,4 +1,7 @@
 #include <fpga/fpgaYoto.h>
+#include <common/parameters.h>
+//#include <common/cache.h>
+#include <vector>
 
 //todo cache parts
 
@@ -145,7 +148,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
-    float _time = duration.count();
+    auto _time = static_cast<float>(duration.count());
 
     int tc = 0;
     // commented to take the cost of the longest path

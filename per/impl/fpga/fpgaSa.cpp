@@ -1,6 +1,8 @@
 #include <fpga/fpgaSa.h>
+#include <common/parameters.h>
 
-FpgaReportData fpgaSa(FPGAGraph &g) {
+FpgaReportData fpgaSa(FPGAGraph& g)
+{
     const string alg_type = "SA";
     int cacheMisses = 0;
     int tries = 0;
@@ -9,7 +11,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     const int nCells = g.nCells;
     const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
-    const vector<pair<int, int> > ed = g.gEdges;
+    const vector<pair<int, int>> ed = g.gEdges;
 
 
     vector<int> c2n(nCells, -1);
@@ -29,8 +31,10 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 
 
     int idx = 0;
-    for (int node: ioNodes) {
-        if (c2n[inOutCells[idx]] == -1) {
+    for (int node : ioNodes)
+    {
+        if (c2n[inOutCells[idx]] == -1)
+        {
             c2n[inOutCells[idx]] = node;
             n2c[node] = inOutCells[idx];
             idx++;
@@ -41,33 +45,34 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     vector<int> clbNodes = g.clbNodes;
 
     idx = 0;
-    for (int node: clbNodes) {
-        if (c2n[clbCells[idx]] == -1) {
+    for (int node : clbNodes)
+    {
+        if (c2n[clbCells[idx]] == -1)
+        {
             c2n[clbCells[idx]] = node;
             n2c[node] = clbCells[idx];
             idx++;
         }
     }
 
-    std::vector<std::vector<int> > neighbors = g.neighbors;
-
-    static random_device rd;
-    static mt19937 gen(rd());
-    static uniform_real_distribution<> dis(0.0, 1.0);
+    vector<vector<int>> neighbors = g.neighbors;
 
 #ifdef DEBUG
     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
     //begin of SA algorithm
-    const float t_min = 0.001;
+    constexpr float t_min = 0.001f;
     float t = 100;
 
     auto start = chrono::high_resolution_clock::now();
 
-    while (t >= t_min) {
-        for (int cellA = 1; cellA < nCells; cellA++) {
-            for (int cellB = 1; cellB < nCells; cellB++) {
+    while (t >= t_min)
+    {
+        for (int cellA = 1; cellA < nCells; cellA++)
+        {
+            for (int cellB = 1; cellB < nCells; cellB++)
+            {
                 tries++;
 
                 if (cellA == cellB)
@@ -95,21 +100,24 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
                 int costABefore, costAAfter;
                 int costBBefore, costBAfter;
 
-                getSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
-                            costBAfter);
+                fpgaGetSwapCost(n2c, a, b, cellA, cellB, nCellsSqrt, neighbors, costABefore, costAAfter, costBBefore,
+                                costBAfter);
 
                 int costAfter = costAAfter + costBAfter;
                 int costBefore = costABefore + costBBefore;
 
-                double value = exp((-1 * (costAfter - costBefore) / t));
+                double value = exp((-1.0 * (costAfter - costBefore) / t));
 
-                double rnd = dis(gen);
+                const double rnd = randomFloat(0.0f, 1.0f);
 
-                if ((costAfter < costBefore) || (rnd <= value)) {
-                    if (a != -1) {
+                if ((costAfter < costBefore) || (rnd <= value))
+                {
+                    if (a != -1)
+                    {
                         n2c[a] = cellB;
                     }
-                    if (b != -1) {
+                    if (b != -1)
+                    {
                         n2c[b] = cellA;
                     }
                     c2n[cellA] = b;
@@ -129,7 +137,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
-    float _time = duration.count();
+    auto _time = static_cast<float>(duration.count());
 
     int tc = 0;
     // commented to take the cost of the longest path
@@ -156,41 +164,52 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 }
 
 
-void getSwapCost(
-    const std::vector<int> &n2c,
+void fpgaGetSwapCost(
+    const std::vector<int>& n2c,
     const int a,
     const int b,
     const int cellA,
     const int cellB,
     const int nCellsSqrt,
-    const std::vector<std::vector<int> > &neighbors,
-    int &costABefore,
-    int &costAAfter,
-    int &costBBefore,
-    int &costBAfter
-) {
+    const std::vector<std::vector<int>>& neighbors,
+    int& costABefore,
+    int& costAAfter,
+    int& costBBefore,
+    int& costBAfter
+)
+{
     costABefore = 0;
     costAAfter = 0;
     costBBefore = 0;
     costBAfter = 0;
 
-    if (a != -1) {
-        for (const int node: neighbors[a]) {
+    if (a != -1)
+    {
+        for (const int node : neighbors[a])
+        {
             costABefore += getManhattanDist(cellA, n2c[node], nCellsSqrt);
-            if (cellB == n2c[node]) {
+            if (cellB == n2c[node])
+            {
                 costAAfter += getManhattanDist(cellA, cellB, nCellsSqrt);
-            } else {
+            }
+            else
+            {
                 costAAfter += getManhattanDist(cellB, n2c[node], nCellsSqrt);
             }
         }
     }
 
-    if (b != -1) {
-        for (const int node: neighbors[b]) {
+    if (b != -1)
+    {
+        for (const int node : neighbors[b])
+        {
             costBBefore += getManhattanDist(cellB, n2c[node], nCellsSqrt);
-            if (cellA == n2c[node]) {
+            if (cellA == n2c[node])
+            {
                 costBAfter += getManhattanDist(cellB, cellA, nCellsSqrt);
-            } else {
+            }
+            else
+            {
                 costBAfter += getManhattanDist(cellA, n2c[node], nCellsSqrt);
             }
         }

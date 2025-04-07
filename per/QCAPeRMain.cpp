@@ -2,6 +2,7 @@
 #include  <common/util.h>
 #include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>
+#include <qca/qcaSa.h>
 
 #include <omp.h>
 
@@ -16,83 +17,100 @@ int main() {
 #ifdef DEBUG
     const string benchPath = "benchmarks/qca/bench_test/";
 #else
-        const string benchPath = "benchmarks/qca/eval_dot/";
+    const string benchPath = "benchmarks/qca/eval/";
 #endif
-    const string reportPath = "reports/fqca";
+    const string reportPath = "reports/qca";
     string algPath;
 
     cout << rootPath << endl;
 
-
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
-    // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
     for (const auto &[fst, snd]: files) {
         cout << fst << endl;
 
         //Creating graph important variables
         auto g = QCAGraph(fst, snd.substr(0, snd.size() - 4));
-        //reading graph variables
 
         int nExec;
         //execution parameters
-#ifdef QCA_YOTO_DF
+#ifdef QCA_YOTO_ZZ
         algPath = "/yoto_df";
+#elifdef QCA_SA
+        algPath = "/sa";
 #endif
 
 #ifdef DEBUG
         nExec = 1;
-#elifdef  FPGA_SA
-            nExec = 100;
+#elifdef  QCA_SA
+        nExec = 10;
 #else
         nExec = 1000;
 #endif
+        int nExtraLayers = 0;
 
-        vector<QcaReportData> reports;
+        vector<vector<QcaReportData> > reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
 
+        while (nExtraLayers < MAX_EXTRA_LAYERS) {
 #ifndef DEBUG
-        int nThreads = max(1, omp_get_num_procs() - 1);
-        omp_set_num_threads(nThreads);
+            int nThreads = max(1, omp_get_num_procs() - 1);
+            omp_set_num_threads(nThreads);
 
 #pragma omp parallel
-        {
+            {
 #pragma omp for schedule(dynamic)
 #endif
-        for (int exec = 0; exec < nExec; exec++) {
-            QcaReportData report;
-#if defined(QCA_YOTO_DF)
-            report = qcaYoto(g);
+                for (int exec = 0; exec < nExec; exec++) {
+                    QcaReportData report;
+                    /*QCAGraph gT = g;
+                    for (int i = 0; i < nExtraLayers; i++) {
+                        gT.insertDummyLayerAtLevel(randomInt(0, gT.minOutputLevel));
+                    }*/
+
+#if defined(QCA_YOTO_ZZ)
+                report = qcaYoto(g);
+#elif  defined(QCA_SA)
+                    report = qcaSa(g);
 #endif
 
 #ifndef DEBUG
 #pragma omp critical
 #endif
-            {
-                reports.push_back(report);
+                    {
+                        reports[nExtraLayers][exec] = report;
+                    }
+                }
+#ifndef DEBUG
             }
-        }
-#ifndef DEBUG
-    }
 #endif
+            nExtraLayers++;
+            g.insertDummyLayerAtLevel(randomInt(0, g.minOutputLevel));
+        }
 
-        //sort the reports by total cost because I want only the 10 better placements
-        sort(reports.begin(), reports.end(), [](const QcaReportData &a, const QcaReportData &b) {
-            return a.totalCost < b.totalCost;
-        });
-        int limit = (10 < reports.size()) ? 10 : reports.size();
-        for (int i = 0; i < limit; i++) {
-            //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-            cout << g.dotName << endl;
-            string fileName = g.dotName + "_" + to_string(i);
-#ifndef DEBUG
-            //save reports for the 10 better placements
-            writeJson(rootPath, reportPath, algPath, fileName, reports[i]);
-#endif
-#if !defined (DEBUG)
-            //generate reports and files for vpr
-            writeVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
-#endif
+        //#ifndef DEBUG
+        for (auto &rep: reports) {
+            sort(rep.begin(), rep.end(), [](const QcaReportData &a, const QcaReportData &b) {
+                /*if (a.success != b.success)
+                    return a.success > b.success; // true vem antes de false*/
+                return a.wrongEdges < b.wrongEdges; // menos arestas erradas vem primeiro
+            });
         }
+
+        for (int extraLayer = 0; extraLayer < MAX_EXTRA_LAYERS; extraLayer++) {
+            cout << g.dotName << endl;
+            string fileName = g.dotName + "_" + to_string(extraLayer);
+            qcaWriteJson(rootPath, reportPath, algPath, fileName, extraLayer, reports[extraLayer][0]);
+
+            auto n2c = reports[extraLayer][0].n2c;
+            auto ed = reports[extraLayer][0].edges;
+            auto nCellsSqrt = reports[extraLayer][0].nCellsSqrt;
+            string finalPath = rootPath + reportPath + algPath + "/dot/";
+            string dotFile = finalPath + fileName + ".dot";
+            createDir(finalPath);
+
+            qcaExportUSEToDot(dotFile, n2c, ed, nCellsSqrt);
+        }
+        //#endif
     }
     return 0;
 }

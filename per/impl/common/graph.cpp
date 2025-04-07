@@ -1,4 +1,11 @@
 #include <common/graph.h>
+#include <tuple>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <unordered_set>
 
 
 /*void Graph::readGraphDataStr() {
@@ -115,7 +122,6 @@ void Graph::updateG() {
     readAdjList();
     readSuccPred();
     readIONodes();
-    findLongestPath();
 }
 
 void Graph::readEdgesNodes() {
@@ -237,14 +243,12 @@ vector<pair<int, int> > Graph::getEdgesDepthFirst() {
             continue;
         }
         visited[n] = true;
-        bool flag = false;
         // Process all neighbors
         for (int i = 0; i < nNodes; i++) {
             if (successors[n][i]) {
                 if (!visited[i]) {
                     stack.push_back(i);
                     edges.emplace_back(n, i);
-                    flag = true;
                 }
             }
         }
@@ -253,69 +257,17 @@ vector<pair<int, int> > Graph::getEdgesDepthFirst() {
     return edges;
 }
 
-vector<pair<int, int> > Graph::getEdgesDepthFirstPriority() {
-    // Copia os nós de entrada e embaralha, se necessário
-    vector<int> inputList = inputNodes;
-    randomVector(inputList);
-    //move the initial node of the longest path to the end of the stack and so on
 
-    auto it = std::find(inputList.begin(), inputList.end(), longestPath[0]);
-
-    if (it != inputList.end()) {
-        const int valor = *it;
-        inputList.erase(it); // remove node
-        inputList.push_back(valor); // add it on last position
-    }
-
-    // Inicializa a pilha com inputList
-    vector<int> stack(inputList);
-    vector<pair<int, int> > edges;
-    vector<bool> visited(nNodes, false);
-
-    while (!stack.empty()) {
-        int n = stack.back();
-        stack.pop_back();
-
-        if (visited[n]) {
-            continue;
-        }
-        visited[n] = true;
-
-        // Coleta os vizinhos ainda não visitados
-        vector<int> neighbors;
-        for (int i = 0; i < nNodes; i++) {
-            if (successors[n][i] && !visited[i]) {
-                neighbors.push_back(i);
-            }
-        }
-
-        // Ordena os vizinhos para priorizar os maiores caminhos
-        sort(neighbors.begin(), neighbors.end(), [this](int a, int b) {
-            // Critério para ordenar: pode ser baseado na quantidade de sucessores
-            return count(successors[a].begin(), successors[a].end(), true) >
-                   count(successors[b].begin(), successors[b].end(), true);
-        });
-
-        // Adiciona os vizinhos à pilha e armazena as arestas
-        for (int neighbor: neighbors) {
-            stack.push_back(neighbor);
-            edges.emplace_back(n, neighbor);
-        }
-    }
-
-    return edges;
-}
-
-vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergence) {
+vector<pair<int, int> > Graph::getEdgesZigzag(
+    vector<pair<int, int> > &convergence,
+    vector<tuple<int, int, string> > *edgeTypes) {
     vector<pair<int, string> > outputList;
 
     for (const auto &node: outputNodes) {
         outputList.emplace_back(node, "IN");
     }
 
-    // if (make_shuffle) {
     randomVector(outputList);
-    // }
 
     vector stack(outputList.begin(), outputList.end());
     vector<pair<int, int> > edges;
@@ -359,7 +311,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                //edges.emplace_back({a, b, "OUT"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             } else if (!fanIn[a].empty()) {
                 const int b = fanIn[a].back();
@@ -373,7 +325,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                // edges.push_back({a, b, "IN"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             }
         } else {
@@ -390,7 +342,7 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                //edges.push_back({a, b, "IN"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             } else if (!fanOut[a].empty()) {
                 int b = fanOut[a].back();
@@ -404,10 +356,23 @@ vector<pair<int, int> > Graph::getEdgesZigzag(vector<pair<int, int> > &convergen
                 if (visited[b]) {
                     convergence.emplace_back(a, b);
                 }
-                // edges.push_back({a, b, "OUT"});
+                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             }
         }
+    }
+    edges = clearEdges(edges);
+
+    if (edgeTypes) {
+        vector<tuple<int, int, string> > cleaned;
+        for (const auto &t: *edgeTypes) {
+            int a = get<0>(t);
+            int b = get<1>(t);
+            if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end()) {
+                cleaned.push_back(t);
+            }
+        }
+        *edgeTypes = cleaned;
     }
     return clearEdges(edges);
 }
@@ -429,54 +394,6 @@ vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) 
     return new_edges;
 }
 
-void Graph::findLongestPath() {
-    // 1. Construir lista de adjacência a partir da matriz de sucessores
-    vector<vector<int> > adj(nNodes);
-    for (int i = 0; i < nNodes; ++i)
-        for (int j = 0; j < nNodes; ++j)
-            if (successors[i][j])
-                adj[i].push_back(j);
-
-    // 2. Ordenação topológica
-    vector<bool> visited(nNodes, false);
-    vector<int> topo_order;
-    for (int i = 0; i < nNodes; ++i)
-        if (!visited[i])
-            dfs(i, adj, visited, topo_order);
-    reverse(topo_order.begin(), topo_order.end());
-
-    // 3. Programação dinâmica para encontrar o maior caminho
-    vector<int> dist(nNodes, numeric_limits<int>::min());
-    vector<int> parent(nNodes, -1);
-    for (int i = 0; i < nNodes; ++i)
-        dist[i] = 0; // cada nó pode iniciar um caminho de comprimento 0
-
-    for (const int u: topo_order) {
-        for (const int v: adj[u]) {
-            if (dist[u] + 1 > dist[v]) {
-                dist[v] = dist[u] + 1;
-                parent[v] = u;
-            }
-        }
-    }
-
-    // 4. Encontrar o nó final do maior caminho
-    int max_len = -1, end_node = -1;
-    for (int i = 0; i < nNodes; ++i) {
-        if (dist[i] > max_len) {
-            max_len = dist[i];
-            end_node = i;
-        }
-    }
-
-    // 5. Reconstruir o caminho
-    vector<int> path;
-    for (int v = end_node; v != -1; v = parent[v])
-        path.push_back(v);
-    reverse(path.begin(), path.end());
-
-    longestPath = path;
-}
 
 void Graph::dfs(const int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order) {
     visited[idx] = true;

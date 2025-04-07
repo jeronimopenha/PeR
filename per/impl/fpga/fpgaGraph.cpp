@@ -1,4 +1,6 @@
 #include <fpga/fpgaGraph.h>
+#include <algorithm>
+#include <list>
 
 
 FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
@@ -7,13 +9,18 @@ FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPat
     clbNodes = otherNodes;
 }
 
+void FPGAGraph::updateG() {
+    Graph::updateG();
+    findLongestPath();
+}
+
 void FPGAGraph::readNeighbors() {
     //neighbors vector
     neighbors.resize(nNodes);
     for (size_t i = 0; i < successors.size(); ++i) {
         for (size_t j = 0; j < successors[i].size(); ++j) {
             if (successors[i][j] || predecessors[i][j]) {
-                neighbors[i].push_back(j);
+                neighbors[i].push_back(static_cast<int>(j));
             }
         }
     }
@@ -34,8 +41,7 @@ void FPGAGraph::calcMatrix() {
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }
 
-vector<int> FPGAGraph::getInOutPos() const
-{
+vector<int> FPGAGraph::getInOutPos() const {
     vector<int> possibleInOut;
 
     // Append positions in the first range
@@ -95,8 +101,6 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
                 const bool tmp2 = find(placed.begin(), placed.end(), node) != placed.end();
                 if (!tmp2)
                     ioNode = true;
-                else
-                    int asd = 1;
             }
         }
         if (ioNode) {
@@ -114,9 +118,8 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
 
         for (auto it = edges.rbegin(); it != edges.rend(); ++it) {
             const int a = it->first;
-            int b = it->second;
 
-            if (elem_cycle_begin == b && !found_start) {
+            if (int b = it->second; elem_cycle_begin == b && !found_start) {
                 value1 = a;
                 string key = funcKey(to_string(value1), to_string(elem_cycle_begin));
                 walk_key.push_front(key);
@@ -135,9 +138,9 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
                 } else {
                     // Go back and update values
                     const int half_count = count / 2;
-                    auto it = walk_key.begin();
-                    for (int k = 0; k < half_count; ++k, ++it) {
-                        auto &dic_actual = annotations[*it];
+                    auto it2 = walk_key.begin();
+                    for (int k = 0; k < half_count; ++k, ++it2) {
+                        auto &dic_actual = annotations[*it2];
                         for (auto &[fst,snd]: dic_actual) {
                             if (fst == elem_cycle_end) {
                                 snd = k + 1;
@@ -153,7 +156,105 @@ unordered_map<string, vector<pair<int, int> > > FPGAGraph::getGraphAnnotations(
     return annotations;
 }
 
+void FPGAGraph::findLongestPath() {
+    // 1. Construir lista de adjacência a partir da matriz de sucessores
+    vector<vector<int> > adj(nNodes);
+    for (int i = 0; i < nNodes; ++i)
+        for (int j = 0; j < nNodes; ++j)
+            if (successors[i][j])
+                adj[i].push_back(j);
+
+    // 2. Ordenação topológica
+    vector<bool> visited(nNodes, false);
+    vector<int> topo_order;
+    for (int i = 0; i < nNodes; ++i)
+        if (!visited[i])
+            dfs(i, adj, visited, topo_order);
+    reverse(topo_order.begin(), topo_order.end());
+
+    // 3. Programação dinâmica para encontrar o maior caminho
+    vector<int> dist(nNodes, numeric_limits<int>::min());
+    vector<int> parent(nNodes, -1);
+    for (int i = 0; i < nNodes; ++i)
+        dist[i] = 0; // cada nó pode iniciar um caminho de comprimento 0
+
+    for (const int u: topo_order) {
+        for (const int v: adj[u]) {
+            if (dist[u] + 1 > dist[v]) {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+            }
+        }
+    }
+
+    // 4. Encontrar o nó final do maior caminho
+    int max_len = -1, end_node = -1;
+    for (int i = 0; i < nNodes; ++i) {
+        if (dist[i] > max_len) {
+            max_len = dist[i];
+            end_node = i;
+        }
+    }
+
+    // 5. Reconstruir o caminho
+    vector<int> path;
+    for (int v = end_node; v != -1; v = parent[v])
+        path.push_back(v);
+    reverse(path.begin(), path.end());
+
+    longestPath = path;
+}
 
 
+vector<pair<int, int> > FPGAGraph::getEdgesDepthFirstPriority() {
+    // Copia os nós de entrada e embaralha, se necessário
+    vector<int> inputList = inputNodes;
+    randomVector(inputList);
+    //move the initial node of the longest path to the end of the stack and so on
 
+    auto it = std::find(inputList.begin(), inputList.end(), longestPath[0]);
 
+    if (it != inputList.end()) {
+        const int valor = *it;
+        inputList.erase(it); // remove node
+        inputList.push_back(valor); // add it on last position
+    }
+
+    // Inicializa a pilha com inputList
+    vector<int> stack(inputList);
+    vector<pair<int, int> > edges;
+    vector<bool> visited(nNodes, false);
+
+    while (!stack.empty()) {
+        int n = stack.back();
+        stack.pop_back();
+
+        if (visited[n]) {
+            continue;
+        }
+        visited[n] = true;
+
+        // Coleta os vizinhos ainda não visitados
+        vector<int> neighbors;
+        for (int i = 0; i < nNodes; i++) {
+            if (successors[n][i] && !visited[i]) {
+                neighbors.push_back(i);
+            }
+        }
+
+        // Ordena os vizinhos para priorizar os maiores caminhos
+        sort(neighbors.begin(), neighbors.end(), [this](int a, int b) {
+            // Critério para ordenar: pode ser baseado na quantidade de sucessores
+            return count(successors[a].begin(), successors[a].end(), true) >
+                   count(successors[b].begin(), successors[b].end(), true);
+        });
+
+        // Adiciona os vizinhos à pilha e armazena as arestas
+        for (int neighbor: neighbors) {
+            stack.push_back(neighbor);
+            edges.emplace_back(n, neighbor);
+        }
+    }
+
+    return edges;
+}

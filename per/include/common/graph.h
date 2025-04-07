@@ -1,11 +1,6 @@
 #ifndef GRAPH_H
 #define GRAPH_H
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <unordered_set>
+
 #include <common/util.h>
 #include <string>
 #include <vector>
@@ -42,7 +37,6 @@ public:
     vector<int> outputNodes;
     vector<int> otherNodes;
 
-    vector<int> longestPath;
 
     Graph(const string &dotPath, const string &dotName);
 
@@ -60,14 +54,13 @@ public:
 
     vector<pair<int, int> > getEdgesDepthFirst();
 
-    vector<pair<int, int> > getEdgesDepthFirstPriority();
-
-    vector<pair<int, int> > getEdgesZigzag(vector<pair<int, int> > &convergence);
+    vector<pair<int, int> > getEdgesZigzag(
+        vector<pair<int, int> > &convergence,
+        vector<tuple<int, int, string> > *edgeTypes = nullptr);
 
     vector<pair<int, int> > clearEdges(const vector<pair<int, int> > &edges) const;
 
     void dfs(int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order);
 
-    void findLongestPath();
 };
 #endif

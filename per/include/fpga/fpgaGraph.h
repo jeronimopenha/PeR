@@ -4,23 +4,24 @@
 #include <unordered_map>
 #include <common/graph.h>
 #include <common/util.h>
-#include <algorithm>
-#include <list>
 
 
-
-class FPGAGraph : public Graph {
+class FPGAGraph : public Graph
+{
 public:
-
     int nCells = 0;
     int nCellsSqrt = 0;
 
     //Neighbors vector
-    vector<vector<int> > neighbors;
+    vector<vector<int>> neighbors;
 
     vector<int> clbNodes;
 
-    FPGAGraph(const string &dotPath, const string &dotName);
+    vector<int> longestPath;
+
+    FPGAGraph(const string& dotPath, const string& dotName);
+
+    void updateG();
 
     void readNeighbors();
 
@@ -30,10 +31,14 @@ public:
 
     vector<int> getClbPos() const;
 
-    unordered_map<string, vector<pair<int, int> > > getGraphAnnotations(
-        const vector<pair<int, int> > &edges,
-        const vector<pair<int, int> > &convergences
+    unordered_map<string, vector<pair<int, int>>> getGraphAnnotations(
+        const vector<pair<int, int>>& edges,
+        const vector<pair<int, int>>& convergences
     );
+
+    void findLongestPath();
+
+    vector<pair<int, int>> getEdgesDepthFirstPriority();
 };
 
 #endif

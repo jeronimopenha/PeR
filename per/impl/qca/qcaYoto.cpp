@@ -3,11 +3,11 @@
 #include <vector>
 
 
-QcaReportData qcaYoto(QCAGraph& g)
-{
+QcaReportData qcaYoto(QCAGraph &g) {
     const int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
+    const int nCellsSqrt = g.nCellsSqrt;
     const int nNodes = g.nNodes;
+    const vector<pair<int,int>> ed = g.gEdges;
 
     vector<int> c2n(nCells, -1);
     vector<int> n2c(nNodes, -1);
@@ -16,19 +16,21 @@ QcaReportData qcaYoto(QCAGraph& g)
     iota(cells.begin(), cells.end(), 0);
     randomVector(cells);
 
-#ifdef DEBUG
-    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+#ifdef PRINT
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
 
     int tries = 0;
     int swaps = 0;
 
     string alg_type;
-    vector<pair<int, int>> ed;
+    //vector<pair<int, int> > ed;
 
-#ifdef QCA_YOTO_DF
-    ed = g.getEdgesDepthFirst();
-    alg_type = "DEPTH_FIRST";
+#ifdef QCA_YOTO_ZZ
+    vector<pair<int, int> > convergence;
+    vector<tuple<int, int, string> > edzz;
+    g.getEdgesZigzag(convergence, &edzz);
+    alg_type = "ZIGZAG";
 #endif
 
     int lastCellIdxUsed = 0;
@@ -36,24 +38,24 @@ QcaReportData qcaYoto(QCAGraph& g)
     //time counting
     const auto start = chrono::high_resolution_clock::now();
 
+#ifdef QCA_YOTO_ZZ
+    for (const auto &[a,b,dir]: edzz)
+#else
     for (auto [a,b] : ed)
+#endif
     {
         //Verify if A is placed
         //if it is not placed, then place in a random unused cell.
         //the variable lastCellIdxUsed is for optimize future looks
-        if (n2c[a] == -1)
-        {
+        if (n2c[a] == -1) {
             bool found = false;
-            while (!found)
-            {
+            while (!found) {
                 int cell = cells[lastCellIdxUsed];
-                while (cell == -1)
-                {
+                while (cell == -1) {
                     lastCellIdxUsed++;
                     cell = cells[lastCellIdxUsed];
                 }
-                if (c2n[cell] == -1)
-                {
+                if (c2n[cell] == -1) {
                     c2n[cell] = a;
                     n2c[a] = cell;
                     cells[lastCellIdxUsed] = -1;
@@ -63,13 +65,12 @@ QcaReportData qcaYoto(QCAGraph& g)
             }
         }
 
-#ifdef DEBUG
-        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+#ifdef PRINT
+        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
 
         //Now, if B is placed, go to next edge
-        if (n2c[b] != -1)
-        {
+        if (n2c[b] != -1) {
             continue;
         }
 
@@ -79,17 +80,24 @@ QcaReportData qcaYoto(QCAGraph& g)
         const int xA = getX(n2c[a], nCellsSqrt);
         const int yA = getY(n2c[a], nCellsSqrt);
 
-        vector<pair<int, int>> distCells = qcaGetOutputDirections(xA, yA);
+        vector<pair<int, int> > distCells;
+#ifdef QCA_YOTO_ZZ
+        if (dir == "IN")
+            distCells = qcaGetInputDirections(xA, yA);
+        else
+            distCells = qcaGetOutputDirections(xA, yA);
+#endif
+        randomVector(distCells);
+
         bool placed = false;
         //Then I will look for a cell next to A's cell
-        for (const auto& dist : distCells)
-        {
+        for (const auto &[fst, snd]: distCells) {
             ++tries;
-            const int xB = xA + dist.first;
-            const int yB = yA + dist.second;
+            const int xB = xA + fst;
+            const int yB = yA + snd;
 
             //find the idx for the target cell
-            int targetCell = yB * nCellsSqrt + xB;
+            const int targetCell = yB * nCellsSqrt + xB;
 
             // Check if the target cell is nor allowed, go to next
             if (qcaIsInvalidCell(xB, yB, nCellsSqrt))
@@ -97,14 +105,13 @@ QcaReportData qcaYoto(QCAGraph& g)
 
 
             // Place the node if `placement[targetCell]` is unoccupied
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
                 placed = true;
-#ifdef DEBUG
-                qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, nCellsSqrt);
+#ifdef PRINT
+                qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed,nCellsSqrt);
 #endif
                 break;
             }
@@ -113,31 +120,43 @@ QcaReportData qcaYoto(QCAGraph& g)
             break;
     }
 
-    /*const auto end = chrono::high_resolution_clock::now();
+
+    const auto end = chrono::high_resolution_clock::now();
     const chrono::duration<double, milli> duration = end - start;
     double _time = duration.count();
 
-    int tc = 0;
-    // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = calcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#endif
+    //if this placement valid?
 
-    ReportData report = ReportData(
+    bool success = g.verifyPlacement(n2c,ed);
+    auto report = QcaReportData();
+    /*auto report = QcaReportData(
+        success,
         _time,
         g.dotName,
         g.dotPath,
-        "yoto",
-        cacheMisses,
+        "YOTO",
+        g.dummyMap.size(),
+        g.nNodes - g.dummyMap.size(),
         tries,
         swaps,
-        alg_type,
-        tc,
+        g.extraLayers,
+        g.extraLayersLevels,
         c2n,
         n2c
-    );
+    );*/
+    /*
+    * float _time;
+    * string dotName;
+    * string dotPath;
+    * string placer;
+    * int wires;
+    * int nodes;
+    * int tries;
+    * int swaps;
+    * int extraLayers;
+    * vector<int> extraLayersLevels;
+    * vector<int> placement;
+    * vector<int> n2c;
+     */
     return report;
-    */
 }
