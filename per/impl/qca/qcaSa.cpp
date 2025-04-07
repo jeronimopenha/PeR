@@ -312,10 +312,10 @@ pair<float, float> qcaGetSwapCost(
 }
 
 QcaCost computeQcaCostForNode(
-    int node,
-    int nodeCell,
-    int otherNode,
-    int otherCell,
+    const int node,
+    const int nodeCell,
+    const int otherNode,
+    const int otherCell,
     const vector<int> &n2c,
     const QCAGraph &g
 ) {

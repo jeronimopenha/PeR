@@ -30,7 +30,7 @@ struct FpgaReportData {
     string to_json() const;
 };
 
-void fpgaSavePlacedDot(vector<int> n2c, const vector<pair<int, int> >& ed, int nCellsSqrt,
+void fpgaSavePlacedDot(vector<int> &n2c, const vector<pair<int, int> > &ed, const int nCellsSqrt,
                        const string &filename);
 
 vector<vector<int> > fpgaGetAdjCellsDist(int nCellsSqrt);
