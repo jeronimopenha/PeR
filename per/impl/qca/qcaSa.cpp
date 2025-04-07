@@ -1,5 +1,6 @@
 #include <common/parameters.h>
 #include <qca/qcaSa.h>
+#include <unordered_set>
 
 QcaReportData qcaSa(QCAGraph& g)
 {
