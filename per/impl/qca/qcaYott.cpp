@@ -115,7 +115,7 @@ QcaReportData qcaYott(QCAGraph& g)
             //the code needs to be improved, but ir works
 
             //beginning with an annotation if it exists
-            string key = to_string(a) + " " + to_string(b);
+            const string key = to_string(a) + " " + to_string(b);
             const vector<pair<int, int>> annotation = annotations[key];
 
             //if we have an annotation
@@ -124,69 +124,25 @@ QcaReportData qcaYott(QCAGraph& g)
                 if (c2n[targetCell] != -1)
                     continue;
 
-                int modDist = targetCellDist;
+                int modDist = 0;
                 bool found = true;
                 //find the distance of the target cell to the annotated cell and compare if they are equal
                 for (auto& [fst, snd] : annotation)
                 {
-                    int annDist;
-                    int tAnnDist;
+                    const int annCell = n2c[fst];
+                    const int annDist = snd + 1;
+                    const int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
 
-                    if (fst == -1)
-                    {
-                        annDist = 1;
-                        tAnnDist = fpgaMinBorderDist(targetCell, nCellsSqrt);
-                    }
-                    else
-                    {
-                        int annCell;
-                        annCell = n2c[fst];
-                        annDist = snd + 1;
-                        tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
-                    }
-
-                    if (tAnnDist != annDist)
-                    {
-                        found = false;
-                        modDist += abs(annDist - tAnnDist);
-                    }
+                    modDist += abs(annDist - tAnnDist);
                 }
-                if (found)
-                {
-                    if (c2n[targetCell] == -1)
-                    {
-                        c2n[targetCell] = b;
-                        n2c[b] = targetCell;
-                        ++swaps;
-                        break;
-                    }
-                    continue;
-                }
-
                 if (modDist < betterCellDist && c2n[targetCell] == -1)
                 {
                     betterCellDist = modDist;
                     betterCell = targetCell;
                 }
                 continue;
-
-                if (betterCell > -1)
-                {
-                    c2n[betterCell] = b;
-                    n2c[b] = betterCell;
-                    ++swaps;
-                    break;
-                }
-                if (c2n[targetCell] == -1)
-                {
-                    c2n[targetCell] = b;
-                    n2c[b] = targetCell;
-                    ++swaps;
-                    break;
-                }
             }
-
-            // if the target node has no annotations, then it will put it on the first empty cell
+            //if edge has no annotations
             if (c2n[targetCell] == -1)
             {
                 c2n[targetCell] = b;
@@ -195,34 +151,47 @@ QcaReportData qcaYott(QCAGraph& g)
                 break;
             }
         }
+        if (betterCell > -1)
+        {
+            c2n[betterCell] = b;
+            n2c[b] = betterCell;
+            ++swaps;
+        }
+        else
+            break; //not placed
     }
-#ifdef DEBUG
-    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double, milli> duration = end - start;
-    auto _time = static_cast<float>(duration.count());
-
-    int tc = 0;
-    // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+#ifdef PRINT
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
 
-    auto report = FpgaReportData(
-        _time,
+    const auto end = chrono::high_resolution_clock::now();
+    const chrono::duration<double, milli> duration = end - start;
+    double _time = duration.count();
+
+    //if this placement valid?
+    int wrongEdges;
+    bool success = g.verifyPlacement(n2c, ed, &wrongEdges);
+    AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt, c2n);
+
+
+    auto report = QcaReportData(
+        success,
+        static_cast<float>(_time),
         g.dotName,
         g.dotPath,
-        "yott",
-        cacheMisses,
+        "SA",
+        nCellsSqrt,
+        static_cast<int>(g.dummyMap.size()),
+        static_cast<int>(g.nNodes - g.dummyMap.size()),
         tries,
         swaps,
-        alg_type,
-        tc,
+        wrongEdges,
+        saMetrics.totalCells,
+        saMetrics.utilization,
+        g.extraLayers,
+        g.extraLayersLevels,
         c2n,
-        n2c
+        n2c,
+        ed
     );
-    return report;
 }
