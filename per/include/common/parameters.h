@@ -36,7 +36,7 @@
 //###############################
 
 //debugging defines
-#define DEBUG
-#define PRINT
+//#define DEBUG
+//#define PRINT
 //*******************************
 #endif //PARAMETERS_H

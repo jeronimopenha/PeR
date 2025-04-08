@@ -68,7 +68,7 @@ QcaReportData qcaYott(QCAGraph& g)
         }
 
 #ifdef PRINT
-        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
+        //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
 
         //Now, if B is placed, go to next edge
@@ -79,7 +79,6 @@ QcaReportData qcaYott(QCAGraph& g)
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-        const int cellA = n2c[a];
         const int xA = getX(n2c[a], nCellsSqrt);
         const int yA = getY(n2c[a], nCellsSqrt);
 
@@ -94,6 +93,8 @@ QcaReportData qcaYott(QCAGraph& g)
 
         int betterCell = -1;
         int betterCellDist = nCells;
+
+        bool placed = false;
 
         //Then I will look for a cell next to A's cell
         for (const auto& [fst,snd] : distCells)
@@ -148,6 +149,7 @@ QcaReportData qcaYott(QCAGraph& g)
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
+                placed = true;
                 break;
             }
         }
@@ -157,7 +159,7 @@ QcaReportData qcaYott(QCAGraph& g)
             n2c[b] = betterCell;
             ++swaps;
         }
-        else
+        else if (!placed)
             break; //not placed
     }
 #ifdef PRINT
@@ -194,4 +196,5 @@ QcaReportData qcaYott(QCAGraph& g)
         n2c,
         ed
     );
+    return report;
 }

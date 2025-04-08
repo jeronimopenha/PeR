@@ -44,7 +44,7 @@ int main()
 #elifdef QCA_SA
         algPath = "/sa";
 #elifdef QCA_YOTT
-        algPath = "/sa";
+        algPath = "/yott";
 #endif
 
 #ifdef DEBUG
