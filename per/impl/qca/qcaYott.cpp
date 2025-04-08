@@ -26,11 +26,12 @@ QcaReportData qcaYott(QCAGraph& g)
 
 
     string alg_type;
-    vector<pair<int, int>> ed_zz;
 
     vector<pair<int, int>> convergence;
-    ed_zz = g.getEdgesZigzag(convergence);
-    unordered_map<string, vector<pair<int, int>>> annotations = g.qcaGetGraphAnnotations(ed_zz, convergence);
+    vector<tuple<int, int, string>> ed_zz;
+    const vector ed_tmp = g.getEdgesZigzag(convergence, &ed_zz);
+
+    unordered_map<string, vector<pair<int, int>>> annotations = g.qcaGetGraphAnnotations(ed_tmp, convergence);
 
     alg_type = "ZIG_ZAG";
 
@@ -38,11 +39,12 @@ QcaReportData qcaYott(QCAGraph& g)
 
     auto start = chrono::high_resolution_clock::now();
 
-    for (auto [a,b] : ed)
+    for (const auto& [a,b,dir] : ed_zz)
     {
         //Verify if A is placed
         //if it is not placed, then place in a random unused cell.
         //the variable lastCellIdxUsed is for optimize future looks
+
         if (n2c[a] == -1)
         {
             bool found = false;
@@ -65,58 +67,47 @@ QcaReportData qcaYott(QCAGraph& g)
             }
         }
 
-        //Now, if B is placed, go to next edge
+#ifdef PRINT
+        qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
+#endif
 
+        //Now, if B is placed, go to next edge
         if (n2c[b] != -1)
-        {
             continue;
-        }
+
 
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
         const int cellA = n2c[a];
-        const int lA = cellA / nCellsSqrt;
-        const int cA = cellA % nCellsSqrt;
+        const int xA = getX(n2c[a], nCellsSqrt);
+        const int yA = getY(n2c[a], nCellsSqrt);
+
+        vector<pair<int, int>> distCells;
+
+        if (dir == "IN")
+            distCells = qcaGetInputDirections(xA, yA);
+        else
+            distCells = qcaGetOutputDirections(xA, yA);
+
+        randomVector(distCells);
 
         int betterCell = -1;
         int betterCellDist = nCells;
 
         //Then I will look for a cell next to A's cell
-        for (const auto& ij : distCells)
+        for (const auto& [fst,snd] : distCells)
         {
             ++tries;
-            const int lB = lA + ij[0];
-            const int cB = cA + ij[1];
+            const int yB = yA + snd;
+            const int xB = xA + fst;
+
             //find the idx for the target cell
-            const int targetCell = lB * nCellsSqrt + cB;
-            const int targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+            const int targetCell = yB * nCellsSqrt + xB;
 
-            // Check if the target cell is nor allowed, go to next
-            if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
+            // Check if the target cell is not allowed, go to next
+            if (qcaIsInvalidCell(xB, yB, nCellsSqrt))
                 continue;
-
-            const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
-
-            //prevents IO nodes to be not put in IO cells
-            //and put a non IO node in an IO cell
-            if (isTargetCellIO)
-            {
-                // 'targetCell' is a IO cell
-                if (!IsBIoNode)
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                // 'targetCell' is not in possible_positions
-                if (IsBIoNode)
-                {
-                    continue;
-                }
-            }
 
             //begin of yott verifications.
             // if yott verifications does not match until targetCellDistance < 4, then
@@ -125,62 +116,60 @@ QcaReportData qcaYott(QCAGraph& g)
 
             //beginning with an annotation if it exists
             string key = to_string(a) + " " + to_string(b);
-            vector<pair<int, int>> annotation = annotations[key];
+            const vector<pair<int, int>> annotation = annotations[key];
 
             //if we have an annotation
             if (!annotation.empty())
             {
-                if (targetCellDist < 4)
+                if (c2n[targetCell] != -1)
+                    continue;
+
+                int modDist = targetCellDist;
+                bool found = true;
+                //find the distance of the target cell to the annotated cell and compare if they are equal
+                for (auto& [fst, snd] : annotation)
                 {
-                    if (c2n[targetCell] != -1)
-                        continue;
+                    int annDist;
+                    int tAnnDist;
 
-                    int modDist = targetCellDist;
-                    bool found = true;
-                    //find the distance of the target cell to the annotated cell and compare if they are equal
-                    for (auto& [fst, snd] : annotation)
+                    if (fst == -1)
                     {
-                        int annDist;
-                        int tAnnDist;
-
-                        if (fst == -1)
-                        {
-                            annDist = 1;
-                            tAnnDist = fpgaMinBorderDist(targetCell, nCellsSqrt);
-                        }
-                        else
-                        {
-                            int annCell;
-                            annCell = n2c[fst];
-                            annDist = snd + 1;
-                            tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
-                        }
-
-                        if (tAnnDist != annDist)
-                        {
-                            found = false;
-                            modDist += abs(annDist - tAnnDist);
-                        }
+                        annDist = 1;
+                        tAnnDist = fpgaMinBorderDist(targetCell, nCellsSqrt);
                     }
-                    if (found)
+                    else
                     {
-                        if (c2n[targetCell] == -1)
-                        {
-                            c2n[targetCell] = b;
-                            n2c[b] = targetCell;
-                            ++swaps;
-                            break;
-                        }
-                        continue;
+                        int annCell;
+                        annCell = n2c[fst];
+                        annDist = snd + 1;
+                        tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
                     }
 
-                    if (modDist < betterCellDist && c2n[targetCell] == -1)
+                    if (tAnnDist != annDist)
                     {
-                        betterCellDist = modDist;
-                        betterCell = targetCell;
+                        found = false;
+                        modDist += abs(annDist - tAnnDist);
+                    }
+                }
+                if (found)
+                {
+                    if (c2n[targetCell] == -1)
+                    {
+                        c2n[targetCell] = b;
+                        n2c[b] = targetCell;
+                        ++swaps;
+                        break;
                     }
                     continue;
                 }
+
+                if (modDist < betterCellDist && c2n[targetCell] == -1)
+                {
+                    betterCellDist = modDist;
+                    betterCell = targetCell;
+                }
+                continue;
+
                 if (betterCell > -1)
                 {
                     c2n[betterCell] = b;
