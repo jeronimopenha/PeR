@@ -31,8 +31,8 @@
 
 //Choose the algorithm to be run
 //#define QCA_YOTO_ZZ
-//#define QCA_YOTT
-#define QCA_SA
+#define QCA_YOTT
+//#define QCA_SA
 //###############################
 
 //debugging defines

@@ -25,7 +25,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
     vector<pair<int, int>> convergence;
     ed = g.getEdgesZigzag(convergence);
-    unordered_map<string, vector<pair<int, int>>> annotations = g.getGraphAnnotations(ed, convergence);
+    unordered_map<string, vector<pair<int, int>>> annotations = g.fpgaGetGraphAnnotations(ed, convergence);
 
     alg_type = "ZIG_ZAG";
 

@@ -3,54 +3,65 @@
 #include <qca/qcaYott.h>
 
 
-QcaReportData fpgaYott(QCAGraph& g)
+QcaReportData qcaYott(QCAGraph& g)
 {
-    int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
-    int nNodes = g.nNodes;
+    const int nCells = g.nCells;
+    const int nCellsSqrt = g.nCellsSqrt;
+    const int nNodes = g.nNodes;
+    const vector<pair<int, int>> ed = g.gEdges;
 
     vector c2n(nCells, -1);
     vector n2c(nNodes, -1);
-    vector<vector<int>> distCells = fpgaGetAdjCellsDist(nCellsSqrt);
-    vector<int> inOutCells = g.getInOutPos();
 
-    randomVector(inOutCells);
+    vector<int> cells(nCells);
+    iota(cells.begin(), cells.end(), 0);
+    randomVector(cells);
 
-    int cacheMisses = 0;
+#ifdef PRINT
+    qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
+#endif
+
     int tries = 0;
     int swaps = 0;
 
+
     string alg_type;
-    vector<pair<int, int>> ed;
+    vector<pair<int, int>> ed_zz;
 
     vector<pair<int, int>> convergence;
-    ed = g.getEdgesZigzag(convergence);
-    unordered_map<string, vector<pair<int, int>>> annotations = g.getGraphAnnotations(ed, convergence);
+    ed_zz = g.getEdgesZigzag(convergence);
+    unordered_map<string, vector<pair<int, int>>> annotations = g.qcaGetGraphAnnotations(ed_zz, convergence);
 
     alg_type = "ZIG_ZAG";
 
-    int lastIdxIOCellUsed = 0;
+    int lastCellIdxUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
 
     for (auto [a,b] : ed)
     {
-#ifdef DEBUG
-        fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-
         //Verify if A is placed
-        //if it is not placed, then place in a random inout cell.
-        //the variable lastIdxIOCellUsed is for optimize future looks
+        //if it is not placed, then place in a random unused cell.
+        //the variable lastCellIdxUsed is for optimize future looks
         if (n2c[a] == -1)
         {
-            int ioCell = inOutCells[lastIdxIOCellUsed];
-
-            if (c2n[ioCell] == -1)
+            bool found = false;
+            while (!found)
             {
-                c2n[ioCell] = a;
-                n2c[a] = ioCell;
-                lastIdxIOCellUsed++;
+                int cell = cells[lastCellIdxUsed];
+                while (cell == -1)
+                {
+                    lastCellIdxUsed++;
+                    cell = cells[lastCellIdxUsed];
+                }
+                if (c2n[cell] == -1)
+                {
+                    c2n[cell] = a;
+                    n2c[a] = cell;
+                    cells[lastCellIdxUsed] = -1;
+                    lastCellIdxUsed++;
+                    found = true;
+                }
             }
         }
 

@@ -83,7 +83,7 @@ vector<int> FPGAGraph::getClbPos() const
     return pos;
 }
 
-unordered_map<string, vector<pair<int, int>>> FPGAGraph::getGraphAnnotations(
+unordered_map<string, vector<pair<int, int>>> FPGAGraph::fpgaGetGraphAnnotations(
     const vector<pair<int, int>>& edges,
     const vector<pair<int, int>>& convergences
 )

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <list>
 #include <queue>
 #include <qca/qcaGraph.h>
 #include<common/parameters.h>
@@ -365,4 +366,70 @@ bool QCAGraph::verifyPlacement(const vector<int>& n2c, const vector<pair<int, in
         *invalidEdgesCount = totalInvalid;
 
     return valid;
+}
+
+unordered_map<string, vector<pair<int, int>>> QCAGraph::qcaGetGraphAnnotations(
+    const vector<pair<int, int>>& edges,
+    const vector<pair<int, int>>& convergences
+)
+{
+    unordered_map<string, vector<pair<int, int>>> annotations;
+    vector<int> placed;
+    // Initialization of the dictionary
+
+    for (const auto& [fst,snd] : convergences)
+    {
+        const int elem_cycle_begin = fst;
+        int elem_cycle_end = snd;
+        list<string> walk_key;
+        bool found_start = false;
+        int count = 0;
+        int value1 = -1;
+
+        for (auto it = edges.rbegin(); it != edges.rend(); ++it)
+        {
+            const int a = it->first;
+
+            if (const int b = it->second; elem_cycle_begin == b && !found_start)
+            {
+                value1 = a;
+                string key = funcKey(to_string(value1), to_string(elem_cycle_begin));
+                walk_key.push_front(key);
+                annotations[key].emplace_back(elem_cycle_end, count);
+                count++;
+                found_start = true;
+            }
+            else if (found_start && (value1 == b || elem_cycle_end == a))
+            {
+                const int value2 = b;
+                value1 = a;
+                string key = funcKey(to_string(value1), to_string(value2));
+
+                if (value1 != elem_cycle_end && value2 != elem_cycle_end)
+                {
+                    walk_key.push_front(key);
+                    annotations[key].emplace_back(elem_cycle_end, count);
+                    count++;
+                }
+                else
+                {
+                    // Go back and update values
+                    const int half_count = count / 2;
+                    auto it2 = walk_key.begin();
+                    for (int k = 0; k < half_count; ++k, ++it2)
+                    {
+                        auto& dic_actual = annotations[*it2];
+                        for (auto& [fst,snd] : dic_actual)
+                        {
+                            if (fst == elem_cycle_end)
+                                snd = k + 1;
+                        }
+                    }
+                    break; // Move to the next element in convergences
+                }
+            }
+        }
+    }
+
+    return annotations;
 }

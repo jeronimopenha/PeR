@@ -4,6 +4,7 @@
 #include  <common/util.h>
 #include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>
+#include <qca/qcaYott.h>
 #include <qca/qcaSa.h>
 
 #include <omp.h>
@@ -42,6 +43,8 @@ int main()
         algPath = "/yoto_zz";
 #elifdef QCA_SA
         algPath = "/sa";
+#elifdef QCA_YOTT
+        algPath = "/sa";
 #endif
 
 #ifdef DEBUG
@@ -73,6 +76,8 @@ int main()
                 report = qcaYoto(g);
 #elif  defined(QCA_SA)
                 report = qcaSa(g);
+#elif  defined(QCA_YOTT)
+                report = qcaYott(g);
 #endif
 
 #ifndef DEBUG

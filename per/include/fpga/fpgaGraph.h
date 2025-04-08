@@ -31,7 +31,7 @@ public:
 
     vector<int> getClbPos() const;
 
-    unordered_map<string, vector<pair<int, int>>> getGraphAnnotations(
+    unordered_map<string, vector<pair<int, int>>> fpgaGetGraphAnnotations(
         const vector<pair<int, int>>& edges,
         const vector<pair<int, int>>& convergences
     );
