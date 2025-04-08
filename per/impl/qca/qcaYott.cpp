@@ -1,9 +1,9 @@
 #include <common/parameters.h>
 #include <common/cache.h>
-#include <fpga/fpgaYott.h>
+#include <qca/qcaYott.h>
 
 
-FpgaReportData fpgaYott(FPGAGraph& g)
+QcaReportData fpgaYott(QCAGraph& g)
 {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
