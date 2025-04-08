@@ -21,7 +21,7 @@ int Cache::readCache(const int address, const vector<int> &vec) {
         cacheValid[line] = true;
 
         for (int i = 0; i < CACHE_COLUMNS; i++) {
-            int readAddress = readAddressoffset + i;
+            const int readAddress = readAddressoffset + i;
             if (readAddress < vec.size())
                 cacheData[line][i] = vec[readAddressoffset + i];
             else

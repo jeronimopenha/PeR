@@ -39,7 +39,7 @@ int main()
         int nExec;
         //execution parameters
 #ifdef QCA_YOTO_ZZ
-        algPath = "/yoto_df";
+        algPath = "/yoto_zz";
 #elifdef QCA_SA
         algPath = "/sa";
 #endif

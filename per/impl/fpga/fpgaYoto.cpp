@@ -10,8 +10,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
-    vector<int> c2n(nCells, -1);
-    vector<int> n2c(nNodes, -1);
+    vector c2n(nCells, -1);
+    vector n2c(nNodes, -1);
     vector<vector<int> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 #ifdef CACHE
@@ -96,7 +96,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         const int lA = n2c[a] / nCellsSqrt;
         const int cA = n2c[a] % nCellsSqrt;
 
-        //bool placed = false;
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells) {
             ++tries;

@@ -3,15 +3,14 @@
 #include <fpga/fpgaYoto.h>
 
 
-
 FpgaReportData fpgaYott(FPGAGraph& g)
 {
     int nCells = g.nCells;
     int nCellsSqrt = g.nCellsSqrt;
     int nNodes = g.nNodes;
 
-    vector<int> c2n(nCells, -1);
-    vector<int> n2c(nNodes, -1);
+    vector c2n(nCells, -1);
+    vector n2c(nNodes, -1);
     vector<vector<int>> distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     vector<int> inOutCells = g.getInOutPos();
 
@@ -30,8 +29,6 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
     alg_type = "ZIG_ZAG";
 
-
-    //saveToDot(ed, "/home/jeronimo/test.dot");
     int lastIdxIOCellUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
@@ -45,7 +42,6 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-
         if (n2c[a] == -1)
         {
             int ioCell = inOutCells[lastIdxIOCellUsed];
@@ -75,9 +71,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         int betterCell = -1;
         int betterCellDist = nCells;
 
-        //bool placed = false;
         //Then I will look for a cell next to A's cell
-
         for (const auto& ij : distCells)
         {
             ++tries;
@@ -133,7 +127,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
                     int modDist = targetCellDist;
                     bool found = true;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
-                    for (auto &[fst, snd] : annotation)
+                    for (auto& [fst, snd] : annotation)
                     {
                         int annDist;
                         int tAnnDist;
@@ -193,7 +187,6 @@ FpgaReportData fpgaYott(FPGAGraph& g)
             }
 
             // if the target node has no annotations, then it will put it on the first empty cell
-
             if (c2n[targetCell] == -1)
             {
                 c2n[targetCell] = b;

@@ -110,7 +110,8 @@
     nCells = static_cast<int>(pow(nCellsSqrt, 2));
 }*/
 
-Graph::Graph(const string &dotPath, const string &dotName) {
+Graph::Graph(const string& dotPath, const string& dotName)
+{
     this->dotPath = dotPath;
     this->dotName = dotName;
 
@@ -118,28 +119,33 @@ Graph::Graph(const string &dotPath, const string &dotName) {
     updateG();
 }
 
-void Graph::updateG() {
+void Graph::updateG()
+{
     readAdjList();
     readSuccPred();
     readIONodes();
 }
 
-void Graph::readEdgesNodes() {
+void Graph::readEdgesNodes()
+{
     unordered_set<int> nodes;
 
     ifstream dotFile(dotPath);
     string line;
 
     // If  the opening has an error
-    if (!dotFile.is_open()) {
+    if (!dotFile.is_open())
+    {
         cerr << "Error opening file: " << dotPath << endl;
         return;
     }
 
-    while (getline(dotFile, line)) {
+    while (getline(dotFile, line))
+    {
         // Look for lines that define edges
 
-        if (line.find("->") != string::npos) {
+        if (line.find("->") != string::npos)
+        {
             string toNode;
             string fromNode;
 
@@ -175,24 +181,30 @@ void Graph::readEdgesNodes() {
         gNodes.push_back(i);
 }
 
-void Graph::readAdjList() {
+void Graph::readAdjList()
+{
     adjList.clear();
-    for (auto [fst, snd]: gEdges) {
+    for (auto [fst, snd] : gEdges)
+    {
         adjList[fst].push_back(snd);
     }
 }
 
-void Graph::readIONodes() {
+void Graph::readIONodes()
+{
     //input and output nodes
     outputNodes.clear();
     inputNodes.clear();
     otherNodes.clear();
-    for (int i = 0; i < nNodes; i++) {
-        if (nSuccV[i] == 0) {
+    for (int i = 0; i < nNodes; i++)
+    {
+        if (nSuccV[i] == 0)
+        {
             outputNodes.push_back(i);
             continue;
         }
-        if (nPredV[i] == 0) {
+        if (nPredV[i] == 0)
+        {
             inputNodes.push_back(i);
             continue;
         }
@@ -200,7 +212,8 @@ void Graph::readIONodes() {
     }
 }
 
-void Graph::readSuccPred() {
+void Graph::readSuccPred()
+{
     //2 - find the successors and the predecessors
     //and find how many succ and pred each node have
 
@@ -209,10 +222,11 @@ void Graph::readSuccPred() {
     //predecessors
     nSuccV = vector<int>(nNodes, 0);
     nPredV = vector<int>(nNodes, 0);
-    successors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
-    predecessors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
+    successors = vector<vector<bool>>(nNodes, vector<bool>(nNodes, false));
+    predecessors = vector<vector<bool>>(nNodes, vector<bool>(nNodes, false));
 
-    for (const auto &[fst, snd]: gEdges) {
+    for (const auto& [fst, snd] : gEdges)
+    {
         const int fromN = fst;
         const int toN = snd;
 
@@ -224,29 +238,35 @@ void Graph::readSuccPred() {
     }
 }
 
-vector<pair<int, int> > Graph::getEdgesDepthFirst() {
+vector<pair<int, int>> Graph::getEdgesDepthFirst()
+{
     // Copy input nodes and shuffle if needed
     vector<int> inputList = inputNodes;
 
     randomVector(inputList);
 
     vector<int> stack(inputList); // Initialize stack with input_list
-    vector<pair<int, int> > edges;
+    vector<pair<int, int>> edges;
     vector<bool> visited(nNodes, false);
 
-    while (!stack.empty()) {
+    while (!stack.empty())
+    {
         int n = stack.back();
         stack.pop_back();
 
 
-        if (visited[n]) {
+        if (visited[n])
+        {
             continue;
         }
         visited[n] = true;
         // Process all neighbors
-        for (int i = 0; i < nNodes; i++) {
-            if (successors[n][i]) {
-                if (!visited[i]) {
+        for (int i = 0; i < nNodes; i++)
+        {
+            if (successors[n][i])
+            {
+                if (!visited[i])
+                {
                     stack.push_back(i);
                     edges.emplace_back(n, i);
                 }
@@ -258,30 +278,36 @@ vector<pair<int, int> > Graph::getEdgesDepthFirst() {
 }
 
 
-vector<pair<int, int> > Graph::getEdgesZigzag(
-    vector<pair<int, int> > &convergence,
-    vector<tuple<int, int, string> > *edgeTypes) {
-    vector<pair<int, string> > outputList;
+vector<pair<int, int>> Graph::getEdgesZigzag(
+    vector<pair<int, int>>& convergence,
+    vector<tuple<int, int, string>>* edgeTypes)
+{
+    vector<pair<int, string>> outputList;
 
-    for (const auto &node: outputNodes) {
+    for (const auto& node : outputNodes)
+    {
         outputList.emplace_back(node, "IN");
     }
 
     randomVector(outputList);
 
     vector stack(outputList.begin(), outputList.end());
-    vector<pair<int, int> > edges;
+    vector<pair<int, int>> edges;
     vector visited(nNodes, false);
 
     // Precompute fan-in and fan-out
-    vector<vector<int> > fanIn(nNodes);
-    vector<vector<int> > fanOut(nNodes);
-    for (int i = 0; i < nNodes; i++) {
-        for (int j = 0; j < nNodes; j++) {
-            if (successors[i][j]) {
+    vector<vector<int>> fanIn(nNodes);
+    vector<vector<int>> fanOut(nNodes);
+    for (int i = 0; i < nNodes; i++)
+    {
+        for (int j = 0; j < nNodes; j++)
+        {
+            if (successors[i][j])
+            {
                 fanOut[i].push_back(j);
             }
-            if (predecessors[i][j]) {
+            if (predecessors[i][j])
+            {
                 fanIn[i].push_back(j);
             }
         }
@@ -290,16 +316,19 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
     }
 
 
-    while (!stack.empty()) {
+    while (!stack.empty())
+    {
         auto [fst, snd] = stack.back();
         stack.pop_back();
 
-        const int &a = fst;
-        const string &direction = snd;
+        const int& a = fst;
+        const string& direction = snd;
         visited[a] = true;;
 
-        if (direction == "IN") {
-            if (!fanOut[a].empty()) {
+        if (direction == "IN")
+        {
+            if (!fanOut[a].empty())
+            {
                 const int b = fanOut[a].back();
                 stack.emplace_back(a, "IN");
                 stack.insert(stack.end(), fanIn[a].size(), {a, "IN"});
@@ -308,12 +337,15 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
                 fanOut[a].pop_back();
                 fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
-                if (visited[b]) {
+                if (visited[b])
+                {
                     convergence.emplace_back(a, b);
                 }
                 if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
-            } else if (!fanIn[a].empty()) {
+            }
+            else if (!fanIn[a].empty())
+            {
                 const int b = fanIn[a].back();
                 stack.emplace_back(a, "IN");
                 stack.insert(stack.end(), fanIn[a].size(), {b, "IN"});
@@ -322,15 +354,19 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
                 fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
 
-                if (visited[b]) {
+                if (visited[b])
+                {
                     convergence.emplace_back(a, b);
                 }
                 if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             }
-        } else {
+        }
+        else
+        {
             // direction == "OUT"
-            if (!fanIn[a].empty()) {
+            if (!fanIn[a].empty())
+            {
                 int b = fanIn[a].back();
                 stack.emplace_back(a, "OUT");
                 stack.insert(stack.end(), fanOut[a].size(), {a, "OUT"});
@@ -339,12 +375,15 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
                 fanIn[a].pop_back();
                 fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
-                if (visited[b]) {
+                if (visited[b])
+                {
                     convergence.emplace_back(a, b);
                 }
                 if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
-            } else if (!fanOut[a].empty()) {
+            }
+            else if (!fanOut[a].empty())
+            {
                 int b = fanOut[a].back();
                 stack.emplace_back(a, "OUT");
                 stack.insert(stack.end(), fanOut[a].size(), {b, "OUT"});
@@ -353,7 +392,8 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
                 fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
 
-                if (visited[b]) {
+                if (visited[b])
+                {
                     convergence.emplace_back(a, b);
                 }
                 if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
@@ -363,12 +403,15 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
     }
     edges = clearEdges(edges);
 
-    if (edgeTypes) {
-        vector<tuple<int, int, string> > cleaned;
-        for (const auto &t: *edgeTypes) {
+    if (edgeTypes)
+    {
+        vector<tuple<int, int, string>> cleaned;
+        for (const auto& t : *edgeTypes)
+        {
             int a = get<0>(t);
             int b = get<1>(t);
-            if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end()) {
+            if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end())
+            {
                 cleaned.push_back(t);
             }
         }
@@ -377,16 +420,19 @@ vector<pair<int, int> > Graph::getEdgesZigzag(
     return clearEdges(edges);
 }
 
-vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) const {
+vector<pair<int, int>> Graph::clearEdges(const vector<pair<int, int>>& edges) const
+{
     vector placedNodes(nNodes, false); // Set to track placed nodes
-    vector<pair<int, int> > new_edges; // Vector to store filtered edges
+    vector<pair<int, int>> new_edges; // Vector to store filtered edges
 
     // Add the first node of the first edge to the set
     placedNodes[edges[0].first] = true;
 
-    for (const auto [fst,snd]: edges) {
+    for (const auto [fst,snd] : edges)
+    {
         // Check if the second node is not in the set or if we don't remove placed edges
-        if (!placedNodes[snd]) {
+        if (!placedNodes[snd])
+        {
             placedNodes[snd] = true; // Add n2 to the set
             new_edges.emplace_back(fst, snd); // Add the edge to the new list
         }
@@ -395,12 +441,13 @@ vector<pair<int, int> > Graph::clearEdges(const vector<pair<int, int> > &edges) 
 }
 
 
-void Graph::dfs(const int idx, const vector<vector<int> > &adj, vector<bool> &visited, vector<int> &topo_order) {
+void Graph::dfs(const int idx, const vector<vector<int>>& adj, vector<bool>& visited, vector<int>& topo_order)
+{
     visited[idx] = true;
-    for (const int v: adj[idx]) {
-        if (!visited[v]) {
+    for (const int v : adj[idx])
+    {
+        if (!visited[v])
             dfs(v, adj, visited, topo_order);
-        }
     }
     topo_order.push_back(idx);
 }
