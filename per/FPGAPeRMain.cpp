@@ -13,14 +13,19 @@ using namespace std;
 //Choose the algorithm in util.h defines
 int main()
 {
-    // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
 
 #ifdef DEBUG
     const string benchPath = "benchmarks/fpga/bench_test/";
 #else
-        const string benchPath = "benchmarks/fpga/eval/";
+#ifdef TRETS
+    const string benchPath = "benchmarks/fpga/eval/TRETS/";
+#elifdef EPFL
+        const string benchPath = "benchmarks/fpga/eval/EPFL/";
+#endif
+
+
 #endif
     const string reportPath = "reports/fpga";
     string algPath;
@@ -55,6 +60,12 @@ int main()
         algPath = "/sa";
 #endif
 
+#ifdef TRETS
+        algPath += "TRETS";
+#elifdef EPFL
+            algPath += "EPFL";
+#endif
+
 #ifdef CACHE
         algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP);
 #endif
@@ -79,11 +90,11 @@ int main()
         {
 #pragma omp for schedule(dynamic)
 #endif
-        for (int exec = 0; exec < nExec; exec++)
-        {
-            FpgaReportData report;
+            for (int exec = 0; exec < nExec; exec++)
+            {
+                FpgaReportData report;
 #if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
-            report = fpgaYoto(g);
+                report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
             report = fpgaYott(g);
 #elifdef FPGA_SA
@@ -92,12 +103,12 @@ int main()
 #ifndef DEBUG
 #pragma omp critical
 #endif
-            {
-                reports.push_back(report);
+                {
+                    reports.push_back(report);
+                }
             }
-        }
 #ifndef DEBUG
-    }
+        }
 #endif
 
         //sort the reports by total cost because I want only the 10 better placements

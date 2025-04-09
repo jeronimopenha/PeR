@@ -45,7 +45,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //I need to place every input at the beginning of execution
     for (int n: g.inputNodes) {
         for (int i = lastIdxIOCellUsed + 1; i < inOutCells.size(); i++) {
-            int ioCell = inOutCells[i];
+            const int ioCell = inOutCells[i];
             if (c2n[ioCell] == -1) {
                 c2n[ioCell] = n;
                 n2c[n] = ioCell;

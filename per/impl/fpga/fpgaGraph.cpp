@@ -8,6 +8,7 @@ FPGAGraph::FPGAGraph(const string& dotPath, const string& dotName): Graph(dotPat
     readNeighbors();
     calcMatrix();
     clbNodes = otherNodes;
+    updateG();
 }
 
 void FPGAGraph::updateG()

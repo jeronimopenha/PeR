@@ -29,12 +29,13 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
     alg_type = "ZIG_ZAG";
 
-    int lastIdxIOCellUsed = 0;
+    //int lastIdxIOCellUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
 
     for (auto [a,b] : ed)
     {
+        bool placed = false;
 #ifdef DEBUG
         fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
@@ -44,13 +45,13 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         //the variable lastIdxIOCellUsed is for optimize future looks
         if (n2c[a] == -1)
         {
-            int ioCell = inOutCells[lastIdxIOCellUsed];
+            const int ioCell = inOutCells.back();
+            inOutCells.pop_back();
 
             if (c2n[ioCell] == -1)
             {
                 c2n[ioCell] = a;
                 n2c[a] = ioCell;
-                lastIdxIOCellUsed++;
             }
         }
 
