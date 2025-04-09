@@ -8,9 +8,9 @@ FpgaReportData::FpgaReportData()
 }
 
 // Constructor for easy initialization
-FpgaReportData::FpgaReportData(float _time, string dot_name, string  dot_path,
-                               string  placer, const int cacheMisses, const int tries, const int swaps,
-                               string  edges_algorithm,
+FpgaReportData::FpgaReportData(float _time, string dot_name, string dot_path,
+                               string placer, const int cacheMisses, const int tries, const int swaps,
+                               string edges_algorithm,
                                int total_cost, const vector<int>& placement, const vector<int>& n2c)
     : _time(_time),
       dotName(std::move(dot_name)),
@@ -73,7 +73,7 @@ void fpgaSavePlacedDot(vector<int>& n2c, const vector<pair<int, int>>& ed, const
         return;
     }
 
-    vector<int> cells(nCellsSqrt * nCellsSqrt, -1);
+    vector cells(nCellsSqrt * nCellsSqrt, -1);
 
     for (int i = 0; i < n2c.size(); i++)
     {
@@ -141,7 +141,6 @@ void fpgaSavePlacedDot(vector<int>& n2c, const vector<pair<int, int>>& ed, const
         }
         file << "};" << endl;
     }
-
 
     // write the dot footer
     file << "}" << endl;
@@ -290,29 +289,25 @@ void fpgaWriteVprData(const string& basePath,
     int k = 3;
 
     if (fileName.find("_k3") != string::npos)
-    {
         k = 3;
-    }
+
     else if (fileName.find("_k4") != string::npos)
-    {
         k = 4;
-    }
+
     else if (fileName.find("_k5") != string::npos)
-    {
         k = 5;
-    }
+
     else if (fileName.find("_k6") != string::npos)
-    {
         k = 6;
-    }
+
 
     ofstream file(netFile);
     if (file.is_open())
     {
         for (int node = 0; node < g.nNodes; node++)
         {
-            int inDegree = g.nPredV[node];
-            int outDegree = g.nSuccV[node];
+            const int inDegree = g.nPredV[node];
+            const int outDegree = g.nSuccV[node];
             if (outDegree == 0)
             {
                 for (int pre = 0; pre < g.nNodes; pre++)
@@ -349,9 +344,8 @@ void fpgaWriteVprData(const string& basePath,
 
                 file << "subblock: " << node;
                 for (int i = 0; i < counter; i++)
-                {
                     file << " " << i;
-                }
+
                 for (int i = 0; i < k - counter; i++)
                     file << " open";
                 file << " " << k << " open" << endl << endl;
@@ -376,8 +370,8 @@ void fpgaWriteVprData(const string& basePath,
         int counter = 0;
         for (int node = 0; node < g.nNodes; node++)
         {
-            int cell = data.n2c[node];
-            int place = data.placement[cell];
+            const int cell = data.n2c[node];
+            const int place = data.placement[cell];
             if (place > -1)
             {
                 int l = cell / g.nCellsSqrt;
@@ -394,9 +388,8 @@ void fpgaWriteVprData(const string& basePath,
                     }
                 }
                 else
-                {
                     file << node << "\t" << c << "\t" << l << "\t" << 0 << "\t#" << counter << endl;
-                }
+
             }
             counter++;
         }
@@ -404,9 +397,8 @@ void fpgaWriteVprData(const string& basePath,
         file.close();
     }
     else
-    {
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
-    }
+
 }
 
 bool fpgaIsInvalidCell(const int cell, const int nCellsSqrt)

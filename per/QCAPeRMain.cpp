@@ -1,7 +1,10 @@
+#include <algorithm>
+
 #include <common/parameters.h>
 #include  <common/util.h>
 #include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>
+#include <qca/qcaYott.h>
 #include <qca/qcaSa.h>
 
 #include <omp.h>
@@ -9,8 +12,8 @@
 using namespace std;
 
 //Choose the algorithm in util.h defines
-int main() {
-    // string root_path = get_project_root();
+int main()
+{
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
 
@@ -26,7 +29,8 @@ int main() {
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
 
-    for (const auto &[fst, snd]: files) {
+    for (const auto& [fst, snd] : files)
+    {
         cout << fst << endl;
 
         //Creating graph important variables
@@ -35,51 +39,53 @@ int main() {
         int nExec;
         //execution parameters
 #ifdef QCA_YOTO_ZZ
-        algPath = "/yoto_df";
+        algPath = "/yoto_zz";
 #elifdef QCA_SA
         algPath = "/sa";
+#elifdef QCA_YOTT
+        algPath = "/yott";
 #endif
 
 #ifdef DEBUG
         nExec = 1;
 #elifdef  QCA_SA
-        nExec = 10;
+        nExec = 100;
 #else
         nExec = 1000;
 #endif
         int nExtraLayers = 0;
 
-        vector<vector<QcaReportData> > reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
+        vector<vector<QcaReportData>> reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
 
-        while (nExtraLayers < MAX_EXTRA_LAYERS) {
+        while (nExtraLayers < MAX_EXTRA_LAYERS)
+        {
 #ifndef DEBUG
-            int nThreads = max(1, omp_get_num_procs() - 1);
+            int nThreads = max(1, omp_get_num_procs());
             omp_set_num_threads(nThreads);
 
 #pragma omp parallel
             {
 #pragma omp for schedule(dynamic)
 #endif
-                for (int exec = 0; exec < nExec; exec++) {
-                    QcaReportData report;
-                    /*QCAGraph gT = g;
-                    for (int i = 0; i < nExtraLayers; i++) {
-                        gT.insertDummyLayerAtLevel(randomInt(0, gT.minOutputLevel));
-                    }*/
+            for (int exec = 0; exec < nExec; exec++)
+            {
+                QcaReportData report;
 
 #if defined(QCA_YOTO_ZZ)
                 report = qcaYoto(g);
 #elif  defined(QCA_SA)
-                    report = qcaSa(g);
+                report = qcaSa(g);
+#elif  defined(QCA_YOTT)
+                report = qcaYott(g);
 #endif
 
 #ifndef DEBUG
 #pragma omp critical
 #endif
-                    {
-                        reports[nExtraLayers][exec] = report;
-                    }
+                {
+                    reports[nExtraLayers][exec] = report;
                 }
+            }
 #ifndef DEBUG
             }
 #endif
@@ -87,16 +93,19 @@ int main() {
             g.insertDummyLayerAtLevel(randomInt(0, g.minOutputLevel));
         }
 
-        //#ifndef DEBUG
-        for (auto &rep: reports) {
-            sort(rep.begin(), rep.end(), [](const QcaReportData &a, const QcaReportData &b) {
+#ifndef DEBUG
+        for (auto& rep : reports)
+        {
+            sort(rep.begin(), rep.end(), [](const QcaReportData& a, const QcaReportData& b)
+            {
                 /*if (a.success != b.success)
                     return a.success > b.success; // true vem antes de false*/
                 return a.wrongEdges < b.wrongEdges; // menos arestas erradas vem primeiro
             });
         }
 
-        for (int extraLayer = 0; extraLayer < MAX_EXTRA_LAYERS; extraLayer++) {
+        for (int extraLayer = 0; extraLayer < MAX_EXTRA_LAYERS; extraLayer++)
+        {
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(extraLayer);
             qcaWriteJson(rootPath, reportPath, algPath, fileName, extraLayer, reports[extraLayer][0]);
@@ -110,7 +119,7 @@ int main() {
 
             qcaExportUSEToDot(dotFile, n2c, ed, nCellsSqrt);
         }
-        //#endif
+#endif
     }
     return 0;
 }

@@ -7,7 +7,7 @@
 //#include <string>
 #include <vector>
 #include <random>
-//#include <algorithm>
+#include <algorithm>
 
 using namespace std;
 namespace fs = std::filesystem;

@@ -1,5 +1,6 @@
 #include <common/parameters.h>
 #include <qca/qcaSa.h>
+#include <unordered_set>
 
 QcaReportData qcaSa(QCAGraph& g)
 {
@@ -12,8 +13,8 @@ QcaReportData qcaSa(QCAGraph& g)
     const int nNodes = g.nNodes;
     const vector<pair<int, int>> ed = g.gEdges;
 
-    vector<int> c2n(nCells, -1);
-    vector<int> n2c(nNodes, -1);
+    vector c2n(nCells, -1);
+    vector n2c(nNodes, -1);
 
     vector<int> cells(nCells);
     iota(cells.begin(), cells.end(), 0);
@@ -22,14 +23,12 @@ QcaReportData qcaSa(QCAGraph& g)
     //place the nodes to their initial positions
     int idx = 0;
     for (int node = 0; node < nNodes; node++)
-    {
         if (c2n[cells[idx]] == -1)
         {
             c2n[cells[idx]] = node;
             n2c[node] = cells[idx];
             idx++;
         }
-    }
 
 
 #ifdef PRINT
@@ -93,9 +92,11 @@ QcaReportData qcaSa(QCAGraph& g)
                     //qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
                 }
-                if (success) break;
+                if (success)
+                    break;
             }
-            if (success) break;
+            if (success)
+                break;
 #ifdef PRINT
             if (t <= 1)
             {
@@ -104,7 +105,8 @@ QcaReportData qcaSa(QCAGraph& g)
 #endif
             t *= 0.999;
         }
-        if (success) break;
+        if (success)
+            break;
     }
 #ifdef PRINT
     qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
@@ -116,11 +118,13 @@ QcaReportData qcaSa(QCAGraph& g)
     //if this placement valid?
     int wrongEdges;
     success = g.verifyPlacement(n2c, ed, &wrongEdges);
+    bool nodesPlaced = allPLaced(n2c);
     AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt, c2n);
 
 
     auto report = QcaReportData(
         success,
+        nodesPlaced,
         static_cast<float>(_time),
         g.dotName,
         g.dotPath,
@@ -143,200 +147,6 @@ QcaReportData qcaSa(QCAGraph& g)
     return report;
 }
 
-
-pair<float, float> qcaGetSwapCost(
-    const int cellNode1,
-    const int cellNode2,
-    const int node1,
-    const int node2,
-    const vector<int>& n2c,
-    const QCAGraph& g
-)
-{
-    if (node1 == -1)
-    {
-        return {0.0, 0.0};
-    }
-    const int nCellsSqrt = g.nCellsSqrt;
-    const int totalNeigh = static_cast<int>(g.inNeighbors[node1].size() + g.outNeighbors[node1].size());
-
-    int costB = 0;
-    int costA = 0;
-
-    //todo add a minor cost penalty if neigh is near node1 but in a wrong cell
-    vector<int> targetNodes;
-
-    //cost before
-    int cellLookX = getX(cellNode1, nCellsSqrt);
-    int cellLookY = getY(cellNode1, nCellsSqrt);;
-
-    vector<int> inCellsNode1;
-    vector<int> outCellsNode1;
-
-    for (auto [x,y] : qcaGetInputDirections(cellLookX, cellLookY))
-    {
-        const int cellX = cellLookX + x;
-        const int cellY = cellLookY + y;
-        if (qcaIsInvalidCell(cellX, cellY, nCellsSqrt)) continue;
-        const int cell = getCellIndex(cellX, cellY, nCellsSqrt);
-        inCellsNode1.push_back(cell);
-    }
-
-    for (auto [x,y] : qcaGetOutputDirections(cellLookX, cellLookY))
-    {
-        const int cellX = cellLookX + x;
-        const int cellY = cellLookY + y;
-        if (qcaIsInvalidCell(cellX, cellY, nCellsSqrt)) continue;
-        const int cell = getCellIndex(cellX, cellY, nCellsSqrt);
-        outCellsNode1.push_back(cell);
-    }
-
-    for (const auto neigh : g.inNeighbors[node1])
-    {
-        //look if neigh is in a valid cell with A
-        const int nCell = n2c[neigh];
-        bool found = false;
-        for (const int cell : inCellsNode1)
-            if (nCell == cell)
-            {
-                found = true;
-                break;
-            }
-        if (!found)
-        {
-            //costB++;
-            const int nx = getX(nCell, nCellsSqrt);
-            const int ny = getY(nCell, nCellsSqrt);
-            const int dx = abs(nx - cellLookX);
-            const int dy = abs(ny - cellLookY);
-            const int dist = dx + dy;
-
-            // Penaliza 1.0 se estiver fora da direção esperada
-            // Penaliza parcialmente se estiver na direção mas distante
-            costB += min(dist, 3); // ou: costB += dist;
-            //costB += dist; // ou: costB += dist;
-            //costB += 1; // ou: costB += dist;
-        }
-    }
-
-    for (const auto neigh : g.outNeighbors[node1])
-    {
-        //look if neigh is in a valid cell with A
-        const int nCell = n2c[neigh];
-        bool found = false;
-        for (const int cell : outCellsNode1)
-            if (nCell == cell)
-            {
-                found = true;
-                break;
-            }
-        if (!found)
-        {
-            //costB++;
-            int nx = getX(nCell, nCellsSqrt);
-            int ny = getY(nCell, nCellsSqrt);
-            int dx = abs(nx - cellLookX);
-            int dy = abs(ny - cellLookY);
-            int dist = dx + dy;
-
-            // Penaliza 1.0 se estiver fora da direção esperada
-            // Penaliza parcialmente se estiver na direção mas distante
-            costB += min(dist, 3); // ou: costB += dist;
-            //costB += dist; // ou: costB += dist;
-            //costB += 1; // ou: costB += dist;
-        }
-    }
-
-    //cost after
-    cellLookX = getX(cellNode2, nCellsSqrt);
-    cellLookY = getY(cellNode2, nCellsSqrt);;
-
-    inCellsNode1.clear();
-    outCellsNode1.clear();
-
-    for (auto [x,y] : qcaGetInputDirections(cellLookX, cellLookY))
-    {
-        const int cellX = cellLookX + x;
-        const int cellY = cellLookY + y;
-        if (qcaIsInvalidCell(cellX, cellY, nCellsSqrt)) continue;
-        const int cell = getCellIndex(cellX, cellY, nCellsSqrt);
-        inCellsNode1.push_back(cell);
-    }
-
-    for (auto [x,y] : qcaGetOutputDirections(cellLookX, cellLookY))
-    {
-        const int cellX = cellLookX + x;
-        const int cellY = cellLookY + y;
-        if (qcaIsInvalidCell(cellX, cellY, nCellsSqrt)) continue;
-        const int cell = getCellIndex(cellX, cellY, nCellsSqrt);
-        outCellsNode1.push_back(cell);
-    }
-
-    for (const auto neigh : g.inNeighbors[node1])
-    {
-        //look if neigh is in a valid cell with A
-        const int nCell = (neigh == node2) ? cellNode1 : n2c[neigh];
-
-        bool found = false;
-        for (const int cell : inCellsNode1)
-            if (nCell == cell)
-            {
-                found = true;
-                break;
-            }
-        if (!found)
-        {
-            //costA++;
-            int nx = getX(nCell, nCellsSqrt);
-            int ny = getY(nCell, nCellsSqrt);
-            int dx = abs(nx - cellLookX);
-            int dy = abs(ny - cellLookY);
-            int dist = dx + dy;
-
-            // Penaliza 1.0 se estiver fora da direção esperada
-            // Penaliza parcialmente se estiver na direção mas distante
-            costA += min(dist, 3); // ou: costB += dist;
-            //costA += dist; // ou: costB += dist;
-            //costA += 1; // ou: costB += dist;
-        }
-    }
-
-    for (const auto neigh : g.outNeighbors[node1])
-    {
-        //look if neigh is in a valid cell with A
-        const int nCell = (neigh == node2) ? cellNode1 : n2c[neigh];
-        bool found = false;
-        for (const int cell : outCellsNode1)
-            if (nCell == cell)
-            {
-                found = true;
-                break;
-            }
-        if (!found)
-        {
-            //costA++;
-            int nx = getX(nCell, nCellsSqrt);
-            int ny = getY(nCell, nCellsSqrt);
-            int dx = abs(nx - cellLookX);
-            int dy = abs(ny - cellLookY);
-            int dist = dx + dy;
-
-            // Penaliza 1.0 se estiver fora da direção esperada
-            // Penaliza parcialmente se estiver na direção mas distante
-            costA += min(dist, 3); // ou: costB += dist;
-            //costA += dist; // ou: costB += dist;
-            //costA += 1; // ou: costB += dist;
-        }
-    }
-    //float totalCostB = static_cast<float>(costB) / static_cast<float>(totalNeigh * (2 * nCellsSqrt));
-    //float totalCostA = static_cast<float>(costA) / static_cast<float>(totalNeigh * (2 * nCellsSqrt));
-
-    float totalCostB = static_cast<float>(costB) / static_cast<float>(totalNeigh * 3);
-    float totalCostA = static_cast<float>(costA) / static_cast<float>(totalNeigh * 3);
-
-    return {totalCostB, totalCostA};
-    //return {costB, costA};
-}
 
 QcaCost computeQcaCostForNode(
     const int node,
@@ -364,58 +174,45 @@ QcaCost computeQcaCostForNode(
         const int cx = x + dx;
         const int cy = y + dy;
         if (!qcaIsInvalidCell(cx, cy, nCellsSqrt))
-        {
             expectedInputs.insert(getCellIndex(cx, cy, nCellsSqrt));
-        }
     }
     for (auto [dx, dy] : outDirs)
     {
-        int cx = x + dx, cy = y + dy;
+        const int cx = x + dx;
+        const int cy = y + dy;
         if (!qcaIsInvalidCell(cx, cy, nCellsSqrt))
-        {
             expectedOutputs.insert(getCellIndex(cx, cy, nCellsSqrt));
-        }
     }
 
-    // Verifica entradas
-    for (int pred : g.inNeighbors[node])
+    // Check inputs
+    for (const int pred : g.inNeighbors[node])
     {
-        int cell = (pred == otherNode) ? otherCell : n2c[pred];
-        if (cell == -1) continue;
-
+        const int cell = (pred == otherNode) ? otherCell : n2c[pred];
+        if (cell == -1)
+            continue;
 
         if (expectedInputs.count(cell))
-            cost.bonus += 1.0f;
-        else
         {
             const int dx = abs(getX(cell, nCellsSqrt) - x);
             const int dy = abs(getY(cell, nCellsSqrt) - y);
             const int dist = dx + dy;
-
             if (dist == 1)
                 cost.bonus += 1.0f;
             else
-            {
-                cost.distancePenalty += static_cast<float>(std::min(dist - 1, 3));
-
-                // Penaliza mais se a movimentação não for reta
-                if (dx != 0 && dy != 0)
-                    cost.directionPenalty += 3.0f; // movimento diagonal (menos desejado)
-                else
-                    cost.directionPenalty += 1.0f; // horizontal ou vertical, menos penalizado
-            }
+                cost.distancePenalty += static_cast<float>(min(dist - 1, 3));
         }
+        else
+            cost.directionPenalty += 3.0f;
     }
 
-    // Verifica saídas
-    for (int succ : g.outNeighbors[node])
+    // Check outputs
+    for (const int succ : g.outNeighbors[node])
     {
-        int cell = (succ == otherNode) ? otherCell : n2c[succ];
-        if (cell == -1) continue;
+        const int cell = (succ == otherNode) ? otherCell : n2c[succ];
+        if (cell == -1)
+            continue;
 
         if (expectedOutputs.count(cell))
-            cost.bonus += 1.0f;
-        else
         {
             const int dx = abs(getX(cell, nCellsSqrt) - x);
             const int dy = abs(getY(cell, nCellsSqrt) - y);
@@ -423,29 +220,21 @@ QcaCost computeQcaCostForNode(
             if (dist == 1)
                 cost.bonus += 1.0f;
             else
-            {
-                cost.distancePenalty += static_cast<float>(std::min(dist - 1, 3));
-
-                // Penaliza mais se a movimentação não for reta
-                if (dx != 0 && dy != 0)
-                    cost.directionPenalty += 3.0f; // movimento diagonal (menos desejado)
-                else
-                    cost.directionPenalty += 1.0f; // horizontal ou vertical, menos penalizado
-            }
+                cost.distancePenalty += static_cast<float>(min(dist - 1, 3));
         }
+        else
+            cost.directionPenalty += 3.0f;
     }
 
-    // Penalidade por inversão direta
+    // Penalty for direct inversion
     if (otherNode != -1)
         if ((g.successors[node][otherNode] || g.successors[otherNode][node]) && node != otherNode)
-        {
-            cost.inversionPenalty += 2.0f; // ajustável
-        }
+            cost.inversionPenalty += 2.0f; // adjustable
 
     return cost;
 }
 
-// Função para calcular custo total da troca
+// Function to calculate total cost of exchange
 tuple<float, float> qcaGetSwapCostImproved(
     const int cellA, const int cellB,
     const int nodeA, const int nodeB,
@@ -463,11 +252,13 @@ tuple<float, float> qcaGetSwapCostImproved(
     float before = costABefore.total() + costBBefore.total();
     float after = costAAfter.total() + costBAfter.total();
 
-    // Normaliza entre 0 e 1 assumindo custo máximo realista por nó
+    // Normalize between 0 and 1 assuming realistic maximum cost per node
     const size_t totalNeigh = g.inNeighbors[nodeA].size() + g.outNeighbors[nodeA].size();
-    const float normFactor = static_cast<float>(std::max<size_t>(totalNeigh, 1)) * 4.0f;
+    const float normFactor = static_cast<float>(std::max<size_t>(totalNeigh, 1)) * 3.0f;
+    //const float normFactor = static_cast<float>(std::max<size_t>(totalNeigh, 1)) * 4.0f;
+    //const float normFactor = static_cast<float>(std::max<size_t>(totalNeigh, 1)) * 6.0f;
     before = before / normFactor;
     after = after / normFactor;
 
-    return {before, after};
+    return {before * EXPLORE_FACTOR, after * EXPLORE_FACTOR};
 }

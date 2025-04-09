@@ -1,12 +1,12 @@
 #include  <common/util.h>
 #include  <common/graph.h>
 
+using namespace std;
 
 int main() {
-    // std::string root_path = get_project_root(); // Supondo que essa função existe
-    const std::string rootPath = verifyPath(getProjectRoot()); // Exemplo de função que busca o root path
+    const std::string rootPath = verifyPath(getProjectRoot());
     std::cout << rootPath << std::endl;
-    const std::string benchPath = "benchmarks/fpga/eval/";
+    const std::string benchPath = "benchmarks/fpga/eval/EPFL/";
     const std::string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
@@ -15,14 +15,9 @@ int main() {
     for (const auto &[fst, snd]: files) {
         std::cout << fst << std::endl;
 
-        graphClearData();
+        auto g = Graph(fst, snd.substr(0, snd.size() - 4), true);
 
-        //Creating graph important variables
-        dotPath = fst;
-        dotName = snd.substr(0, snd.size() - 4);
-        //reading graph variables
-        getGraphDataStr();
-        saveToDot(gEdges, dotPath);
+        saveToDot(g.gEdges, g.dotPath);
     }
     return 0;
 }

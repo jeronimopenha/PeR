@@ -14,8 +14,8 @@ FpgaReportData fpgaSa(FPGAGraph& g)
     const vector<pair<int, int>> ed = g.gEdges;
 
 
-    vector<int> c2n(nCells, -1);
-    vector<int> n2c(nNodes, -1);
+    vector c2n(nCells, -1);
+    vector n2c(nNodes, -1);
 
     vector<int> inOutCells = g.getInOutPos();
     randomVector(inOutCells);

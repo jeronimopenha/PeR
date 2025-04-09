@@ -25,4 +25,4 @@ add_executable(QCAPeRMain QCAPeRMain.cpp ${COMMON_SRCS} ${QCA_SRCS})
 
 # Ferramentas / Outros
 #file(GLOB_RECURSE TOOL_SRCS impl/tools/*.cpp)
-#add_executable(chDotStrToN chDotStrToNMain.cpp ${COMMON_SRCS} ${TOOL_SRCS})
+add_executable(chDotStrToN chDotStrToNMain.cpp ${COMMON_SRCS} ${TOOL_SRCS})
