@@ -5,19 +5,22 @@
 #include <common/util.h>
 
 QcaReportData::QcaReportData()
-    : success(false), _time(0), nCellsSqrt(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0), area(0),
+    : success(false), allPLaced(false), _time(0), nCellsSqrt(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0),
+      area(0),
       usedAreaPercentage(0), extraLayers(0)
 {
 }
 
 // Constructor for easy initialization
-QcaReportData::QcaReportData(const bool success, const float _time, string dotName, string dotPath, string placer,
+QcaReportData::QcaReportData(const bool success, const bool allPLaced, const float _time, string dotName,
+                             string dotPath, string placer,
                              const int nCellsSqrt, const int wires, const int nNodes, const int tries, const int swaps,
                              const int wrongEdges, const int area, const float usedAreaPercentage,
                              const int extraLayers,
                              vector<int> extraLayersLevels, vector<int> placement,
                              vector<int> n2c, vector<pair<int, int>> edges)
     : success(success),
+      allPLaced(allPLaced),
       _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -44,6 +47,7 @@ string QcaReportData::to_json() const
     ostringstream oss;
     oss << "{\n"
         << "  \"success\": " << success << ",\n"
+        << "  \"allPlaced\": " << allPLaced << ",\n"
         << "  \"time\": " << _time << ",\n"
         << "  \"dotName\": \"" << dotName << "\",\n"
         << "  \"dotPath\": \"" << dotPath << "\",\n"
@@ -350,4 +354,17 @@ void qcaWriteJson(const string& basePath,
     }
     else
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+}
+
+bool allPLaced(const vector<int>& n2c)
+{
+    bool placed = true;
+    for (const auto cell : n2c)
+        if (cell == -1)
+        {
+            placed = false;
+            break;
+        }
+
+    return placed;
 }

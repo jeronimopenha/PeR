@@ -118,11 +118,13 @@ QcaReportData qcaSa(QCAGraph& g)
     //if this placement valid?
     int wrongEdges;
     success = g.verifyPlacement(n2c, ed, &wrongEdges);
+    bool nodesPlaced = allPLaced(n2c);
     AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt, c2n);
 
 
     auto report = QcaReportData(
         success,
+        nodesPlaced,
         static_cast<float>(_time),
         g.dotName,
         g.dotPath,

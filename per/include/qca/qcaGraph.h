@@ -43,6 +43,7 @@ public:
 
     bool verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
                          int *invalidEdgesCount = nullptr) const;
+
     unordered_map<string, vector<pair<int, int>>> qcaGetGraphAnnotations(const vector<pair<int, int>>& edges,
                                                                          const vector<pair<int, int>>& convergences);
 

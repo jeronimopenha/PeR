@@ -8,114 +8,15 @@
 #include <unordered_set>
 
 
-/*void Graph::readGraphDataStr() {
-    unordered_set<string> nodesStr;
-    vector<pair<string, string> > edgesStr;
-
-    ifstream dotFile(dotPath);
-    string line;
-
-    // If  the opening has an error
-    if (!dotFile.is_open()) {
-        cerr << "Error opening file: " << dotPath << endl;
-        return;
-    }
-
-    //1 - Read edges and get a list of nodes
-    while (getline(dotFile, line)) {
-        // Look for lines that define edges
-
-        if (line.find("->") != string::npos) {
-            string toNode;
-            string fromNode;
-
-            istringstream iss(line);
-            string word;
-            // Get the fromNode
-            iss >> fromNode;
-            // Ignore the "->" part
-            iss >> word;
-            // Get the toNode
-            iss >> toNode;
-            // Remove any trailing characters (like semicolon)
-            toNode.erase(remove(toNode.begin(), toNode.end(), ';'), toNode.end());
-            toNode.erase(remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
-            fromNode.erase(remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
-            // Add the edge to the adjacency list
-
-            nodesStr.insert(fromNode);
-            nodesStr.insert(toNode);
-            edgesStr.emplace_back(fromNode, toNode);
-            nEdges += 1;
-        }
-    }
-    dotFile.close();
-    nNodes = static_cast<int>(nodesStr.size());
-
-    //2 - Create the dictionary nodesToIdx
-    unordered_map<string, int> nodesToIdx;
-
-    int counter = 0;
-    for (const auto &node: nodesStr) {
-        nodesToIdx[node] = counter;
-        counter++;
-    }
-
-    //3 - strEdges to idxEdges
-    //find the successors and the predecessors
-    //and find how many succ and pred each node have
-
-    //edgesIdx
-    //successors
-    //predecessors
-
-    nSuccV = vector<int>(nNodes, 0);
-    nPredV = vector<int>(nNodes, 0);
-    successors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
-    predecessors = vector<vector<bool> >(nNodes, vector<bool>(nNodes, false));
-    for (const auto &[fst, snd]: edgesStr) {
-        int fromN = nodesToIdx[fst], toN = nodesToIdx[snd];
-        gEdges.emplace_back(fromN, toN);
-
-        successors[fromN][toN] = true;
-        predecessors[toN][fromN] = true;
-
-        nSuccV[fromN] += 1;
-        nPredV[toN] += 1;
-    }
-
-    //input and output nodes
-    for (int i = 0; i < nNodes; i++) {
-        if (nSuccV[i] == 0) {
-            outputNodes.push_back(i);
-        }
-        if (nPredV[i] == 0) {
-            inputNodes.push_back(i);
-        }
-    }
-
-    int a = 1;
-
-    int totalInOut = static_cast<int>(inputNodes.size() + outputNodes.size());
-    int nBaseNodes = nNodes - totalInOut;
-    int nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
-    int nBorderCells = nCellsBaseSqrt * 4;
-    while (totalInOut > nBorderCells) {
-        nCellsBaseSqrt += 2;
-        nBorderCells = nCellsBaseSqrt * 4;
-    }
-    int nCellsBase = static_cast<int>(pow(nCellsBaseSqrt, 2));
-    int totalCells = nCellsBase + nBorderCells;
-    nCellsSqrt = ceil(sqrt(totalCells));
-    nCells = static_cast<int>(pow(nCellsSqrt, 2));
-}*/
-
-Graph::Graph(const string& dotPath, const string& dotName)
+Graph::Graph(const string& dotPath, const string& dotName, const bool str)
 {
     this->dotPath = dotPath;
     this->dotName = dotName;
 
-    readEdgesNodes();
+    if (str)
+        readGraphDataStr();
+    else
+        readEdgesNodes();
     updateG();
 }
 
@@ -450,4 +351,74 @@ void Graph::dfs(const int idx, const vector<vector<int>>& adj, vector<bool>& vis
             dfs(v, adj, visited, topo_order);
     }
     topo_order.push_back(idx);
+}
+
+void Graph::readGraphDataStr()
+{
+    unordered_set<string> nodesStr;
+
+    ifstream dotFile(dotPath);
+    string line;
+
+    // If  the opening has an error
+    if (!dotFile.is_open())
+    {
+        cerr << "Error opening file: " << dotPath << endl;
+        return;
+    }
+
+    //1 - Read edges and get a list of nodes
+    while (getline(dotFile, line))
+    {
+        // Look for lines that define edges
+
+        if (line.find("->") != string::npos)
+        {
+            string toNode;
+            string fromNode;
+
+            istringstream iss(line);
+            string word;
+            // Get the fromNode
+            iss >> fromNode;
+            // Ignore the "->" part
+            iss >> word;
+            // Get the toNode
+            iss >> toNode;
+            // Remove any trailing characters (like semicolon)
+            toNode.erase(remove(toNode.begin(), toNode.end(), ';'), toNode.end());
+            toNode.erase(remove(toNode.begin(), toNode.end(), '\"'), toNode.end());
+            fromNode.erase(remove(fromNode.begin(), fromNode.end(), '\"'), fromNode.end());
+            // Add the edge to the adjacency list
+
+            nodesStr.insert(fromNode);
+            nodesStr.insert(toNode);
+            gEdgesStr.emplace_back(fromNode, toNode);
+            nEdges += 1;
+        }
+    }
+    dotFile.close();
+    nEdges = static_cast<int>(gEdges.size());
+    nNodes = static_cast<int>(nodesStr.size());
+
+    //2 - Create the dictionary nodesToIdx
+    std::unordered_map<std::string, int> nodesToIdx;
+
+    int counter = 0;
+    for (const auto& node : nodesStr)
+    {
+        nodesToIdx[node] = counter;
+        counter++;
+    }
+
+    //create the int edges
+    for (const auto& [fst, snd] : gEdgesStr)
+    {
+        const int fromN = nodesToIdx[fst];
+        const int toN = nodesToIdx[snd];
+        gEdges.emplace_back(fromN, toN);
+    }
+
+    for (int i = 0; i < nNodes; i++)
+        gNodes.push_back(i);
 }

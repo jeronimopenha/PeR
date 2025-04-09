@@ -9,7 +9,7 @@
 
 //Choose if Cache will be used
 //#define CACHE
-//Cache Parameters
+// Parameters
 #define CACHE_LINES_EXP 10
 #define CACHE_LINES (1 << CACHE_LINES_EXP)
 #define CACHE_COLUMNS_EXP 2
@@ -17,26 +17,35 @@
 //*******************************
 
 //Choose the algorithm to be run
-#define FPGA_YOTO_DF
+//#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
 //#define FPGA_YOTO_ZZ
-//#define FPGA_YOTT
+#define FPGA_YOTT
 //#define FPGA_SA
 //*******************************
+
+#define TRETS
+//#define EPFL
 //###############################
+
+
 
 //PER QCA PARAMETERS
 #define  MAX_EXTRA_LAYERS 5
 #define EXPLORE_FACTOR 1
 
+//QCA Tecnology
+#define USE
+//#define WAVE
+
 //Choose the algorithm to be run
 //#define QCA_YOTO_ZZ
-#define QCA_YOTT
-//#define QCA_SA
+//#define QCA_YOTT
+#define QCA_SA
 //###############################
 
 //debugging defines
-//#define DEBUG
-//#define PRINT
+#define DEBUG
+#define PRINT
 //*******************************
 #endif //PARAMETERS_H

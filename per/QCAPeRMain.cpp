@@ -14,7 +14,6 @@ using namespace std;
 //Choose the algorithm in util.h defines
 int main()
 {
-    // string root_path = get_project_root();
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
 
@@ -50,7 +49,7 @@ int main()
 #ifdef DEBUG
         nExec = 1;
 #elifdef  QCA_SA
-        nExec = 10;
+        nExec = 100;
 #else
         nExec = 1000;
 #endif
@@ -61,7 +60,7 @@ int main()
         while (nExtraLayers < MAX_EXTRA_LAYERS)
         {
 #ifndef DEBUG
-            int nThreads = max(1, omp_get_num_procs() - 1);
+            int nThreads = max(1, omp_get_num_procs());
             omp_set_num_threads(nThreads);
 
 #pragma omp parallel
