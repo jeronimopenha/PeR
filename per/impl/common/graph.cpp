@@ -239,10 +239,10 @@ vector<pair<int, int>> Graph::getEdgesZigzag(
                 fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
                 if (visited[b])
-                {
                     convergence.emplace_back(a, b);
-                }
-                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
+
+                if (edgeTypes)
+                    edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             }
             else if (!fanIn[a].empty())
@@ -254,12 +254,11 @@ vector<pair<int, int>> Graph::getEdgesZigzag(
                 fanIn[a].pop_back();
                 fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
-
                 if (visited[b])
-                {
                     convergence.emplace_back(a, b);
-                }
-                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
+
+                if (edgeTypes)
+                    edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             }
         }
@@ -277,10 +276,10 @@ vector<pair<int, int>> Graph::getEdgesZigzag(
                 fanOut[b].erase(remove(fanOut[b].begin(), fanOut[b].end(), a), fanOut[b].end());
 
                 if (visited[b])
-                {
                     convergence.emplace_back(a, b);
-                }
-                if (edgeTypes) edgeTypes->emplace_back(a, b, "IN");
+
+                if (edgeTypes)
+                    edgeTypes->emplace_back(a, b, "IN");
                 edges.emplace_back(a, b);
             }
             else if (!fanOut[a].empty())
@@ -292,12 +291,11 @@ vector<pair<int, int>> Graph::getEdgesZigzag(
                 fanOut[a].pop_back();
                 fanIn[b].erase(remove(fanIn[b].begin(), fanIn[b].end(), a), fanIn[b].end());
 
-
                 if (visited[b])
-                {
                     convergence.emplace_back(a, b);
-                }
-                if (edgeTypes) edgeTypes->emplace_back(a, b, "OUT");
+
+                if (edgeTypes)
+                    edgeTypes->emplace_back(a, b, "OUT");
                 edges.emplace_back(a, b);
             }
         }
@@ -309,8 +307,8 @@ vector<pair<int, int>> Graph::getEdgesZigzag(
         vector<tuple<int, int, string>> cleaned;
         for (const auto& t : *edgeTypes)
         {
-            int a = get<0>(t);
-            int b = get<1>(t);
+            const int a = get<0>(t);
+            const int b = get<1>(t);
             if (find(edges.begin(), edges.end(), make_pair(a, b)) != edges.end())
             {
                 cleaned.push_back(t);
