@@ -10,6 +10,7 @@ public:
     int nCellsSqrt = 0;
 
     int minOutputLevel = 0;
+    int numLevels = 0;
     int extraLayers = 0;
     vector<int> extraLayersLevels;
 
@@ -44,8 +45,10 @@ public:
     bool verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
                          int *invalidEdgesCount = nullptr) const;
 
-    unordered_map<string, vector<pair<int, int>>> qcaGetGraphAnnotations(const vector<pair<int, int>>& edges,
-                                                                         const vector<pair<int, int>>& convergences);
+    unordered_map<string, vector<pair<int, int> > > qcaGetGraphAnnotations(const vector<pair<int, int> > &edges,
+                                                                           const vector<pair<int, int> > &convergences);
+
+    vector<int> getInterleavedOutputCellsQCA() const;
 
     void insertDummyLayerAtLevel(int targetLevel);
 };

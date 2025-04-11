@@ -5,70 +5,69 @@
 #include <filesystem>
 #include <vector>
 
-using namespace std;
 namespace fs = std::filesystem;
 
 
-struct QcaReportData
-{
-    bool success;
-    bool allPLaced;
-    float _time;
-    string dotName;
-    string dotPath;
-    string placer;
-    int nCellsSqrt;
-    int wires;
-    int nNodes;
-    int tries;
-    int swaps;
-    int wrongEdges;
-    int area;
-    float usedAreaPercentage;
-    int extraLayers;
-    vector<int> extraLayersLevels;
-    vector<int> placement;
-    vector<int> n2c;
-    vector<pair<int, int>> edges;
+struct QcaReportData {
+    bool success = false;
+    bool allPLaced = false;
+    float _time = 0.0f;
+    std::string dotName;
+    std::string dotPath;
+    std::string placer;
+    int nCellsSqrt = 0;
+    int wires = 0;
+    int nNodes = 0;
+    int tries = 0;
+    int swaps = 0;
+    int wrongEdges = 0;
+    int area = 0;
+    float usedAreaPercentage = 0.0f;
+    int extraLayers = 0;
+    std::vector<int> extraLayersLevels;
+    std::vector<int> placement;
+    std::vector<int> n2c;
+    std::vector<std::pair<int, int> > edges;
 
-    QcaReportData();
+    //QcaReportData();
 
-    QcaReportData(bool success, bool allPLaced, float _time, string dotName, string dotPath, string placer,
+    QcaReportData(bool success, bool allPLaced, float _time, std::string dotName, std::string dotPath, std::string placer,
                   int nCellsSqrt, int wires, int nNodes, int tries, int swaps,
                   int wrongEdges, int area, float usedAreaPercentage, int extraLayers,
-                  vector<int> extraLayersLevels, vector<int> placement,
-                  vector<int> n2c, vector<pair<int, int>> edges);
+                  std::vector<int> extraLayersLevels, std::vector<int> placement,
+                  std::vector<int> n2c, std::vector<std::pair<int, int> > edges);
 
-    [[nodiscard]] string to_json() const;
+    [[nodiscard]] std::string to_json() const;
 };
 
-struct AreaMetrics
-{
-    int minRow, maxRow;
-    int minCol, maxCol;
-    int occupiedCells;
-    int totalCells;
-    float utilization;
+struct AreaMetrics {
+    int minRow = 0;
+    int maxRow = 0;
+    int minCol = 0;
+    int maxCol = 0;
+    int occupiedCells = 0;
+    int totalCells = 0;
+    float utilization = 0.0f;
 };
 
-vector<pair<int, int>> qcaGetInputDirections(int x, int y);
+std::vector<std::pair<int, int> > qcaGetInputDirections(int x = 0, int y = 0);
 
-vector<pair<int, int>> qcaGetOutputDirections(int x, int y);
+std::vector<std::pair<int, int> > qcaGetOutputDirections(int x = 0, int y = 0);
 
 bool qcaIsInvalidCell(int x, int y, int nCellsSqrt);
 
-void qcaExportUSEToDot(const string& filename, const vector<int>& n2c, const vector<pair<int, int>>& edges,
+void qcaExportUSEToDot(const std::string &filename, const std::vector<int> &n2c, const std::vector<std::pair<int, int> > &edges,
                        int nCellsSqrt);
 
-AreaMetrics computeOccupiedAreaMetrics(int nCellsSqrt, const vector<int>& c2n);
+AreaMetrics computeOccupiedAreaMetrics(int nCellsSqrt, const std::vector<int> &c2n);
 
-void qcaWriteJson(const string& basePath,
-                  const string& reportPath,
-                  const string& algPath,
-                  const string& fileName,
+void qcaWriteJson(const std::string &basePath,
+                  const std::string &reportPath,
+                  const std::string &algPath,
+                  const std::string &fileName,
                   int extraLayers,
-                  const QcaReportData& data);
+                  const QcaReportData &data);
 
-bool allPLaced(const vector<int>& n2c);
+bool allPlaced(const std::vector<int> &n2c);
 
 #endif

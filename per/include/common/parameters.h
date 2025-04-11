@@ -35,17 +35,17 @@
 #define EXPLORE_FACTOR 1
 
 //QCA Tecnology
-#define USE
-//#define WAVE
+//#define USE
+#define WAVE2D
 
 //Choose the algorithm to be run
 //#define QCA_YOTO_ZZ
-//#define QCA_YOTT
-#define QCA_SA
+#define QCA_YOTT
+//#define QCA_SA
 //###############################
 
 //debugging defines
-//#define DEBUG
-//#define PRINT
+#define DEBUG
+#define PRINT
 //*******************************
 #endif //PARAMETERS_H
