@@ -150,7 +150,7 @@ void fpgaSavePlacedDot(vector<int>& n2c, const vector<pair<int, int>>& ed, const
 
 vector<vector<int>> fpgaGetAdjCellsDist(const int nCellsSqrt)
 {
-    const int max_dist = (nCellsSqrt - 1) * 2;
+    const int max_dist = (nCellsSqrt * 2) - 1;
     vector<vector<int>> meshDistances;
     vector<vector<vector<int>>> distance_table_raw(max_dist);
     for (int l = 0; l < nCellsSqrt; ++l)
@@ -389,7 +389,6 @@ void fpgaWriteVprData(const string& basePath,
                 }
                 else
                     file << node << "\t" << c << "\t" << l << "\t" << 0 << "\t#" << counter << endl;
-
             }
             counter++;
         }
@@ -398,7 +397,6 @@ void fpgaWriteVprData(const string& basePath,
     }
     else
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
-
 }
 
 bool fpgaIsInvalidCell(const int cell, const int nCellsSqrt)

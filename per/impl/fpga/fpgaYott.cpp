@@ -29,14 +29,15 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
     alg_type = "ZIG_ZAG";
 
-    int lastIdxIOCellUsed = 0;
+    //int lastIdxIOCellUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
+
 
     for (auto [a,b] : ed)
     {
 #ifdef DEBUG
-        fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+        //fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
         //Verify if A is placed
@@ -44,22 +45,26 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         //the variable lastIdxIOCellUsed is for optimize future looks
         if (n2c[a] == -1)
         {
-            int ioCell = inOutCells[lastIdxIOCellUsed];
-
-            if (c2n[ioCell] == -1)
+            bool found = false;
+            while (!found)
             {
-                c2n[ioCell] = a;
-                n2c[a] = ioCell;
-                lastIdxIOCellUsed++;
+                const int ioCell = inOutCells.back();
+                inOutCells.pop_back();
+
+                if (c2n[ioCell] == -1)
+                {
+                    c2n[ioCell] = a;
+                    n2c[a] = ioCell;
+                    found = true;
+                }
             }
         }
 
         //Now, if B is placed, go to next edge
 
         if (n2c[b] != -1)
-        {
             continue;
-        }
+
 
         // Now I will try to find an adjacent cell from A to place B
 

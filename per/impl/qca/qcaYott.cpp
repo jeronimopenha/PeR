@@ -35,7 +35,6 @@ QcaReportData qcaYott(QCAGraph& g)
 
     alg_type = "ZIG_ZAG";
 
-    int lastCellIdxUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
 
@@ -50,18 +49,12 @@ QcaReportData qcaYott(QCAGraph& g)
             bool found = false;
             while (!found)
             {
-                int cell = cells[lastCellIdxUsed];
-                while (cell == -1)
-                {
-                    lastCellIdxUsed++;
-                    cell = cells[lastCellIdxUsed];
-                }
+                int cell = cells.back();
+                cells.pop_back();
                 if (c2n[cell] == -1)
                 {
                     c2n[cell] = a;
                     n2c[a] = cell;
-                    cells[lastCellIdxUsed] = -1;
-                    lastCellIdxUsed++;
                     found = true;
                 }
             }
