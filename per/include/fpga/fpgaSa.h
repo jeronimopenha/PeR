@@ -5,22 +5,21 @@
 #include <fpga/fpgaGraph.h>
 #include <fpga/fpgaUtil.h>
 
-using namespace std;
 
-FpgaReportData fpgaSa(FPGAGraph& g);
+FpgaReportData fpgaSa(FPGAGraph &g);
 
 void fpgaGetSwapCost(
-    const std::vector<int>& n2c,
-    int a,
-    int b,
-    int cellA,
-    int cellB,
-    int nCellsSqrt,
-    const std::vector<std::vector<int>>& neighbors,
-    int& costABefore,
-    int& costAAfter,
-    int& costBBefore,
-    int& costBAfter
+    const std::vector<long> &n2c,
+    long a,
+    long b,
+    long cellA,
+    long cellB,
+    long nCellsSqrt,
+    const std::vector<std::vector<long> > &neighbors,
+    long &costABefore,
+    long &costAAfter,
+    long &costBBefore,
+    long &costBAfter
 );
 
 #endif

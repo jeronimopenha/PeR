@@ -3,32 +3,33 @@
 //#include <common/cache.h>
 #include <vector>
 
+using namespace std;
+
 //todo cache parts
 
-FpgaReportData fpgaYoto(FPGAGraph& g)
-{
-    int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
-    int nNodes = g.nNodes;
+FpgaReportData fpgaYoto(FPGAGraph &g) {
+    const long nCells = g.nCells;
+    const long nCellsSqrt = g.nCellsSqrt;
+    const long nNodes = g.nNodes;
 
-    vector c2n(nCells, -1);
-    vector n2c(nNodes, -1);
-    vector<vector<int>> distCells = fpgaGetAdjCellsDist(nCellsSqrt);
-    vector<int> inOutCells = g.getInOutPos();
+    vector<long> c2n(nCells, -1);
+    vector<long> n2c(nNodes, -1);
+    vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
+    vector<long> inOutCells = g.getInOutPos();
 #ifdef CACHE
     Cache cacheC2N = Cache();
     Cache cacheN2C = Cache();
 #endif
     randomVector(inOutCells);
 
-    int cacheMisses = 0;
-    int tries = 0;
-    int swaps = 0;
+    long cacheMisses = 0;
+    long tries = 0;
+    long swaps = 0;
 
     string alg_type;
-    vector<pair<int, int>> ed;
+    vector<pair<long, long> > ed;
 #if defined(FPGA_YOTO_ZZ)
-    vector<pair<int, int>> convergence;
+    vector<pair<long, long>> convergence;
     ed = g.getEdgesZigzag(convergence);
     alg_type = "ZIG_ZAG";
 #elifdef FPGA_YOTO_DF_PRIO
@@ -43,12 +44,10 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
 #ifndef FPGA_YOTO_ZZ
     //for Deptfh First Search with or without priority
     //I need to place every input at the beginning of execution
-    for (int n : g.inputNodes)
-    {
-        const int ioCell = inOutCells.back();
+    for (auto n: g.inputNodes) {
+        const long ioCell = inOutCells.back();
         inOutCells.pop_back();
-        if (c2n[ioCell] == -1)
-        {
+        if (c2n[ioCell] == -1) {
             c2n[ioCell] = n;
             n2c[n] = ioCell;
         }
@@ -58,8 +57,7 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
     //time counting
     auto start = chrono::high_resolution_clock::now();
 
-    for (auto [a,b] : ed)
-    {
+    for (auto [a,b]: ed) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
@@ -67,18 +65,15 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
 
-        if (n2c[a] == -1)
-        {
+        if (n2c[a] == -1) {
             bool found = false;
-            while (!found)
-            {
-                const int ioCell = inOutCells.back();
+            while (!found) {
+                const long ioCell = inOutCells.back();
                 inOutCells.pop_back();
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                if (c2n[ioCell] == -1)
-                {
+                if (c2n[ioCell] == -1) {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
                     found = true;
@@ -91,9 +86,7 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
         cacheMisses += cacheN2C.readCache(b, n2c);
 #endif
         if (n2c[b] != -1)
-        {
             continue;
-        }
 
         // Now I will try to find an adjacent cell from A to place B
 
@@ -101,18 +94,17 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
-        const int lA = n2c[a] / nCellsSqrt;
-        const int cA = n2c[a] % nCellsSqrt;
+        const long lA = n2c[a] / nCellsSqrt;
+        const long cA = n2c[a] % nCellsSqrt;
 
         //Then I will look for a cell next to A's cell
-        for (const auto& ij : distCells)
-        {
+        for (const auto &ij: distCells) {
             ++tries;
-            const int lB = lA + ij[0];
-            const int cB = cA + ij[1];
+            const long lB = lA + ij[0];
+            const long cB = cA + ij[1];
 
             //find the idx for the target cell
-            int targetCell = lB * nCellsSqrt + cB;
+            long targetCell = lB * nCellsSqrt + cB;
 
             // Check if the target cell is nor allowed, go to next
             if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
@@ -124,29 +116,21 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
-            if (isTargetCellIO)
-            {
+            if (isTargetCellIO) {
                 // 'targetCell' is a IO cell
                 if (!IsBIoNode)
-                {
                     continue;
-                }
-            }
-            else
-            {
+            } else {
                 // 'targetCell' is not in possible_positions
                 if (IsBIoNode)
-                {
                     continue;
-                }
             }
 
             // Place the node if `placement[targetCell]` is unoccupied
 #ifdef CACHE
             cacheMisses += cacheC2N.readCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
@@ -162,9 +146,9 @@ FpgaReportData fpgaYoto(FPGAGraph& g)
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
-    auto _time = static_cast<float>(duration.count());
+    auto _time = duration.count();
 
-    int tc = 0;
+    long tc = 0;
     // commented to take the cost of the longest path
 #ifdef FPGA_TOTAL_COST
     tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);

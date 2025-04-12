@@ -2,40 +2,36 @@
 #include <common/cache.h>
 #include <fpga/fpgaYott.h>
 
+using namespace std;
 
-FpgaReportData fpgaYott(FPGAGraph& g)
-{
-    int nCells = g.nCells;
-    int nCellsSqrt = g.nCellsSqrt;
-    int nNodes = g.nNodes;
+FpgaReportData fpgaYott(FPGAGraph &g) {
+    const long nCells = g.nCells;
+    const long nCellsSqrt = g.nCellsSqrt;
+    const long nNodes = g.nNodes;
 
-    vector c2n(nCells, -1);
-    vector n2c(nNodes, -1);
-    vector<vector<int>> distCells = fpgaGetAdjCellsDist(nCellsSqrt);
-    vector<int> inOutCells = g.getInOutPos();
+    vector<long> c2n(nCells, -1);
+    vector<long> n2c(nNodes, -1);
+    const vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
+    vector<long> inOutCells = g.getInOutPos();
 
     randomVector(inOutCells);
 
-    int cacheMisses = 0;
-    int tries = 0;
-    int swaps = 0;
+    long cacheMisses = 0;
+    long tries = 0;
+    long swaps = 0;
 
-    string alg_type;
-    vector<pair<int, int>> ed;
+    string alg_type = "ZIG_ZAG";
 
-    vector<pair<int, int>> convergence;
-    ed = g.getEdgesZigzag(convergence);
-    unordered_map<string, vector<pair<int, int>>> annotations = g.fpgaGetGraphAnnotations(ed, convergence);
-
-    alg_type = "ZIG_ZAG";
+    vector<pair<long, long> > convergence;
+    vector<pair<long, long> > ed = g.getEdgesZigzag(convergence);
+    unordered_map<string, vector<pair<long, long> > > annotations = g.fpgaGetGraphAnnotations(ed, convergence);
 
     //int lastIdxIOCellUsed = 0;
 
     auto start = chrono::high_resolution_clock::now();
 
 
-    for (auto [a,b] : ed)
-    {
+    for (auto [a,b]: ed) {
 #ifdef DEBUG
         //fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
@@ -43,16 +39,13 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-        if (n2c[a] == -1)
-        {
+        if (n2c[a] == -1) {
             bool found = false;
-            while (!found)
-            {
-                const int ioCell = inOutCells.back();
+            while (!found) {
+                const long ioCell = inOutCells.back();
                 inOutCells.pop_back();
 
-                if (c2n[ioCell] == -1)
-                {
+                if (c2n[ioCell] == -1) {
                     c2n[ioCell] = a;
                     n2c[a] = ioCell;
                     found = true;
@@ -69,22 +62,21 @@ FpgaReportData fpgaYott(FPGAGraph& g)
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-        const int cellA = n2c[a];
-        const int lA = cellA / nCellsSqrt;
-        const int cA = cellA % nCellsSqrt;
+        const long cellA = n2c[a];
+        const long lA = cellA / nCellsSqrt;
+        const long cA = cellA % nCellsSqrt;
 
-        int betterCell = -1;
-        int betterCellDist = nCells;
+        long betterCell = -1;
+        long betterCellDist = nCells;
 
         //Then I will look for a cell next to A's cell
-        for (const auto& ij : distCells)
-        {
+        for (const auto &ij: distCells) {
             ++tries;
-            const int lB = lA + ij[0];
-            const int cB = cA + ij[1];
+            const long lB = lA + ij[0];
+            const long cB = cA + ij[1];
             //find the idx for the target cell
-            const int targetCell = lB * nCellsSqrt + cB;
-            const int targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+            const long targetCell = lB * nCellsSqrt + cB;
+            const long targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
             // Check if the target cell is nor allowed, go to next
             if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
@@ -95,21 +87,14 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO node in an IO cell
-            if (isTargetCellIO)
-            {
+            if (isTargetCellIO) {
                 // 'targetCell' is a IO cell
                 if (!IsBIoNode)
-                {
                     continue;
-                }
-            }
-            else
-            {
+            } else {
                 // 'targetCell' is not in possible_positions
                 if (IsBIoNode)
-                {
                     continue;
-                }
             }
 
             //begin of yott verifications.
@@ -119,47 +104,37 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 
             //beginning with an annotation if it exists
             string key = to_string(a) + " " + to_string(b);
-            vector<pair<int, int>> annotation = annotations[key];
+            vector<pair<long, long> > annotation = annotations[key];
 
             //if we have an annotation
-            if (!annotation.empty())
-            {
-                if (targetCellDist < 4)
-                {
+            if (!annotation.empty()) {
+                if (targetCellDist < 4) {
                     if (c2n[targetCell] != -1)
                         continue;
 
-                    int modDist = targetCellDist;
+                    long modDist = targetCellDist;
                     bool found = true;
                     //find the distance of the target cell to the annotated cell and compare if they are equal
-                    for (auto& [fst, snd] : annotation)
-                    {
-                        int annDist;
-                        int tAnnDist;
+                    for (auto &[fst, snd]: annotation) {
+                        long annDist;
+                        long tAnnDist;
 
-                        if (fst == -1)
-                        {
+                        if (fst == -1) {
                             annDist = 1;
                             tAnnDist = fpgaMinBorderDist(targetCell, nCellsSqrt);
-                        }
-                        else
-                        {
-                            int annCell;
-                            annCell = n2c[fst];
+                        } else {
+                            const long annCell = n2c[fst];
                             annDist = snd + 1;
                             tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
                         }
 
-                        if (tAnnDist != annDist)
-                        {
+                        if (tAnnDist != annDist) {
                             found = false;
                             modDist += abs(annDist - tAnnDist);
                         }
                     }
-                    if (found)
-                    {
-                        if (c2n[targetCell] == -1)
-                        {
+                    if (found) {
+                        if (c2n[targetCell] == -1) {
                             c2n[targetCell] = b;
                             n2c[b] = targetCell;
                             ++swaps;
@@ -168,22 +143,19 @@ FpgaReportData fpgaYott(FPGAGraph& g)
                         continue;
                     }
 
-                    if (modDist < betterCellDist && c2n[targetCell] == -1)
-                    {
+                    if (modDist < betterCellDist && c2n[targetCell] == -1) {
                         betterCellDist = modDist;
                         betterCell = targetCell;
                     }
                     continue;
                 }
-                if (betterCell > -1)
-                {
+                if (betterCell > -1) {
                     c2n[betterCell] = b;
                     n2c[b] = betterCell;
                     ++swaps;
                     break;
                 }
-                if (c2n[targetCell] == -1)
-                {
+                if (c2n[targetCell] == -1) {
                     c2n[targetCell] = b;
                     n2c[b] = targetCell;
                     ++swaps;
@@ -192,8 +164,7 @@ FpgaReportData fpgaYott(FPGAGraph& g)
             }
 
             // if the target node has no annotations, then it will put it on the first empty cell
-            if (c2n[targetCell] == -1)
-            {
+            if (c2n[targetCell] == -1) {
                 c2n[targetCell] = b;
                 n2c[b] = targetCell;
                 ++swaps;
@@ -206,9 +177,9 @@ FpgaReportData fpgaYott(FPGAGraph& g)
 #endif
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duration = end - start;
-    auto _time = static_cast<float>(duration.count());
+    auto _time = duration.count();
 
-    int tc = 0;
+    long tc = 0;
     // commented to take the cost of the longest path
 #ifdef FPGA_TOTAL_COST
     tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);

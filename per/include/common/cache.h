@@ -4,18 +4,16 @@
 
 #include <vector>
 
-using namespace std;
 
-class Cache
-{
-    vector<bool> cacheValid;
-    vector<int> cacheTag;
-    vector<vector<int>> cacheData;
+class Cache {
+    std::vector<bool> cacheValid;
+    std::vector<long> cacheTag;
+    std::vector<std::vector<long> > cacheData;
 
 public:
     Cache();
 
-    int readCache(int address, const vector<int>& vec);
+    long readCache(long address, const std::vector<long> &vec);
 };
 
 

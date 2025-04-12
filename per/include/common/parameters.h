@@ -29,7 +29,6 @@
 //###############################
 
 
-
 //PER QCA PARAMETERS
 #define  MAX_EXTRA_LAYERS 5
 #define EXPLORE_FACTOR 1

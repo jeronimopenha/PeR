@@ -9,42 +9,42 @@
 #include <random>
 #include <algorithm>
 
-using namespace std;
+
 namespace fs = std::filesystem;
 
 
 template<typename T>
-void randomVector(vector<T> &vec) {
-    random_device rd;
-    mt19937 g(rd());
+void randomVector(std::vector<T> &vec) {
+    std::random_device rd;
+    std::mt19937 g(rd());
     shuffle(vec.begin(), vec.end(), g);
 }
 
-string getProjectRoot();
+std::string getProjectRoot();
 
-string verifyPath(const string &path);
+std::string verifyPath(const std::string &path);
 
-vector<pair<string, string> > getFilesListByExtension(
-    const string &path,
-    const string &file_extension
+std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
+    const std::string &path,
+    const std::string &file_extension
 );
 
-string funcKey(const string &a, const string &b);
+std::string funcKey(const std::string &a, const std::string &b);
 
 
-void saveToDot(const vector<pair<int, int> > &edges, const string &filename);
+void saveToDot(const std::vector<std::pair<long, long> > &edges, const std::string &filename);
 
 
-int getManhattanDist(int cell1, int cell2, int n_cells_sqrt);
+long getManhattanDist(long cell1, long cell2, long n_cells_sqrt);
 
 
 void createDir(const fs::path &pth);
 
-int getX(int cellIndex, int nCellsSqrt);
+long getX(long cellIndex, long nCellsSqrt);
 
-int getY(int cellIndex, int nCellsSqrt);
+long getY(long cellIndex, long nCellsSqrt);
 
-int getCellIndex(int x, int y, int nCellsSqrt);
+long getCellIndex(long x, long y, long nCellsSqrt);
 
 int randomInt(int min, int max);
 

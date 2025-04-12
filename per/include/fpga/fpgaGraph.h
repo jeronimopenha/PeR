@@ -6,20 +6,19 @@
 #include <common/util.h>
 
 
-class FPGAGraph : public Graph
-{
+class FPGAGraph : public Graph {
 public:
-    int nCells = 0;
-    int nCellsSqrt = 0;
+    long nCells = 0;
+    long nCellsSqrt = 0;
 
     //Neighbors vector
-    vector<vector<int>> neighbors;
+    std::vector<std::vector<long> > neighbors;
 
-    vector<int> clbNodes;
+    std::vector<long> clbNodes;
 
-    vector<int> longestPath;
+    std::vector<long> longestPath;
 
-    FPGAGraph(const string& dotPath, const string& dotName);
+    FPGAGraph(const std::string &dotPath, const std::string &dotName);
 
     void updateG();
 
@@ -27,18 +26,18 @@ public:
 
     void calcMatrix();
 
-    vector<int> getInOutPos() const;
+    std::vector<long> getInOutPos() const;
 
-    vector<int> getClbPos() const;
+    std::vector<long> getClbPos() const;
 
-    unordered_map<string, vector<pair<int, int>>> fpgaGetGraphAnnotations(
-        const vector<pair<int, int>>& edges,
-        const vector<pair<int, int>>& convergences
+    std::unordered_map<std::string, std::vector<std::pair<long, long> > > fpgaGetGraphAnnotations(
+        const std::vector<std::pair<long, long> > &edges,
+        const std::vector<std::pair<long, long> > &convergences
     );
 
     void findLongestPath();
 
-    vector<pair<int, int>> getEdgesDepthFirstPriority();
+    std::vector<std::pair<long, long> > getEdgesDepthFirstPriority();
 };
 
 #endif
