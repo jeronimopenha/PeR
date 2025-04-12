@@ -118,7 +118,7 @@ QcaReportData qcaSa(QCAGraph& g)
     //if this placement valid?
     int wrongEdges;
     success = g.verifyPlacement(n2c, ed, &wrongEdges);
-    bool nodesPlaced = allPLaced(n2c);
+    bool nodesPlaced = allPlaced(n2c);
     AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt, c2n);
 
 
