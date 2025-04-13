@@ -53,7 +53,7 @@ int main() {
 #ifdef FPGA_YOTO_DF
         algPath += "/yoto_df";
 #elifdef FPGA_YOTO_DF_PRIO
-        algPath +=  "/yoto_df_prio";
+        algPath += "/yoto_df_prio";
 #elifdef FPGA_YOTO_ZZ
         algPath  += "/yoto_zz";
 #elifdef FPGA_YOTT
@@ -80,8 +80,11 @@ int main() {
 #endif
 
         vector<FpgaReportData> reports;
-
+        auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
+            return a.totalCost < b.totalCost;
+        };
 #ifndef DEBUG
+
         int nThreads = max(1, omp_get_num_procs());
         omp_set_num_threads(nThreads);
 
@@ -89,9 +92,7 @@ int main() {
         {
 #pragma omp for schedule(dynamic)
 #endif
-        auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
-            return a.totalCost < b.totalCost;
-        };
+
 
         for (int exec = 0; exec < nExec; exec++) {
             FpgaReportData report;

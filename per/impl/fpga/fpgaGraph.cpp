@@ -170,7 +170,7 @@ void FPGAGraph::findLongestPath() {
 
     // 3. Dynamic programming to find the longest path
     //vector dist(nNodes, numeric_limits<int>::min());
-    vector<unsigned long> dist(nNodes, 0);
+    vector<long> dist(nNodes, 0);
     vector<long> parent(nNodes, -1);
 
     /*for (int i = 0; i < nNodes; ++i)
@@ -187,7 +187,7 @@ void FPGAGraph::findLongestPath() {
     }
 
     // 4. Find the end node of the longest path
-    unsigned long max_len = -1;
+    long max_len = -1;
     long end_node = -1;
     for (long i = 0; i < nNodes; ++i) {
         if (dist[i] > max_len) {
