@@ -1,8 +1,8 @@
 import sys
 import networkx as nx
 
-from src.py.graph.graph import Graph
-from src.py.util.util import get_files_list_by_extension, get_project_root, verify_path
+from graphs.graph import Graph
+from graphs.util import get_files_list_by_extension, get_project_root, verify_path
 
 
 def create_statistic(path_dot):
@@ -23,10 +23,10 @@ def create_statistic(path_dot):
             cont_output += 1
         cont_fanout += g.out_degree(no)
 
-    print("INPUT      = %d" % (cont_input))
-    print("OUTPUT     = %d" % (cont_output))
-    print("NODES      = %d" % (cont_no))
-    print("EDGES      = %d" % (cont_edges))
+    print("INPUT      = %d" % cont_input)
+    print("OUTPUT     = %d" % cont_output)
+    print("NODES      = %d" % cont_no)
+    print("EDGES      = %d" % cont_edges)
     print("FANOUT AVG = %.2f" % (cont_fanout / (cont_no - cont_output)))
 
 
