@@ -32,7 +32,7 @@ def create_statistic(path_dot):
 
 def create_net(dot_origin, dot_destiny):
     # print(path_net)
-    arq = open(dot_destiny, 'w')
+    # arq = open(dot_destiny, 'w')
 
     graph = Graph(dot_origin, "dot")
 
@@ -86,8 +86,8 @@ def create_net(dot_origin, dot_destiny):
 if __name__ == "__main__":
 
     root_path = verify_path(get_project_root())
-    base_path_origin = root_path + "benchmarks/fpga/dot_TRETS/"
-    base_path_destiny = root_path + "benchmarks/fpga/net_TRETS/"
+    base_path_origin = root_path + "benchmarks/fpga/eval/EPFL/"
+    base_path_destiny = root_path + "benchmarks/fpga/net_EPFL/"
 
     files = get_files_list_by_extension(base_path_origin, ".dot")
     for file in files:
