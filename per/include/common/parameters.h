@@ -8,7 +8,7 @@
 //*******************************
 
 //Choose if Cache will be used
-#define CACHE
+//#define CACHE
 // Parameters
 #define CACHE_LINES_EXP 10
 #define CACHE_LINES (1 << CACHE_LINES_EXP)
@@ -44,7 +44,7 @@
 //###############################
 
 //debugging defines
-//#define DEBUG
-//#define PRINT
+#define DEBUG
+#define PRINT
 //*******************************
 #endif //PARAMETERS_H

@@ -13,9 +13,9 @@ pasta_base="$2"
 num_processos=${3:-4}
 
 # Diretórios com base no nome da pasta
-input_folder1="reports/fpga/${pasta_base}/net"
-input_folder2="reports/fpga/${pasta_base}/place"
-output_folder="reports/fpga/${pasta_base}/rep"
+input_folder1="reports/fpga/EPFL/${pasta_base}/net"
+input_folder2="reports/fpga/EPFL/${pasta_base}/place"
+output_folder="reports/fpga/EPFL/${pasta_base}/rep"
 
 # Extensões
 ext1=".net"

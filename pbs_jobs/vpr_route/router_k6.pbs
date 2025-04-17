@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N vpr_router_k6
+#PBS -l nodes=1:ppn=1,mem=500mb
+#PBS -o router_k6.out.txt
+#PBS -e router_k6.err.txt
+#PBS -V
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "benchmarks/fpga/net_EPFL/router_k6.net" arch/k6-n1.xml "router_k6.place" "router_k6.route"  -nodisp > "router_k6.out"
