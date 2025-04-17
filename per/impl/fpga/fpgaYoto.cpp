@@ -1,11 +1,10 @@
 #include <fpga/fpgaYoto.h>
 #include <common/parameters.h>
-//#include <common/cache.h>
+#include <common/cache.h>
 #include <vector>
 
 using namespace std;
 
-//todo cache parts
 
 FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCells = g.nCells;
@@ -17,8 +16,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     vector<long> inOutCells = g.getInOutPos();
 #ifdef CACHE
-    Cache cacheC2N = Cache();
-    Cache cacheN2C = Cache();
+    auto cacheC2N = Cache();
+    auto cacheN2C = Cache();
 #endif
     randomVector(inOutCells);
 
@@ -140,7 +139,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         }
     }
 
-#ifdef DEBUG
+#ifdef PRINT
     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 

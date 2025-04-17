@@ -69,14 +69,13 @@ int main() {
         algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP);
 #endif
 
-        int nExec;
 
 #ifdef DEBUG
-        nExec = 12;
+        constexpr  int nExec = 12;
 #elifdef  FPGA_SA
-            nExec = 100;
+        constexpr int    nExec = 100;
 #else
-        nExec = 1000;
+        constexpr int nExec = 1000;
 #endif
 
         vector<FpgaReportData> reports;
@@ -95,7 +94,7 @@ int main() {
 
 
         for (int exec = 0; exec < nExec; exec++) {
-                cout << exec << " ";
+            //cout << exec << " ";
             FpgaReportData report;
 #if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
             report = fpgaYoto(g);
