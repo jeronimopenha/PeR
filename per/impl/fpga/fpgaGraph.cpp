@@ -33,7 +33,7 @@ void FPGAGraph::calcMatrix() {
     long nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     long nBorderCells = nCellsBaseSqrt * 4;
     while (totalInOut > nBorderCells) {
-        nCellsBaseSqrt += 2;
+        nCellsBaseSqrt += 1;
         nBorderCells = nCellsBaseSqrt * 4;
     }
     const long nCellsBase = nCellsBaseSqrt * nCellsBaseSqrt; //static_cast<long>(pow(nCellsBaseSqrt, 2));
