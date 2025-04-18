@@ -1,8 +1,8 @@
 import sys
 import networkx as nx
 
-from src.py.graph.graph import Graph
-from src.py.util.util import get_files_list_by_extension, get_project_root, verify_path
+from graphs.graph import Graph
+from graphs.util import get_files_list_by_extension, get_project_root, verify_path
 
 
 def create_statistic(path_dot):
@@ -23,16 +23,16 @@ def create_statistic(path_dot):
             cont_output += 1
         cont_fanout += g.out_degree(no)
 
-    print("INPUT      = %d" % (cont_input))
-    print("OUTPUT     = %d" % (cont_output))
-    print("NODES      = %d" % (cont_no))
-    print("EDGES      = %d" % (cont_edges))
+    print("INPUT      = %d" % cont_input)
+    print("OUTPUT     = %d" % cont_output)
+    print("NODES      = %d" % cont_no)
+    print("EDGES      = %d" % cont_edges)
     print("FANOUT AVG = %.2f" % (cont_fanout / (cont_no - cont_output)))
 
 
 def create_net(dot_origin, dot_destiny):
     # print(path_net)
-    arq = open(dot_destiny, 'w')
+    # arq = open(dot_destiny, 'w')
 
     graph = Graph(dot_origin, "dot")
 
@@ -86,8 +86,8 @@ def create_net(dot_origin, dot_destiny):
 if __name__ == "__main__":
 
     root_path = verify_path(get_project_root())
-    base_path_origin = root_path + "benchmarks/fpga/dot_TRETS/"
-    base_path_destiny = root_path + "benchmarks/fpga/net_TRETS/"
+    base_path_origin = root_path + "benchmarks/fpga/eval/EPFL/"
+    base_path_destiny = root_path + "benchmarks/fpga/net_EPFL/"
 
     files = get_files_list_by_extension(base_path_origin, ".dot")
     for file in files:

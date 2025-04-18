@@ -6,9 +6,7 @@
 #include <fpga/fpgaGraph.h>
 
 
-using namespace std;
-
-FpgaReportData fpgaYott(FPGAGraph& g);
+FpgaReportData fpgaYott(FPGAGraph &g);
 
 
 #endif

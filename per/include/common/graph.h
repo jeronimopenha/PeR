@@ -8,42 +8,41 @@
 #include <utility>
 
 
-using namespace std;
-
-class Graph
-{
+class Graph {
 public:
-    string dotPath;
-    string dotName;
+    std::string dotPath;
+    std::string dotName;
 
-    int nEdges = 0;
-    int nNodes = 0;
+    long nEdges = 0;
+    long nNodes = 0;
 
     //Adjacency for successors
-    vector<vector<bool>> successors;
+    std::vector<std::vector<bool> > successors;
     //Adjacency for predecessors
-    vector<vector<bool>> predecessors;
+    std::vector<std::vector<bool> > predecessors;
     //Edges list
-    vector<pair<int, int>> gEdges;
+    std::vector<std::pair<long, long> > gEdges;
     //Edges list
-    vector<pair<string, string>> gEdgesStr;
+    std::vector<std::pair<std::string, std::string> > gEdgesStr;
     //nodes List
-    vector<int> gNodes;
+    std::vector<long> gNodes;
 
     //adjacency list
-    unordered_map<int, vector<int>> adjList;
+    std::unordered_map<long, std::vector<long> > adjList;
 
-    vector<int> nSuccV;
-    vector<int> nPredV;
+    std::vector<long> nSuccV;
+    std::vector<long> nPredV;
 
-    vector<int> inputNodes;
-    vector<int> outputNodes;
-    vector<int> otherNodes;
+    std::vector<long> inputNodes;
+    std::vector<long> outputNodes;
+    std::vector<long> otherNodes;
 
 
-    Graph(const string& dotPath, const string& dotName, bool str = false);
+    Graph(const std::string &dotPath, const std::string &dotName, bool str = false);
 
     void readGraphDataStr();
+
+    void isolateMultiInputOutputs();
 
     void updateG();
 
@@ -55,14 +54,15 @@ public:
 
     void readSuccPred();
 
-    vector<pair<int, int>> getEdgesDepthFirst();
+    std::vector<std::pair<long, long> > getEdgesDepthFirst();
 
-    vector<pair<int, int>> getEdgesZigzag(
-        vector<pair<int, int>>& convergence,
-        vector<tuple<int, int, string>>* edgeTypes = nullptr);
+    std::vector<std::pair<long, long> > getEdgesZigzag(
+        std::vector<std::pair<long, long> > &convergence,
+        std::vector<std::tuple<long, long, std::string> > *edgeTypes = nullptr);
 
-    vector<pair<int, int>> clearEdges(const vector<pair<int, int>>& edges) const;
+    std::vector<std::pair<long, long> > clearEdges(const std::vector<std::pair<long, long> > &edges) const;
 
-    void dfs(int idx, const vector<vector<int>>& adj, vector<bool>& visited, vector<int>& topo_order);
+    void dfs(long idx, const std::vector<std::vector<long> > &adj, std::vector<bool> &visited,
+             std::vector<long> &topo_order);
 };
 #endif

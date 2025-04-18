@@ -5,57 +5,57 @@
 #include <fpga/fpgaGraph.h>
 #include <common/util.h>
 
-using namespace std;
 
-struct FpgaReportData
-{
-    float _time;
-    string dotName;
-    string dotPath;
-    string placer;
-    int cacheMisses;
-    int tries;
-    int swaps;
-    string edgesAlgorithm;
-    int totalCost;
-    vector<int> placement;
-    vector<int> n2c;
+struct FpgaReportData {
+    double _time = 0.0;
+    std::string dotName;
+    std::string dotPath;
+    std::string placer;
+    long cacheMisses = 0;
+    long tries = 0;
+    long swaps = 0;
+    std::string edgesAlgorithm;
+    long totalCost = 0;
+    std::vector<long> placement;
+    std::vector<long> n2c;
 
     FpgaReportData();
 
-    FpgaReportData(float _time, string dot_name, string dot_path,
-                   string placer, int cacheMisses, int tries, int swaps,
-                   string edges_algorithm, int total_cost,
-                   const vector<int>& placement, const vector<int>& n2c);
+    FpgaReportData(double _time, std::string dotName, std::string dotPath,
+                   std::string placer, long cacheMisses, long tries,
+                   long swaps, std::string edges_algorithm, long total_cost,
+                   const std::vector<long> &placement, const std::vector<long> &n2c);
 
-    [[nodiscard]] string to_json() const;
+    [[nodiscard]] std::string to_json() const;
 };
 
-void fpgaSavePlacedDot(vector<int>& n2c, const vector<pair<int, int>>& ed, int nCellsSqrt,
-                       const string& filename);
+void fpgaSavePlacedDot(std::vector<long> &n2c, const std::vector<std::pair<long, long> > &ed, long nCellsSqrt,
+                       const std::string &filename);
 
-vector<vector<int>> fpgaGetAdjCellsDist(int nCellsSqrt);
+std::vector<std::vector<long> > fpgaGetAdjCellsDist(long nCellsSqrt);
 
-int fpgaCalcGraphTotalDistance(const vector<int>& n2c, const vector<pair<int, int>>& edges, int nCellsSqrt);
+long fpgaCalcGraphTotalDistance(const std::vector<long> &n2c, const std::vector<std::pair<long, long> > &edges,
+                                long nCellsSqrt);
 
-int fpgaCalcGraphLPDistance(const vector<int>& longestPath, const vector<int>& n2c, int nCellsSqrt);
+long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
+                             long nCellsSqrt);
 
-bool fpgaIsInvalidCell(int cell, int nCellsSqrt);
+bool fpgaIsInvalidCell(long cell, long nCellsSqrt);
 
-bool fpgaIsIOCell(int cell, int nCellsSqrt);
+bool fpgaIsIOCell(long cell, long nCellsSqrt);
 
-int fpgaMinBorderDist(int cell, int nCellsSqrt);
+long fpgaMinBorderDist(long cell, long nCellsSqrt);
 
-void fpgaWriteJson(const string& basePath,
-                   const string& reportPath,
-                   const string& algPath,
-                   const string& fileName,
-                   const FpgaReportData& data);
+void fpgaWriteJson(const std::string &basePath,
+                   const std::string &reportPath,
+                   const std::string &algPath,
+                   const std::string &fileName,
+                   const FpgaReportData &data);
 
-void fpgaWriteVprData(const string& basePath,
-                      const string& reportPath,
-                      const string& algPath,
-                      const string& fileName,
-                      const FpgaReportData& data,
+void fpgaWriteVprData(const std::string &basePath,
+                      const std::string &reportPath,
+                      const std::string &algPath,
+                      const std::string &fileName,
+                      const FpgaReportData &data,
                       FPGAGraph g);
 #endif

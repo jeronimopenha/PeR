@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N vpr_max_k6
+#PBS -l nodes=1:ppn=1,mem=2048mb
+#PBS -o max_k6.out.txt
+#PBS -e max_k6.err.txt
+#PBS -V
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "benchmarks/fpga/net_EPFL/max_k6.net" arch/k6-n1.xml "max_k6.place" "max_k6.route"  -nodisp > "max_k6.out"

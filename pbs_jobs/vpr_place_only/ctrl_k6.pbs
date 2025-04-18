@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N vpr_ctrl_k6
+#PBS -l nodes=1:ppn=1,mem=500mb
+#PBS -o ctrl_k6.out.txt
+#PBS -e ctrl_k6.err.txt
+#PBS -V
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "benchmarks/fpga/net_EPFL/ctrl_k6.net" arch/k6-n1.xml "ctrl_k6.place" "ctrl_k6.route" --place_only -nodisp > "ctrl_k6.out"
