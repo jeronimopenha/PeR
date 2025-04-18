@@ -369,3 +369,39 @@ void Graph::readGraphDataStr() {
     for (long i = 0; i < nNodes; i++)
         gNodes.push_back(i);
 }
+
+
+void Graph::isolateMultiInputOutputs() {
+    vector<long> newOutputs;
+    vector<pair<long, long> > newEdges;
+    long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+
+    for (auto node: outputNodes) {
+        const bool hasMoreInput = count(predecessors[node].begin(), predecessors[node].end(), true) > 1;;
+
+        if (hasMoreInput) {
+            // Cria dummy de saída
+            long dummy = nextId++;
+            gNodes.push_back(dummy);
+            nNodes++;
+
+            newEdges.emplace_back(node, dummy);
+            newOutputs.push_back(dummy);
+        } else
+            newOutputs.push_back(node);
+    }
+
+    // Atualiza lista de outputs
+    outputNodes = newOutputs;
+
+    // Adiciona nova aresta ao grafo
+    gEdges.insert(gEdges.end(), newEdges.begin(), newEdges.end());
+
+    updateG(); // atualiza estruturas internas
+}
+
+/*
+* bool hasMultiplePredecessors(int u, const vector<vector<bool>>& predecessors) {
+    return std::count(predecessors[u].begin(), predecessors[u].end(), true) > 1;
+}
+ */

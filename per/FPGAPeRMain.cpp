@@ -71,7 +71,7 @@ int main() {
 
 
 #ifdef DEBUG
-        constexpr  int nExec = 12;
+        constexpr int nExec = 1;
 #elifdef  FPGA_SA
         constexpr int    nExec = 100;
 #else
@@ -101,12 +101,13 @@ int main() {
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
                 report = fpgaYott(g);
 #elifdef FPGA_SA
-                report = fpgaSa(g);
+            report = fpgaSa(g);
 #endif
 #ifndef DEBUG
 #pragma omp critical
 #endif
             {
+//#ifndef DEBUG
                 if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
                     // encontra a posição onde deve ser inserido
                     auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
@@ -116,6 +117,7 @@ int main() {
                     if (reports.size() > 10)
                         reports.pop_back();
                 }
+//#endif
                 //reports.push_back(report);
             }
         }
@@ -123,21 +125,22 @@ int main() {
         }
 #endif
 
-
-        int limit = (10 < reports.size()) ? 10 : static_cast<int>(reports.size());
+//#ifndef DEBUG
+        const int limit = min(10, static_cast<int>(reports.size()));
         for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
             string fileName = g.dotName + "_" + to_string(i);
-#ifndef DEBUG
+
             //save reports for the 10 better placements
             fpgaWriteJson(rootPath, reportPath, algPath, fileName, reports[i]);
-#endif
-#if !defined(CACHE) && !defined (DEBUG)
+
+#if !defined(CACHE)
             //generate reports and files for vpr
             fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif
         }
+//#endif
     }
     return 0;
 }

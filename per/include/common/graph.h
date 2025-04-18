@@ -42,6 +42,8 @@ public:
 
     void readGraphDataStr();
 
+    void isolateMultiInputOutputs();
+
     void updateG();
 
     void readEdgesNodes();

@@ -99,3 +99,4 @@ float randomFloat(const float min, const float max) {
     std::uniform_real_distribution<float> distrib(min, max);
     return distrib(gen);
 }
+
