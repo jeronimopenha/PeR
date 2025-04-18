@@ -73,7 +73,7 @@ int main() {
 #ifdef DEBUG
         constexpr int nExec = 1;
 #elifdef  FPGA_SA
-        constexpr int    nExec = 100;
+        constexpr int    nExec = 10;
 #else
         constexpr int nExec = 1000;
 #endif
@@ -107,7 +107,7 @@ int main() {
 #pragma omp critical
 #endif
             {
-//#ifndef DEBUG
+#ifndef DEBUG
                 if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
                     // encontra a posição onde deve ser inserido
                     auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
@@ -117,7 +117,7 @@ int main() {
                     if (reports.size() > 10)
                         reports.pop_back();
                 }
-//#endif
+#endif
                 //reports.push_back(report);
             }
         }
@@ -125,7 +125,7 @@ int main() {
         }
 #endif
 
-//#ifndef DEBUG
+/#ifndef DEBUG
         const int limit = min(10, static_cast<int>(reports.size()));
         for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
@@ -140,7 +140,7 @@ int main() {
             fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif
         }
-//#endif
+#endif
     }
     return 0;
 }
