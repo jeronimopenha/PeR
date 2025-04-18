@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_yoto_df_cavlc_k6_7
+#PBS -l nodes=1:ppn=1,mem=10240mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o cavlc_k6_7.pbs.out
+#PBS -e cavlc_k6_7.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/yoto_df/net/cavlc_k6_7.net" arch/k6-n1.xml "reports/fpga/EPFL/yoto_df/place/cavlc_k6_7.place" "reports/fpga/EPFL/yoto_df/rep/cavlc_k6_7.route" --route_only -nodisp > "reports/fpga/EPFL/yoto_df/rep/cavlc_k6_7.out"

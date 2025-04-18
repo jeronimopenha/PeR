@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_yoto_df_adder_k6_5
+#PBS -l nodes=1:ppn=1,mem=10240mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o adder_k6_5.pbs.out
+#PBS -e adder_k6_5.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/yoto_df/net/adder_k6_5.net" arch/k6-n1.xml "reports/fpga/EPFL/yoto_df/place/adder_k6_5.place" "reports/fpga/EPFL/yoto_df/rep/adder_k6_5.route" --route_only -nodisp > "reports/fpga/EPFL/yoto_df/rep/adder_k6_5.out"
