@@ -125,7 +125,7 @@ int main() {
         }
 #endif
 
-/#ifndef DEBUG
+#ifndef DEBUG
         const int limit = min(10, static_cast<int>(reports.size()));
         for (int i = 0; i < limit; i++) {
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
