@@ -20,8 +20,8 @@
 
 //#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
-#define FPGA_YOTO_ZZ
-//#define FPGA_YOTT
+//#define FPGA_YOTO_ZZ
+#define FPGA_YOTT
 //#define FPGA_SA
 //*******************************
 
