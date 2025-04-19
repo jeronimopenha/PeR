@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_sa_ctrl_k6_9
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o ctrl_k6_9.pbs.out
+#PBS -e ctrl_k6_9.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/sa/net/ctrl_k6_9.net" arch/k6-n1.xml "reports/fpga/EPFL/sa/place/ctrl_k6_9.place" "reports/fpga/EPFL/sa/rep/ctrl_k6_9.route" --route_only -nodisp > "reports/fpga/EPFL/sa/rep/ctrl_k6_9.out"

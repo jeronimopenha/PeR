@@ -26,7 +26,7 @@ for net_file in "$net_folder"/*.net; do
         cat > "$pbs_file" <<EOF
 #!/bin/bash
 #PBS -N vpr_${pasta_base}_$base
-#PBS -l nodes=1:ppn=1,mem=10240mb
+#PBS -l nodes=1:ppn=1,mem=4192mb
 #PBS -m ae
 #PBS -M jeronimo.penha@ufv.br
 #PBS -o $base.pbs.out
