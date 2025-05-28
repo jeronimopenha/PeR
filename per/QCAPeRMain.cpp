@@ -55,7 +55,7 @@ int main()
 #endif
         int nExtraLayers = 0;
 
-        vector<vector<QcaReportData>> reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
+        vector reports(MAX_EXTRA_LAYERS, vector<QcaReportData>(nExec));
 
         while (nExtraLayers < MAX_EXTRA_LAYERS)
         {

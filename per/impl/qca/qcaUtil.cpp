@@ -5,19 +5,16 @@
 #include <common/util.h>
 #include <common/parameters.h>
 
-/*QcaReportData::QcaReportData()
-    : success(false), allPLaced(false), _time(0), nCellsSqrt(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0),
-      area(0), usedAreaPercentage(0), extraLayers(0) {
-}*/
+using namespace std;
+
+QcaReportData::QcaReportData() = default;
 
 // Constructor for easy initialization
-QcaReportData::QcaReportData(const bool success, const bool allPLaced, const float _time, string dotName,
-                             string dotPath, string placer,
-                             const int nCellsSqrt, const int wires, const int nNodes, const int tries, const int swaps,
-                             const int wrongEdges, const int area, const float usedAreaPercentage,
-                             const int extraLayers,
-                             vector<int> extraLayersLevels, vector<int> placement,
-                             vector<int> n2c, vector<pair<int, int> > edges)
+QcaReportData::QcaReportData(const bool success, const bool allPLaced, const double _time, string dotName,
+                             string dotPath, string placer, const long nCellsSqrt, const long wires, const long nNodes,
+                             const long tries, const long swaps, const long wrongEdges, const long area,
+                             const double usedAreaPercentage, const long extraLayers, vector<long> extraLayersLevels,
+                             vector<long> placement, vector<long> n2c, vector<pair<long, long> > edges)
     : success(success),
       allPLaced(allPLaced),
       _time(_time),
@@ -88,8 +85,8 @@ string QcaReportData::to_json() const {
 }
 
 // Returns the relative offset vectors for input directions of a cell at (x, y)
-vector<pair<int, int> > qcaGetOutputDirections(const int x, const int y) {
-    vector<pair<int, int> > directions;
+vector<pair<long, long> > qcaGetOutputDirections(const long x, const long y) {
+    vector<pair<long, long> > directions;
 
 #ifdef USE
     const bool isEvenRow = (y % 2 == 0);
@@ -122,8 +119,8 @@ vector<pair<int, int> > qcaGetOutputDirections(const int x, const int y) {
 }
 
 // Returns the relative offset vectors for output directions of a cell at (x, y)
-vector<pair<int, int> > qcaGetInputDirections(const int x, const int y) {
-    vector<pair<int, int> > directions;
+vector<pair<long, long> > qcaGetInputDirections(const long x, const long y) {
+    vector<pair<long, long> > directions;
 #ifdef USE
     const bool isEvenRow = (y % 2 == 0);
     const bool isEvenCol = (x % 2 == 0);
@@ -155,23 +152,23 @@ vector<pair<int, int> > qcaGetInputDirections(const int x, const int y) {
 }
 
 
-bool qcaIsInvalidCell(const int x, const int y, const int nCellsSqrt) {
+bool qcaIsInvalidCell(const long x, const long y, const long nCellsSqrt) {
     const bool outOfBounds = (x < 0 || x >= nCellsSqrt || y < 0 || y >= nCellsSqrt);
     return outOfBounds;
 }
 
-void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vector<pair<int, int> > &edges,
-                       int nCellsSqrt) {
+void qcaExportUSEToDot(const string &filename, const vector<vector<long>> &n2c, const vector<pair<long, long> > &edges,
+                       long nCellsSqrt) {
     ofstream file(filename);
     if (!file) {
         cerr << "Error while opening the DOT file!" << endl;
         return;
     }
 
-    const int nCells = nCellsSqrt * nCellsSqrt;
+    const long nCells = nCellsSqrt * nCellsSqrt;
     vector cells(nCells, -1);
 
-    for (int i = 0; i < static_cast<int>(n2c.size()); i++)
+    for (long i = 0; i < static_cast<long>(n2c.size()); i++)
         if (n2c[i] > -1)
             cells[n2c[i]] = i;
 
@@ -182,7 +179,7 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     file << "splines=ortho; \n" << endl;
     file << "node [style=filled shape=square fixedsize=true width=0.6];\n";
 
-    for (int i = 0; i < nCells; i++) {
+    for (long i = 0; i < nCells; i++) {
         file << "  " << i << " [label=\"";
         if (cells[i] == -1) {
             file << "\", fontsize=8, fillcolor=\"#ffffff\"];\n";
@@ -193,26 +190,26 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     file << "edge [constraint=false, style=vis];\n";
     //normal edges
 
-    for (int cell = 0; cell < nCells; cell++) {
-        const int x0 = getX(cell, nCellsSqrt);
-        const int y0 = getY(cell, nCellsSqrt);
-        const vector<pair<int, int> > directions = qcaGetOutputDirections(x0, y0);
+    for (long cell = 0; cell < nCells; cell++) {
+        const long x0 = getX(cell, nCellsSqrt);
+        const long y0 = getY(cell, nCellsSqrt);
+        const vector<pair<long, long> > directions = qcaGetOutputDirections(x0, y0);
 
         for (const auto &[dx, dy]: directions) {
-            const int x1 = x0 + dx;
-            const int y1 = y0 + dy;
+            const long x1 = x0 + dx;
+            const long y1 = y0 + dy;
 
             if (!qcaIsInvalidCell(x1, y1, nCellsSqrt)) {
-                int neighbor = getCellIndex(x1, y1, nCellsSqrt);
+                long neighbor = getCellIndex(x1, y1, nCellsSqrt);
                 file << "  " << cell << " -> " << neighbor << " [color=\"#cccccc\"];\n";
             }
         }
     }
 
     for (const auto &[u, v]: edges) {
-        if (u >= 0 && v >= 0 && u < static_cast<int>(n2c.size()) && v < static_cast<int>(n2c.size())) {
-            const int cellU = n2c[u];
-            const int cellV = n2c[v];
+        if (u >= 0 && v >= 0 && u < static_cast<long>(n2c.size()) && v < static_cast<long>(n2c.size())) {
+            const long cellU = n2c[u];
+            const long cellV = n2c[v];
             if (cellU != -1 && cellV != -1)
                 file << cellU << " -> " << cellV << ";\n";
         }
@@ -221,9 +218,9 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     file << "edge [constraint=true, style=invis];" << endl;
 
     //structural edges
-    for (int j = 0; j < nCellsSqrt; j++) {
-        for (int i = 0; i < nCellsSqrt; i++) {
-            const int c = j + i * nCellsSqrt;
+    for (long j = 0; j < nCellsSqrt; j++) {
+        for (long i = 0; i < nCellsSqrt; i++) {
+            const long c = j + i * nCellsSqrt;
             if (i != nCellsSqrt - 1) {
                 file << c << " -> ";
             } else {
@@ -232,10 +229,10 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
         }
     }
 
-    for (int i = 0; i < nCellsSqrt; i++) {
+    for (long i = 0; i < nCellsSqrt; i++) {
         file << "rank = same { ";
-        for (int j = 0; j < nCellsSqrt; j++) {
-            int c = i * nCellsSqrt + j;
+        for (long j = 0; j < nCellsSqrt; j++) {
+            long c = i * nCellsSqrt + j;
             if (j == nCellsSqrt - 1) {
                 file << c << ";";
             } else {
@@ -251,18 +248,18 @@ void qcaExportUSEToDot(const string &filename, const vector<int> &n2c, const vec
     file.close();
 }
 
-AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int> &c2n) {
-    const int INF = std::numeric_limits<int>::max();
-    int minRow = INF;
-    int maxRow = -1;
-    int minCol = INF;
-    int maxCol = -1;
-    int occupiedCount = 0;
+AreaMetrics computeOccupiedAreaMetrics(const long nCellsSqrt, const vector<long> &c2n) {
+    const long INF = std::numeric_limits<long>::max();
+    long minRow = INF;
+    long maxRow = -1;
+    long minCol = INF;
+    long maxCol = -1;
+    long occupiedCount = 0;
 
-    for (int idx = 0; idx < static_cast<int>(c2n.size()); ++idx)
+    for (long idx = 0; idx < static_cast<long>(c2n.size()); ++idx)
         if (c2n[idx] != -1) {
-            const int row = idx / nCellsSqrt;
-            const int col = idx % nCellsSqrt;
+            const long row = idx / nCellsSqrt;
+            const long col = idx % nCellsSqrt;
 
             minRow = min(minRow, row);
             maxRow = max(maxRow, row);
@@ -279,8 +276,8 @@ AreaMetrics computeOccupiedAreaMetrics(const int nCellsSqrt, const vector<int> &
     result.minCol = minCol;
     result.maxCol = maxCol;
 
-    const int height = maxRow - minRow + 1;
-    const int width = maxCol - minCol + 1;
+    const long height = maxRow - minRow + 1;
+    const long width = maxCol - minCol + 1;
 
     result.totalCells = height * width;
     result.occupiedCells = occupiedCount;
@@ -295,7 +292,7 @@ void qcaWriteJson(const string &basePath,
                   const string &reportPath,
                   const string &algPath,
                   const string &fileName,
-                  const int extraLayers,
+                  const long extraLayers,
                   const QcaReportData &data) {
     string finalPath = basePath + reportPath + algPath + "/json/";
     string jsonFile = finalPath + fileName + ".json";
@@ -311,8 +308,8 @@ void qcaWriteJson(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
 }
 
-bool allPlaced(const vector<int> &n2c) {
-    const bool placed = std::all_of(n2c.begin(), n2c.end(), [](const int cell) {
+bool allPlaced(const vector<long> &n2c) {
+    const bool placed = std::all_of(n2c.begin(), n2c.end(), [](const long cell) {
         return cell != -1;
     });
 
