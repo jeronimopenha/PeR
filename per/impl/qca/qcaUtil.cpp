@@ -166,11 +166,13 @@ void qcaExportUSEToDot(const string &filename, const vector<vector<long>> &n2c, 
     }
 
     const long nCells = nCellsSqrt * nCellsSqrt;
-    vector cells(nCells, -1);
+    vector<vector<long>> cells(nCells, vector<long>(2,-1));
 
     for (long i = 0; i < static_cast<long>(n2c.size()); i++)
-        if (n2c[i] > -1)
-            cells[n2c[i]] = i;
+        if (n2c[i][0] > -1)
+            long nodeCell =n2c[i][0];
+            long cellPosition = n2c[i][1];
+            cells[nodeCell][cellPosition] = i;
 
 
     // write the dot header

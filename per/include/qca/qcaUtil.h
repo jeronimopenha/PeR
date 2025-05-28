@@ -55,7 +55,7 @@ std::vector<std::pair<long, long> > qcaGetOutputDirections(long x = 0, long y = 
 
 bool qcaIsInvalidCell(long x, long y, long nCellsSqrt);
 
-void qcaExportUSEToDot(const std::string &filename, const std::vector<long> &n2c,
+void qcaExportUSEToDot(const std::string &filename, const std::vector<std::vector<long>> &n2c,
                        const std::vector<std::pair<long, long> > &edges,
                        long nCellsSqrt);
 
