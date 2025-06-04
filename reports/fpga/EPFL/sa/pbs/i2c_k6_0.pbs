@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_sa_i2c_k6_0
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o i2c_k6_0.pbs.out
+#PBS -e i2c_k6_0.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/sa/net/i2c_k6_0.net" arch/k6-n1.xml "reports/fpga/EPFL/sa/place/i2c_k6_0.place" "reports/fpga/EPFL/sa/rep/i2c_k6_0.route" --route_only -nodisp > "reports/fpga/EPFL/sa/rep/i2c_k6_0.out"

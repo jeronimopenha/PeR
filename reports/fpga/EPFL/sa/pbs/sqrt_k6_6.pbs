@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_sa_sqrt_k6_6
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o sqrt_k6_6.pbs.out
+#PBS -e sqrt_k6_6.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/sa/net/sqrt_k6_6.net" arch/k6-n1.xml "reports/fpga/EPFL/sa/place/sqrt_k6_6.place" "reports/fpga/EPFL/sa/rep/sqrt_k6_6.route" --route_only -nodisp > "reports/fpga/EPFL/sa/rep/sqrt_k6_6.out"

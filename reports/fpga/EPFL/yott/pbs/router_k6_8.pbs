@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_yott_router_k6_8
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o router_k6_8.pbs.out
+#PBS -e router_k6_8.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/yott/net/router_k6_8.net" arch/k6-n1.xml "reports/fpga/EPFL/yott/place/router_k6_8.place" "reports/fpga/EPFL/yott/rep/router_k6_8.route" --route_only -nodisp > "reports/fpga/EPFL/yott/rep/router_k6_8.out"

@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_yott_cavlc_k6_2
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o cavlc_k6_2.pbs.out
+#PBS -e cavlc_k6_2.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/yott/net/cavlc_k6_2.net" arch/k6-n1.xml "reports/fpga/EPFL/yott/place/cavlc_k6_2.place" "reports/fpga/EPFL/yott/rep/cavlc_k6_2.route" --route_only -nodisp > "reports/fpga/EPFL/yott/rep/cavlc_k6_2.out"

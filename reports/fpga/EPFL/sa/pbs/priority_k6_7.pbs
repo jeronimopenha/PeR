@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_sa_priority_k6_7
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o priority_k6_7.pbs.out
+#PBS -e priority_k6_7.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/sa/net/priority_k6_7.net" arch/k6-n1.xml "reports/fpga/EPFL/sa/place/priority_k6_7.place" "reports/fpga/EPFL/sa/rep/priority_k6_7.route" --route_only -nodisp > "reports/fpga/EPFL/sa/rep/priority_k6_7.out"

@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_yoto_df_prio_div_k6_2
+#PBS -l nodes=1:ppn=1,mem=10240mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o div_k6_2.pbs.out
+#PBS -e div_k6_2.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/yoto_df_prio/net/div_k6_2.net" arch/k6-n1.xml "reports/fpga/EPFL/yoto_df_prio/place/div_k6_2.place" "reports/fpga/EPFL/yoto_df_prio/rep/div_k6_2.route" --route_only -nodisp > "reports/fpga/EPFL/yoto_df_prio/rep/div_k6_2.out"

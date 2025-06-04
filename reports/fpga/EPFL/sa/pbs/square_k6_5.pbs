@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N vpr_sa_square_k6_5
+#PBS -l nodes=1:ppn=1,mem=4192mb
+#PBS -m ae
+#PBS -M jeronimo.penha@ufv.br
+#PBS -o square_k6_5.pbs.out
+#PBS -e square_k6_5.pbs.err
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+bin/vpr "reports/fpga/EPFL/sa/net/square_k6_5.net" arch/k6-n1.xml "reports/fpga/EPFL/sa/place/square_k6_5.place" "reports/fpga/EPFL/sa/rep/square_k6_5.route" --route_only -nodisp > "reports/fpga/EPFL/sa/rep/square_k6_5.out"
