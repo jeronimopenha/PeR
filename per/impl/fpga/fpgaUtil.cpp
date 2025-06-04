@@ -88,7 +88,8 @@ void fpgaSavePlacedDot(vector<long> &n2c, const vector<pair<long, long> > &ed, c
     file << "edge [constraint=false, style=vis];" << endl;
     //normal edges
     for (auto &[fst,snd]: ed) {
-        file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
+        if (n2c[fst] != -1 && n2c[snd] != -1)
+            file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
     }
 
 
