@@ -21,15 +21,21 @@ mkdir -p "$output_folder"
 
 # Verifica se arquivos existem
 if [ -f "$arquivo1" ] && [ -f "$arquivo2" ]; then
-    echo "Processando: $arquivo1"
-
+    #echo "Processando: $arquivo1"
+    echo "Processando: bin/vpr $arquivo1 arch/k6-n1.xml $arquivo2 $arquivo3 --route_only  -nodisp  -timing_analysis on    -router_algorithm directed_search > $output_file" ;
     case "$k" in
-        3) bin/vpr "$arquivo1" arch/k3-n1.xml "$arquivo2" "$arquivo3" --route_only -nodisp > "$output_file" ;;
-        4) bin/vpr "$arquivo1" arch/k4-n1.xml "$arquivo2" "$arquivo3" --route_only -nodisp > "$output_file" ;;
-        5) bin/vpr "$arquivo1" arch/k5-n1.xml "$arquivo2" "$arquivo3" --route_only -nodisp > "$output_file" ;;
-        6) bin/vpr "$arquivo1" arch/k6-n1.xml "$arquivo2" "$arquivo3" --route_only -nodisp > "$output_file" ;;
+        #3) bin/vpr "$arquivo1" arch/k3-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis on    -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+        #4) bin/vpr "$arquivo1" arch/k4-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis on    -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+        #5) bin/vpr "$arquivo1" arch/k5-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis on    -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+        6) bin/vpr "$arquivo1" arch/k6-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis on    -router_algorithm directed_search > "$output_file" ;; #-max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
         *) echo "Aviso: k=$k não suportado" ;;
     esac
 else
     echo "Aviso: Arquivo não encontrado: $arquivo1 ou $arquivo2"
 fi
+
+#3) bin/vpr "$arquivo1" arch/k3-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis off -enable_timing_computations off -inner_num 1 -place_algorithm bounding_box -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+#        4) bin/vpr "$arquivo1" arch/k4-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis off -enable_timing_computations off -inner_num 1 -place_algorithm bounding_box -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+#        5) bin/vpr "$arquivo1" arch/k5-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis off -enable_timing_computations off -inner_num 1 -place_algorithm bounding_box -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+#        6) bin/vpr "$arquivo1" arch/k6-n1.xml "$arquivo2" "$arquivo3" --route_only  -nodisp  -timing_analysis off -enable_timing_computations off -inner_num 1 -place_algorithm bounding_box -router_algorithm directed_search -max_router_iterations 1 -initial_pres_fac 1000 -base_cost_type demand_only > "$output_file" ;;
+#        *) echo "Aviso: k=$k não suportado" ;;
