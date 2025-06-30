@@ -149,6 +149,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         swaps,
         alg_type,
         tc,
+        0,
         c2n,
         n2c
     );

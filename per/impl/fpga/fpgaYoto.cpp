@@ -157,13 +157,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     chrono::duration<double, milli> duration = end - start;
     auto _time = duration.count();
 
-    long tc = 0;
+    //long tc = 0;
     // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#endif
+//#ifdef FPGA_TOTAL_COST
+    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+//#elifdef FPGA_LONG_PATH_COST
+    const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+//#endif
 
     const long tries = (clbTries + ioTries);
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
@@ -185,6 +185,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         swaps,
         alg_type,
         tc,
+        tlpc,
         c2n,
         n2c
     );

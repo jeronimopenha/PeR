@@ -22,6 +22,7 @@ struct FpgaReportData {
     long swaps = 0;
     std::string edgesAlgorithm;
     long totalCost = 0;
+    long lPCost = 0;
     std::vector<long> placement;
     std::vector<long> n2c;
 
@@ -29,7 +30,7 @@ struct FpgaReportData {
 
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long cacheMisses, long w,
                    long wCost, long cachePenalties, long clbTries, long ioTries, long tries, long triesP, long swaps,
-                   std::string edges_algorithm, long total_cost, const std::vector<long> &placement,
+                   std::string edges_algorithm, long totalCost, long lPCost, const std::vector<long> &placement,
                    const std::vector<long> &n2c);
 
     [[nodiscard]] std::string to_json() const;
