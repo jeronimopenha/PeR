@@ -22,7 +22,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     randomVector(inOutCells);
 
     long cacheMisses = 0;
-    long tries = 0;
+    //long tries = 0;
+    long ioTries = 0;
+    long clbTries = 0;
     long swaps = 0;
 
     string alg_type;
@@ -98,7 +100,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells) {
-            ++tries;
+            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+
+            if (IsBIoNode) {
+                ioTries++;
+            } else {
+                clbTries++;
+            }
+            //++tries;
+
             const long lB = lA + ij[0];
             const long cB = cA + ij[1];
 
@@ -111,7 +121,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
 
             const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO noce in an IO cell
@@ -155,13 +165,23 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
+    const long tries = (clbTries + ioTries);
+    long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
+    const long triesP = tries + cachePenalties;
+
     auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
         "yoto",
         cacheMisses,
+        CACHE_W_PARAMETER,
+        CACHE_W_COST,
+        cachePenalties,
+        clbTries,
+        ioTries,
         tries,
+        triesP,
         swaps,
         alg_type,
         tc,

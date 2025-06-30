@@ -66,7 +66,8 @@ int main() {
 
 
 #ifdef CACHE
-        algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP);
+        algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP) + "_W_" + to_string(
+            CACHE_W_PARAMETER)+"_" + to_string(CACHE_W_COST);;
 #endif
 
 
@@ -75,7 +76,7 @@ int main() {
 #elifdef  FPGA_SA
         constexpr int    nExec = 10;
 #else
-        constexpr int nExec = 1000;
+        constexpr int nExec = 100;
 #endif
 
         vector<FpgaReportData> reports;

@@ -8,20 +8,22 @@
 //*******************************
 
 //Choose if Cache will be used
-//#define CACHE
+#define CACHE
 // Parameters
 #define CACHE_LINES_EXP 10
 #define CACHE_LINES (1 << CACHE_LINES_EXP)
 #define CACHE_COLUMNS_EXP 2
 #define CACHE_COLUMNS (1 << CACHE_COLUMNS_EXP)
+#define CACHE_W_PARAMETER 8
+#define CACHE_W_COST 10
 //*******************************
 
 //Choose the algorithm to be run
 
-//#define FPGA_YOTO_DF
+#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
 //#define FPGA_YOTO_ZZ
-#define FPGA_YOTT
+//#define FPGA_YOTT
 //#define FPGA_SA
 //*******************************
 
