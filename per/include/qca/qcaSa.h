@@ -24,27 +24,27 @@ struct QcaCost
 QcaReportData qcaSa(QCAGraph& g);
 
 pair<float, float> qcaGetSwapCost(
-    int cellNode1,
-    int cellNode2,
-    int node1,
-    int node2,
-    const vector<int>& n2c,
+    long cellNode1,
+    long cellNode2,
+    long node1,
+    long node2,
+    const vector<long>& n2c,
     const QCAGraph& g
 );
 
 tuple<float, float> qcaGetSwapCostImproved(
-    int cellA, int cellB,
-    int nodeA, int nodeB,
-    const vector<int>& n2c,
+    long cellA, long cellB,
+    long nodeA, long nodeB,
+    const vector<long>& n2c,
     const QCAGraph& g
 );
 
 QcaCost computeQcaCostForNode(
-    int node,
-    int nodeCell,
-    int otherNode,
-    int otherCell,
-    const vector<int>& n2c,
+    long node,
+    long nodeCell,
+    long otherNode,
+    long otherCell,
+    const vector<long>& n2c,
     const QCAGraph& g
 );
 

@@ -6,23 +6,23 @@
 
 class QCAGraph : public Graph {
 public:
-    int nCells = 0;
-    int nCellsSqrt = 0;
+    long nCells = 0;
+    long nCellsSqrt = 0;
 
-    int minOutputLevel = 0;
-    int numLevels = 0;
-    int extraLayers = 0;
-    vector<int> extraLayersLevels;
+    long minOutputLevel = 0;
+    long numLevels = 0;
+    long extraLayers = 0;
+    std::vector<long> extraLayersLevels;
 
-    unordered_map<int, int> level;
-    unordered_map<int, string> dummyMap;
-    unordered_map<int, vector<int> > levelSuccessors;
-    unordered_map<int, vector<int> > levelPredecessors;
+    std::unordered_map<long, long> level;
+    std::unordered_map<long, std::string> dummyMap;
+    std::unordered_map<long, std::vector<long> > levelSuccessors;
+    std::unordered_map<long, std::vector<long> > levelPredecessors;
 
-    vector<std::vector<int> > inNeighbors;
-    vector<std::vector<int> > outNeighbors;
+    std::vector<std::vector<long> > inNeighbors;
+    std::vector<std::vector<long> > outNeighbors;
 
-    QCAGraph(const string &dotPath, const string &dotName);
+    QCAGraph(const std::string &dotPath, const std::string &dotName);
 
     void calcMatrix();
 
@@ -38,19 +38,19 @@ public:
 
     void balanceGraphAll();
 
-    void exportUpGToDot(const string &filename);
+    void exportUpGToDot(const std::string &filename);
 
-    void saveDummyMap(const string &filename);
+    void saveDummyMap(const std::string &filename);
 
-    bool verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
-                         int *invalidEdgesCount = nullptr) const;
+    bool verifyPlacement(const std::vector<long> &n2c, const std::vector<std::pair<long, long> > &edges,
+                         long *invalidEdgesCount = nullptr) const;
 
-    unordered_map<string, vector<pair<int, int> > > qcaGetGraphAnnotations(const vector<pair<int, int> > &edges,
-                                                                           const vector<pair<int, int> > &convergences);
+    std::unordered_map<std::string, std::vector<std::pair<long, long> > > qcaGetGraphAnnotations(const std::vector<std::pair<long, long> > &edges,
+                                                                           const std::vector<std::pair<long, long> > &convergences);
 
-    vector<int> getInterleavedOutputCellsQCA() const;
+    std::vector<long> getInterleavedOutputCellsQCA() const;
 
-    void insertDummyLayerAtLevel(int targetLevel);
+    void insertDummyLayerAtLevel(long targetLevel);
 };
 
 #endif

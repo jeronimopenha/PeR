@@ -18,6 +18,10 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     vector<long> c2n(nCells, -1);
     vector<long> n2c(nNodes, -1);
 
+#ifdef DEBUG
+    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
+
     vector<long> inOutCells = g.getInOutPos();
     randomVector(inOutCells);
 
