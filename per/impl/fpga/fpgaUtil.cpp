@@ -6,19 +6,27 @@ using namespace std;
 FpgaReportData::FpgaReportData() = default;
 
 // Constructor for easy initialization
-FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath,
-                               string placer, const long cacheMisses, const long tries,
-                               const long swaps, string edges_algorithm, const long total_cost,
+FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer,
+                               const long cacheMisses, const long w, const long wCost, const long cachePenalties,
+                               const long clbTries, const long ioTries, const long tries, const long triesP,
+                               const long swaps, string edges_algorithm, const long totalCost, const long lPCost,
                                const vector<long> &placement, const vector<long> &n2c)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
       placer(std::move(placer)),
       cacheMisses(cacheMisses),
+      w(w),
+      wCost(wCost),
+      cachePenalties(cachePenalties),
+      clbTries(clbTries),
+      ioTries(ioTries),
       tries(tries),
+      triesP(triesP),
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
-      totalCost(total_cost),
+      totalCost(totalCost),
+      lPCost(lPCost),
       placement(placement),
       n2c(n2c) {
 }
@@ -32,10 +40,17 @@ string FpgaReportData::to_json() const {
             << "  \"dotPath\": \"" << dotPath << "\",\n"
             << "  \"placer\": \"" << placer << "\",\n"
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
+            << "  \"w\": " << w << ",\n"
+            << "  \"wCost\": " << wCost << ",\n"
+            << "  \"cachePenalties\": " << cachePenalties << ",\n"
+            << "  \"clbTries\": " << clbTries << ",\n"
+            << "  \"ioTries\": " << ioTries << ",\n"
             << "  \"tries\": " << tries << ",\n"
+            << "  \"triesP\": " << triesP << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
             << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
-            << "  \"totalCost\": " << totalCost << "\n";
+            << "  \"totalCost\": " << totalCost << ",\n"
+            << "  \"lPCost\": " << lPCost << "\n";
     /*<< "  \"placement\": [";
 
 // Serialize vector<int> placement

@@ -1,0 +1,265 @@
+
+VPR FPGA Placement and Routing.
+Version: Version 5.0.2
+Compiled: Dec 11 2020.
+Original VPR by V. Betz.
+Timing-driven placement enhancements by A. Marquardt.
+Single-drivers enhancements by Andy Ye with additions by.
+Mark Fang, Jason Luu, Ted Campbell
+Heterogeneous stucture support by Jason Luu and Ted Campbell.
+This code is licensed only for non-commercial use.
+
+Auto-sizing FPGA, try x = 10 y = 10
+Auto-sizing FPGA, try x = 20 y = 20
+Auto-sizing FPGA, try x = 40 y = 40
+Auto-sizing FPGA, try x = 20 y = 20
+Auto-sizing FPGA, try x = 30 y = 30
+Auto-sizing FPGA, try x = 25 y = 25
+Auto-sizing FPGA, try x = 22 y = 22
+Auto-sizing FPGA, try x = 23 y = 23
+Auto-sizing FPGA, try x = 22 y = 22
+FPGA auto-sized to, x = 23 y = 23
+
+Resource Usage:
+Netlist      0	blocks of type <EMPTY>
+Architecture 4	blocks of type <EMPTY>
+Netlist      91	blocks of type .io
+Architecture 92	blocks of type .io
+Netlist      4	blocks of type .clb
+Architecture 529	blocks of type .clb
+
+Timing analysis: ON
+
+Operation:  PLACE_AND_ROUTE
+
+PlacerOpts.place_freq:  PLACE_ONCE
+PlacerOpts.place_algorithm:  BOUNDING_BOX_PLACE
+PlacerOpts.place_cost_type:  LINEAR_CONG
+PlacerOpts.pad_loc_type:  FREE
+PlacerOpts.place_cost_exp:  1.000000
+PlacerOpts.place_chan_width:  100
+PlaceOpts.seed:  1
+AnnealSched.type:  AUTO_SCHED
+AnnealSched.inner_num:  1.000000
+
+RouterOpts.route_type:  DETAILED
+RouterOpts.router_algorithm:  DIRECTED_SEARCH
+RouterOpts.base_cost_type:  DEMAND_ONLY
+RouterOpts.fixed_channel_width:  NO_FIXED_CHANNEL_WIDTH
+RouterOpts.acc_fac:  1.000000
+RouterOpts.bb_factor:  3
+RouterOpts.bend_cost:  0.000000
+RouterOpts.first_iter_pres_fac:  10000.000000
+RouterOpts.initial_pres_fac:  1000.000000
+RouterOpts.pres_fac_mult:  1.300000
+RouterOpts.max_router_iterations:  1
+
+RoutingArch.directionality:  UNI_DIRECTIONAL
+RoutingArch.switch_block_type:  WILTON
+RoutingArch.Fs:  3
+
+The circuit will be mapped into a 23 x 23 array of clbs.
+
+Netlist num_nets:  10
+Netlist num_blocks:  95
+Netlist inputs pins:  6
+Netlist output pins:  85
+
+Initial Placement Cost: 5.56274 bb_cost: 5.56274 td_cost: 0 delay_cost: 0
+
+          T        Cost Av. BB Cost  Av. TD Cost   Av Tot Del  P to P Del        d_max   Ac Rate  Std Dev  R limit      Exp  Tot. Moves    Alpha
+   --------  ---------- -----------  -----------    ---------  ----------        -----   -------  -------  -------  -------  ----------    -----
+     2.7909      5.4944      5.4944            0            0           0           0    0.9977    0.164       23        0         433      0.5
+     1.3955     5.43082     5.43082            0            0           0           0    0.9954    0.173       23        0         866      0.5
+    0.69773     5.41781     5.41781            0            0           0           0    0.9931    0.165       23        0        1299      0.5
+    0.34886     5.33004     5.33004            0            0           0           0    0.9792    0.173       23        0        1732      0.5
+    0.17443     5.29007     5.29007            0            0           0           0    0.9677    0.208       23        0        2165      0.5
+   0.087216     5.06994     5.06994            0            0           0           0    0.9307    0.118       23        0        2598      0.9
+   0.078494     4.89245     4.89245            0            0           0           0    0.8915   0.0785       23        0        3031      0.9
+   0.070645     4.94357     4.94357            0            0           0           0    0.8776    0.113       23        0        3464      0.9
+    0.06358     5.06887     5.06887            0            0           0           0    0.9192   0.0656       23        0        3897      0.9
+   0.057222     5.07081     5.07081            0            0           0           0     0.903    0.101       23        0        4330      0.9
+     0.0515     4.88518     4.88518            0            0           0           0    0.8984    0.039       23        0        4763      0.9
+    0.04635     4.91403     4.91403            0            0           0           0     0.843    0.102       23        0        5196      0.9
+   0.041715     4.90851     4.90851            0            0           0           0    0.8822   0.0389       23        0        5629      0.9
+   0.037544     4.78598     4.78598            0            0           0           0    0.9076   0.0221       23        0        6062      0.9
+   0.033789     4.74894     4.74894            0            0           0           0    0.9053   0.0645       23        0        6495      0.9
+    0.03041     4.67457     4.67457            0            0           0           0    0.8129   0.0416       23        0        6928      0.9
+   0.027369     4.58748     4.58748            0            0           0           0    0.8014   0.0645       23        0        7361      0.9
+   0.024632     4.55627     4.55627            0            0           0           0    0.7714    0.044       23        0        7794     0.95
+   0.023401     4.44742     4.44742            0            0           0           0    0.7968   0.0443       23        0        8227     0.95
+   0.022231     4.29363     4.29363            0            0           0           0    0.7621   0.0244       23        0        8660     0.95
+   0.021119     4.29707     4.29707            0            0           0           0    0.7344   0.0155       23        0        9093     0.95
+   0.020063     4.27563     4.27563            0            0           0           0    0.7644   0.0341       23        0        9526     0.95
+    0.01906     4.26112     4.26112            0            0           0           0    0.7275   0.0201       23        0        9959     0.95
+   0.018107     4.17604     4.17604            0            0           0           0    0.7413   0.0206       23        0       10392     0.95
+   0.017202     4.23194     4.23194            0            0           0           0    0.7229   0.0195       23        0       10825     0.95
+   0.016342     4.24638     4.24638            0            0           0           0     0.746  0.00939       23        0       11258     0.95
+   0.015524     4.27034     4.27034            0            0           0           0    0.7598   0.0141       23        0       11691     0.95
+   0.014748     4.20142     4.20142            0            0           0           0    0.7621    0.033       23        0       12124     0.95
+   0.014011      4.1712      4.1712            0            0           0           0    0.7552    0.015       23        0       12557     0.95
+    0.01331     4.20363     4.20363            0            0           0           0     0.746   0.0147       23        0       12990     0.95
+   0.012645     4.18984     4.18984            0            0           0           0    0.7529   0.0313       23        0       13423     0.95
+   0.012013     4.14639     4.14639            0            0           0           0    0.7021  0.00803       23        0       13856     0.95
+   0.011412     4.13997     4.13997            0            0           0           0    0.7298   0.0125       23        0       14289     0.95
+   0.010841     4.12097     4.12097            0            0           0           0     0.739  0.00646       23        0       14722     0.95
+   0.010299     4.08379     4.08379            0            0           0           0    0.6998   0.0153       23        0       15155     0.95
+  0.0097843     4.06227     4.06227            0            0           0           0    0.7413    0.014       23        0       15588     0.95
+  0.0092951     4.04346     4.04346            0            0           0           0    0.6975        0       23        0       16021     0.95
+  0.0088303     4.00241     4.00241            0            0           0           0    0.7436     0.01       23        0       16454     0.95
+  0.0083888     4.01181     4.01181            0            0           0           0     0.746  0.00733       23        0       16887     0.95
+  0.0079694     4.02117     4.02117            0            0           0           0     0.739  0.00316       23        0       17320     0.95
+  0.0075709     4.02998     4.02998            0            0           0           0    0.7344        0       23        0       17753     0.95
+  0.0071924     4.03402     4.03402            0            0           0           0    0.7737  0.00471       23        0       18186     0.95
+  0.0068327     4.05944     4.05944            0            0           0           0    0.7021    0.005       23        0       18619     0.95
+  0.0064911     4.00844     4.00844            0            0           0           0    0.6467   0.0158       23        0       19052     0.95
+  0.0061666     3.87814     3.87814            0            0           0           0    0.5381   0.0545       23        0       19485     0.95
+  0.0058582        3.76        3.76            0            0           0           0    0.4965   0.0478       23        0       19918     0.95
+  0.0055653     3.67607     3.67607            0            0           0           0    0.4503  0.00025       23        0       20351     0.95
+   0.005287     3.67607     3.67607            0            0           0           0    0.4965  0.00025       23        0       20784     0.95
+  0.0050227     3.67607     3.67607            0            0           0           0    0.4688  0.00025       23        0       21217     0.95
+  0.0047716     3.67607     3.67607            0            0           0           0    0.4596  0.00025       23        0       21650     0.95
+   0.004533     3.67607     3.67607            0            0           0           0    0.3995  0.00025       23        0       22083     0.95
+  0.0043063     3.64321     3.64321            0            0           0           0    0.5982   0.0059    22.07        0       22516     0.95
+   0.004091     3.63563     3.63563            0            0           0           0    0.4527  0.00253       23        0       22949     0.95
+  0.0038865      3.6047      3.6047            0            0           0           0    0.4434  0.00727       23        0       23382     0.95
+  0.0036921     3.60158     3.60158            0            0           0           0    0.4411        0       23        0       23815     0.95
+  0.0035075     3.60158     3.60158            0            0           0           0    0.4457        0       23        0       24248     0.95
+  0.0033322     3.60158     3.60158            0            0           0           0    0.4388        0       23        0       24681     0.95
+  0.0031656     3.60158     3.60158            0            0           0           0     0.642        0    22.97        0       25114     0.95
+  0.0030073     3.60158     3.60158            0            0           0           0    0.4434        0       23        0       25547     0.95
+  0.0028569     3.60158     3.60158            0            0           0           0    0.4573        0       23        0       25980     0.95
+  0.0027141     3.60158     3.60158            0            0           0           0    0.4642        0       23        0       26413     0.95
+  0.0025784     3.60158     3.60158            0            0           0           0    0.4642        0       23        0       26846     0.95
+  0.0024494     3.60158     3.60158            0            0           0           0    0.4965        0       23        0       27279     0.95
+   0.002327     3.60158     3.60158            0            0           0           0    0.4896        0       23        0       27712     0.95
+  0.0022106     3.60158     3.60158            0            0           0           0    0.4157        0       23        0       28145     0.95
+  0.0021001     3.60158     3.60158            0            0           0           0    0.5935        0    22.44        0       28578     0.95
+  0.0019951     3.60158     3.60158            0            0           0           0    0.4919        0       23        0       29011     0.95
+  0.0018953     3.60158     3.60158            0            0           0           0     0.485        0       23        0       29444     0.95
+          0     3.60158     3.60158            0            0           0           0    0.4342        0       23        0       29877  
+
+BB estimate of min-dist (placement) wirelength is ;360
+bb_cost recomputed from scratch is 3.60157.
+
+Completed placement consistency check successfully.
+
+Placement. Cost: 3.60158  bb_cost: 3.60158  td_cost: 0  delay_cost: 0.
+low, high, current -1 -1 8
+Confirming Router Algorithm: DIRECTED_SEARCH.
+Routing failed.
+low, high, current 8 -1 16
+Confirming Router Algorithm: DIRECTED_SEARCH.
+Successfully routed after 1 routing iterations by Directed Search.
+low, high, current 8 16 12
+Confirming Router Algorithm: DIRECTED_SEARCH.
+Successfully routed after 1 routing iterations by Directed Search.
+low, high, current 8 12 10
+Warning (check_all_tracks_reach_pins):  track 8 does not 
+	connect to any FB IPINs.
+Warning (check_all_tracks_reach_pins):  track 9 does not 
+	connect to any FB IPINs.
+Confirming Router Algorithm: DIRECTED_SEARCH.
+Routing failed.
+
+Checking to ensure routing is legal ...
+Completed routing consistency check successfully.
+
+Serial number (magic cookie) for the routing is: -233895
+Best routing used a channel width factor of 12.
+
+
+Average number of bends per net: 9.90000  Maximum # of bends: 39
+
+
+The number of routed nets (nonglobal): 10
+Wirelength results (all in units of 1 clb segments):
+	Total wirelength: 458   Average net length: 45.8000
+	Maximum net length: 135
+
+Wirelength results in terms of physical segments:
+	Total wiring segments used: 244   Av. wire segments per net: 24.4000
+	Maximum segments used by a net: 73
+
+
+X - Directed channels:
+
+j	max occ	av_occ		capacity
+0	5	3.95652  	12
+1	1	0.217391 	12
+2	1	0.0869565	12
+3	0	0.00000  	12
+4	1	0.0869565	12
+5	0	0.00000  	12
+6	0	0.00000  	12
+7	0	0.00000  	12
+8	0	0.00000  	12
+9	5	0.347826 	12
+10	4	0.304348 	12
+11	0	0.00000  	12
+12	2	0.173913 	12
+13	1	0.0869565	12
+14	2	0.0869565	12
+15	0	0.00000  	12
+16	1	0.0434783	12
+17	0	0.00000  	12
+18	0	0.00000  	12
+19	2	0.173913 	12
+20	1	0.0869565	12
+21	1	0.260870 	12
+22	2	0.739130 	12
+23	4	3.17391  	12
+
+Y - Directed channels:
+
+i	max occ	av_occ		capacity
+0	5	3.08696  	12
+1	1	0.173913 	12
+2	1	0.217391 	12
+3	1	0.0434783	12
+4	2	0.130435 	12
+5	0	0.00000  	12
+6	1	0.0869565	12
+7	1	0.0869565	12
+8	1	0.0434783	12
+9	0	0.00000  	12
+10	1	0.0869565	12
+11	1	0.0869565	12
+12	1	0.0869565	12
+13	0	0.00000  	12
+14	1	0.0869565	12
+15	1	0.0869565	12
+16	2	0.173913 	12
+17	1	0.0434783	12
+18	0	0.00000  	12
+19	0	0.00000  	12
+20	1	0.0434783	12
+21	3	0.608696 	12
+22	3	0.782609 	12
+23	7	4.13043  	12
+
+Total Tracks in X-direction: 288  in Y-direction: 288
+
+Logic Area (in minimum width transistor areas):
+Total Logic Area: 1.587e+07  Per 1x1 logic tile: 30000
+
+Routing area (in minimum width transistor areas):
+Total Routing Area: 888609.  Per logic tile: 1679.79
+
+Segment usage by type (index):
+Segment type       Fractional utilization
+------------       ----------------------
+       0                  0.0353
+
+Segment usage by length:
+Segment length       Fractional utilization
+--------------       ----------------------
+        2                   0.0353
+
+Critical Path: 4.99514e-09 (s)
+
+Time elapsed (PLACE&ROUTE): 111.629000 ms
+
+
+Time elapsed (Fernando): 111.637000 ms
+

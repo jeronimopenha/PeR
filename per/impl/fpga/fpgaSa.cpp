@@ -142,10 +142,14 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         g.dotPath,
         "SABase",
         cacheMisses,
+        0,0,0,
+        0,0,
         tries,
+        0,
         swaps,
         alg_type,
         tc,
+        0,
         c2n,
         n2c
     );

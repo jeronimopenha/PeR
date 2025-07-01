@@ -17,7 +17,9 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     randomVector(inOutCells);
 
     long cacheMisses = 0;
-    long tries = 0;
+    //long tries = 0;
+    long ioTries = 0;
+    long clbTries = 0;
     long swaps = 0;
 
     string alg_type = "ZIG_ZAG";
@@ -71,7 +73,15 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
 
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells) {
-            ++tries;
+            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+
+            if (IsBIoNode) {
+                ioTries++;
+            } else {
+                clbTries++;
+            }
+            //++tries;
+
             const long lB = lA + ij[0];
             const long cB = cA + ij[1];
             //find the idx for the target cell
@@ -83,7 +93,7 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
                 continue;
 
             const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+            //const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
             //and put a non IO node in an IO cell
@@ -179,13 +189,17 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     chrono::duration<double, milli> duration = end - start;
     auto _time = duration.count();
 
-    long tc = 0;
+    //long tc = 0;
     // commented to take the cost of the longest path
-#ifdef FPGA_TOTAL_COST
-    tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LP_COST
-    tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#endif
+    //#ifdef FPGA_TOTAL_COST
+    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    //#elifdef FPGA_LONG_PATH_COST
+    const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+    //#endif
+
+    const long tries = (clbTries + ioTries);
+    long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
+    const long triesP = tries + cachePenalties;
 
     auto report = FpgaReportData(
         _time,
@@ -193,12 +207,20 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
         g.dotPath,
         "yott",
         cacheMisses,
+        CACHE_W_PARAMETER,
+        CACHE_W_COST,
+        cachePenalties,
+        clbTries,
+        ioTries,
         tries,
+        triesP,
         swaps,
         alg_type,
         tc,
+        tlpc,
         c2n,
         n2c
     );
+
     return report;
 }
