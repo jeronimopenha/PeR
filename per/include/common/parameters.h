@@ -3,8 +3,8 @@
 
 //PER FPGA PARAMETERS
 //Choose a type of total cost
-#define FPGA_TOTAL_COST
-//#define FPGA_LONG_PATH_COST
+//#define FPGA_TOTAL_COST
+#define FPGA_LONG_PATH_COST
 //*******************************
 
 //Choose if Cache will be used
@@ -14,9 +14,13 @@
 #define CACHE_LINES (1 << CACHE_LINES_EXP)
 #define CACHE_COLUMNS_EXP 2
 #define CACHE_COLUMNS (1 << CACHE_COLUMNS_EXP)
+#define CACHE_W_PARAMETER 8
+#define CACHE_W_COST 10
 //*******************************
 
 //Choose the algorithm to be run
+
+#define BEST_ONLY
 
 //#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
@@ -24,6 +28,11 @@
 #define FPGA_YOTT
 //#define FPGA_SA
 //*******************************
+
+// Tests Quantity
+//#define RUN_10
+//#define RUN_100
+#define RUN_1000
 
 //#define TRETS
 #define EPFL
