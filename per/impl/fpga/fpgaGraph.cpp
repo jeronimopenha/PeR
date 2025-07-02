@@ -7,14 +7,10 @@ using namespace std;
 FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
     readNeighbors();
     calcMatrix();
-    clbNodes = otherNodes;
+    //clbNodes = otherNodes;
     updateG();
 }
 
-void FPGAGraph::updateG() {
-    Graph::updateG();
-    findLongestPath();
-}
 
 void FPGAGraph::readNeighbors() {
     //neighbors vector
@@ -152,61 +148,8 @@ unordered_map<string, vector<pair<long, long> > > FPGAGraph::fpgaGetGraphAnnotat
     return annotations;
 }
 
-void FPGAGraph::findLongestPath() {
-    // 1. Construct adjacency list from successor array
-    vector<vector<long> > adj(nNodes);
-    for (long i = 0; i < nNodes; ++i)
-        for (long j = 0; j < nNodes; ++j)
-            if (successors[i][j])
-                adj[i].push_back(j);
-
-    // 2. Ordenação topológica
-    vector visited(nNodes, false);
-    vector<long> topo_order;
-    for (long i = 0; i < nNodes; ++i)
-        if (!visited[i])
-            dfs(i, adj, visited, topo_order);
-    reverse(topo_order.begin(), topo_order.end());
-
-    // 3. Dynamic programming to find the longest path
-    //vector dist(nNodes, numeric_limits<int>::min());
-    vector<long> dist(nNodes, 0);
-    vector<long> parent(nNodes, -1);
-
-    /*for (int i = 0; i < nNodes; ++i)
-        dist[i] = 0; // each node can start a path of length 0
-        */
-
-    for (const auto u: topo_order) {
-        for (const auto v: adj[u]) {
-            if (dist[u] + 1 > dist[v]) {
-                dist[v] = dist[u] + 1;
-                parent[v] = u;
-            }
-        }
-    }
-
-    // 4. Find the end node of the longest path
-    long max_len = -1;
-    long end_node = -1;
-    for (long i = 0; i < nNodes; ++i) {
-        if (dist[i] > max_len) {
-            max_len = dist[i];
-            end_node = i;
-        }
-    }
-
-    // 5. Rebuild the path
-    vector<long> path;
-    for (long v = end_node; v != -1; v = parent[v])
-        path.push_back(v);
-    reverse(path.begin(), path.end());
-
-    longestPath = path;
-}
-
-
-vector<pair<long, long> > FPGAGraph::getEdgesDepthFirstPriority() {
+//fixme
+vector<pair<long, long> > FPGAGraph::getEdgesDepthFirstPriority() {}/*
     // Copia os nós de entrada e embaralha, se necessário
     vector<long> inputList = inputNodes;
     randomVector(inputList);
@@ -255,4 +198,4 @@ vector<pair<long, long> > FPGAGraph::getEdgesDepthFirstPriority() {
     }
 
     return edges;
-}
+}*/

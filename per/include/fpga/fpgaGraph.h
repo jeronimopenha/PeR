@@ -14,13 +14,7 @@ public:
     //Neighbors vector
     std::vector<std::vector<long> > neighbors;
 
-    std::vector<long> clbNodes;
-
-    std::vector<long> longestPath;
-
     FPGAGraph(const std::string &dotPath, const std::string &dotName);
-
-    void updateG();
 
     void readNeighbors();
 
@@ -35,7 +29,7 @@ public:
         const std::vector<std::pair<long, long> > &convergences
     );
 
-    void findLongestPath();
+    //void findLongestPath();
 
     std::vector<std::pair<long, long> > getEdgesDepthFirstPriority();
 };

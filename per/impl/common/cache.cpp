@@ -1,5 +1,5 @@
 #include "common/cache.h"
-#include <common/parametersFpga.h>
+#include <fpga/fpgaPar.h>
 
 using namespace std;
 

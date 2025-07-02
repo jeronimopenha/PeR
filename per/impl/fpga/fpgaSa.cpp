@@ -1,5 +1,5 @@
 #include <fpga/fpgaSa.h>
-#include <common/parametersFpga.h>
+#include <fpga/fpgaPar.h>
 
 using namespace std;
 
@@ -136,7 +136,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    auto report = FpgaReportData(
+    /*auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
@@ -152,8 +152,8 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         0,
         c2n,
         n2c
-    );
-    return report;
+    );*/
+    return FpgaReportData();
 }
 
 

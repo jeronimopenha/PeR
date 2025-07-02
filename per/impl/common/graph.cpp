@@ -23,7 +23,8 @@ Graph::Graph(const string &dotPath, const string &dotName, const bool str) {
 void Graph::updateG() {
     readAdjList();
     readSuccPred();
-    readIONodes();
+    readTypeOfNodes();
+    readAsapAlap();
 }
 
 void Graph::readEdgesNodes() {
@@ -84,24 +85,6 @@ void Graph::readAdjList() {
     }
 }
 
-void Graph::readIONodes() {
-    //input and output nodes
-    outputNodes.clear();
-    inputNodes.clear();
-    otherNodes.clear();
-    for (long i = 0; i < nNodes; i++) {
-        if (nSuccV[i] == 0) {
-            outputNodes.push_back(i);
-            continue;
-        }
-        if (nPredV[i] == 0) {
-            inputNodes.push_back(i);
-            continue;
-        }
-        otherNodes.push_back(i);
-    }
-}
-
 void Graph::readSuccPred() {
     //2 - find the successors and the predecessors
     //and find how many succ and pred each node have
@@ -124,6 +107,69 @@ void Graph::readSuccPred() {
         nSuccV[fromN] += 1;
         nPredV[toN] += 1;
     }
+}
+
+void Graph::readTypeOfNodes() {
+    //input and output nodes
+    outputNodes.clear();
+    inputNodes.clear();
+    otherNodes.clear();
+    for (long i = 0; i < nNodes; i++) {
+        if (nSuccV[i] == 0) {
+            outputNodes.push_back(i);
+            continue;
+        }
+        if (nPredV[i] == 0) {
+            inputNodes.push_back(i);
+            continue;
+        }
+        otherNodes.push_back(i);
+    }
+}
+
+void Graph::readAsapAlap() {
+    vector asap(nNodes, 0L);
+    vector alap(nNodes, 0L);
+    dAsapAlap = vector<long>(nNodes, 0);
+
+    // DFS in->out for ASAP
+    const vector<long> inputList = inputNodes;
+
+    // Inicializa a pilha com inputList
+    vector<long> stack(inputList);
+    vector visited(nNodes, false);
+
+    while (!stack.empty()) {
+        long n = stack.back();
+        stack.pop_back();
+
+        if (visited[n])
+            continue;
+
+        visited[n] = true;
+
+        // Coleta os vizinhos ainda não visitados
+        vector<long> neighbors;
+        for (int i = 0; i < nNodes; i++) {
+            if (successors[n][i] && !visited[i])
+                neighbors.push_back(i);
+        }
+
+        // Ordena os vizinhos para priorizar os maiores caminhos
+        sort(neighbors.begin(), neighbors.end(), [this](const long a, const long b) {
+            // Critério para ordenar: pode ser baseado na quantidade de sucessores
+            return count(successors[a].begin(), successors[a].end(), true) >
+                   count(successors[b].begin(), successors[b].end(), true);
+        });
+
+        // Adiciona os vizinhos à pilha e armazena as arestas
+        for (auto neighbor: neighbors) {
+            stack.push_back(neighbor);
+            edges.emplace_back(n, neighbor);
+        }
+    }
+
+    return edges;
 }
 
 vector<pair<long, long> > Graph::getEdgesDepthFirst() {
@@ -157,7 +203,6 @@ vector<pair<long, long> > Graph::getEdgesDepthFirst() {
 
     return edges;
 }
-
 
 vector<pair<long, long> > Graph::getEdgesZigzag(
     vector<pair<long, long> > &convergence,
@@ -399,9 +444,3 @@ void Graph::isolateMultiInputOutputs() {
 
     updateG(); // atualiza estruturas internas
 }
-
-/*
-* bool hasMultiplePredecessors(int u, const vector<vector<bool>>& predecessors) {
-    return std::count(predecessors[u].begin(), predecessors[u].end(), true) > 1;
-}
- */

@@ -2,7 +2,7 @@
 #include <list>
 #include <queue>
 #include <qca/qcaGraph.h>
-#include<common/parametersFpga.h>
+#include <../../include/fpga/parametersFpga.h>
 #include <qca/qcaUtil.h>
 
 

@@ -1,5 +1,5 @@
 #include <qca/qcaYoto.h>
-#include <common/parametersFpga.h>
+#include <../../include/fpga/parametersFpga.h>
 #include <vector>
 
 

@@ -1,4 +1,4 @@
-#include <common/parametersFpga.h>
+#include <fpga/fpgaPar.h>
 #include  <fpga/fpgaUtil.h>
 #include  <fpga/fpgaGraph.h>
 #include "fpga/fpgaYoto.h"
@@ -27,50 +27,19 @@ int main() {
 
 
         //execution parameters
-#ifdef TRETS
-            algPath = "/TRETS";
-#elifdef EPFL
-        algPath = "/EPFL";
-#endif
-
-#ifdef FPGA_YOTO_DF
-        algPath += "/yoto_df";
-#elifdef FPGA_YOTO_DF_PRIO
-        algPath += "/yoto_df_prio";
-#elifdef FPGA_YOTO_ZZ
-        algPath  += "/yoto_zz";
-#elifdef FPGA_YOTT
-        algPath += "/yott";
-#elifdef FPGA_YOTT_IO
-        algPath += "/yott_io";
-#elifdef FPGA_SA
-        algPath += "/sa";
-#endif
-
-
-#ifdef CACHE
-        algPath += "_cache_" + to_string(CACHE_LINES_EXP) + "x" + to_string(CACHE_COLUMNS_EXP) + "_W_" + to_string(
-            CACHE_W_PARAMETER)+"_" + to_string(CACHE_W_COST);;
-#endif
-
 #ifdef DEBUG
         constexpr int nExec = 1;
 #elifdef RUN_10
-        algPath += "_x10";
         constexpr int nExec = 10;
 #elifdef RUN_100
-            algPath +="_x100";
-            constexpr int nExec = 100;
+        constexpr int nExec = 100;
 #elifdef RUN_1000
-        algPath += "_x1000";
         constexpr int nExec = 1000;
 #endif
 
-#ifdef BEST_ONLY
-        algPath += "_best_only";
-#endif
-
         vector<FpgaReportData> reports;
+
+#ifdef REPORT
         auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
 #ifdef FPGA_TOTAL_COST
                 return a.totalCost < b.totalCost;
@@ -78,6 +47,8 @@ int main() {
             return a.lPCost < b.lPCost;
 #endif
         };
+#endif
+
 #ifndef DEBUG
 
         int nThreads = max(1, omp_get_num_procs());
@@ -87,7 +58,6 @@ int main() {
         {
 #pragma omp for schedule(dynamic)
 #endif
-
 
         for (int exec = 0; exec < nExec; exec++) {
             //cout << exec << " ";
@@ -99,11 +69,12 @@ int main() {
 #elifdef FPGA_SA
             report = fpgaSa(g);
 #endif
+
 #ifndef DEBUG
 #pragma omp critical
 #endif
             {
-#ifndef DEBUG
+#ifdef REPORT
 
 #ifdef FPGA_TOTAL_COST
                     if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
@@ -126,7 +97,7 @@ int main() {
         }
 #endif
 
-#ifndef DEBUG
+#ifdef REPORT
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
 #else

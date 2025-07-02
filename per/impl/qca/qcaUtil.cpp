@@ -3,7 +3,7 @@
 #include <random>
 #include <utility>
 #include <common/util.h>
-#include <common/parametersFpga.h>
+#include <../../include/fpga/parametersFpga.h>
 
 /*QcaReportData::QcaReportData()
     : success(false), allPLaced(false), _time(0), nCellsSqrt(0), wires(0), nNodes(0), tries(0), swaps(0), wrongEdges(0),

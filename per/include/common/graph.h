@@ -36,6 +36,7 @@ public:
     std::vector<long> inputNodes;
     std::vector<long> outputNodes;
     std::vector<long> otherNodes;
+    std::vector<long> dAsapAlap;
 
 
     Graph(const std::string &dotPath, const std::string &dotName, bool str = false);
@@ -50,9 +51,11 @@ public:
 
     void readAdjList();
 
-    void readIONodes();
-
     void readSuccPred();
+
+    void readAsapAlap();
+
+void readTypeOfNodes();
 
     std::vector<std::pair<long, long> > getEdgesDepthFirst();
 

@@ -1,5 +1,5 @@
 #include <fpga/fpgaYoto.h>
-#include <common/parametersFpga.h>
+#include <fpga/fpgaPar.h>
 #include <common/cache.h>
 #include <vector>
 
@@ -15,6 +15,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     vector<long> c2n(nCells, -1);
     vector<long> n2c(nNodes, -1);
+    //todo começar com saídas
+    //todo posicionametno de IOs
+    //todo Direcionar
     vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     vector<long> inOutCells = g.getInOutPos();
 #ifdef CACHE
@@ -171,6 +174,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
 
+    //FIXME reports
     auto report = FpgaReportData(
         _time,
         g.dotName,
@@ -189,7 +193,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         tc,
         tlpc,
         c2n,
-        n2c
+        n2c,
+        std::vector<std::vector<long> >()
     );
     return report;
 }

@@ -1,4 +1,4 @@
-#include <common/parametersFpga.h>
+#include <fpga/fpgaPar.h>
 #include <common/cache.h>
 #include <fpga/fpgaYott.h>
 
@@ -201,7 +201,7 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
 
-    auto report = FpgaReportData(
+    /*auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
@@ -220,7 +220,7 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
         tlpc,
         c2n,
         n2c
-    );
+    );*/
 
-    return report;
+    return FpgaReportData();
 }
