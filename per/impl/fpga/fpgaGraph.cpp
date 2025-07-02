@@ -148,6 +148,69 @@ unordered_map<string, vector<pair<long, long> > > FPGAGraph::fpgaGetGraphAnnotat
     return annotations;
 }
 
+
+pair<long, long> FPGAGraph::findClosestBorderSpot(long row, long col) {
+    // Descobre a borda mais próxima
+    const long nRows = nCellsSqrt;
+    const long nCols = nCellsSqrt;
+    long dTop = row;
+    long dBottom = nRows - 1 - row;
+    long dLeft = col;
+    long dRight = nCols - 1 - col;
+
+    enum Side { TOP, BOTTOM, LEFT, RIGHT };
+    Side nearest = TOP;
+    long minDist = dTop;
+    if (dBottom < minDist) { minDist = dBottom; nearest = BOTTOM; }
+    if (dLeft < minDist)   { minDist = dLeft;   nearest = LEFT; }
+    if (dRight < minDist)  { minDist = dRight;  nearest = RIGHT; }
+
+    long baseRow = row, baseCol = col;
+    if (nearest == TOP) baseRow = 0;
+    if (nearest == BOTTOM) baseRow = nRows - 1;
+    if (nearest == LEFT) baseCol = 0;
+    if (nearest == RIGHT) baseCol = nCols - 1;
+
+    vector<pair<long, long>> offsets =
+        (nearest == TOP || nearest == BOTTOM)
+        ? generateOffsetsHorizontal(nCols, col)
+        : generateOffsetsVertical(nRows, row);
+
+    for (const auto& [dx, dy] : offsets) {
+        long r = baseRow + dx;
+        long c = baseCol + dy;
+        if (r >= 0 && r < nRows && c >= 0 && c < nCols && isValid(r, c))
+            return {r, c};
+    }
+
+    return {-1, -1};
+}
+
+vector<pair<long, long>> FPGAGraph::generateOffsetsVertical(long maxRows, long baseRow) {
+    vector<pair<long, long>> offsets;
+    offsets.emplace_back(0, 0);
+    for (long d = 1; d < maxRows; ++d) {
+        if (baseRow - d >= 0)
+            offsets.emplace_back(-d, 0);
+        if (baseRow + d < maxRows)
+            offsets.emplace_back(d, 0);
+    }
+    return offsets;
+}
+
+vector<pair<long, long>> FPGAGraph::generateOffsetsHorizontal(long maxCols, long baseCol) {
+    vector<pair<long, long>> offsets;
+    offsets.emplace_back(0, 0);
+    for (long d = 1; d < maxCols; ++d) {
+        if (baseCol - d >= 0)
+            offsets.emplace_back(0, -d);
+        if (baseCol + d < maxCols)
+            offsets.emplace_back(0, d);
+    }
+    return offsets;
+}
+
+
 //fixme
 vector<pair<long, long> > FPGAGraph::getEdgesDepthFirstPriority() {}/*
     // Copia os nós de entrada e embaralha, se necessário

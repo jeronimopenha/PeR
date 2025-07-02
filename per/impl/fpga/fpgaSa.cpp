@@ -41,7 +41,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     }
 
     //place the clb nodes to their initial positions
-    vector<long> clbNodes = g.clbNodes;
+    vector<long> clbNodes = g.outputNodes;
 
     idx = 0;
     for (auto node: clbNodes) {

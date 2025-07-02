@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 #include <unordered_set>
+#include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -79,9 +81,21 @@ void Graph::readEdgesNodes() {
 }
 
 void Graph::readAdjList() {
-    adjList.clear();
+    //optimization
+    if (adjList.size() != nNodes)
+        adjList.resize(nNodes);
+    else
+        for (auto &v: adjList)
+            v.clear();
+
+    if (predList.size() != nNodes)
+        predList.resize(nNodes);
+    else
+        for (auto &v: predList)
+            v.clear();
     for (auto [fst, snd]: gEdges) {
         adjList[fst].push_back(snd);
+        predList[snd].push_back(fst);
     }
 }
 
@@ -92,10 +106,30 @@ void Graph::readSuccPred() {
     //edgesIdx
     //successors
     //predecessors
-    nSuccV = vector<long>(nNodes, 0);
-    nPredV = vector<long>(nNodes, 0);
-    successors = vector(nNodes, vector(nNodes, false));
-    predecessors = vector(nNodes, vector(nNodes, false));
+    // Optimization
+    if (nSuccV.size() != nNodes)
+        nSuccV.resize(nNodes);
+    if (nPredV.size() != nNodes)
+        nPredV.resize(nNodes);
+
+    fill(nSuccV.begin(), nSuccV.end(), 0);
+    fill(nPredV.begin(), nPredV.end(), 0);
+
+    if (successors.size() != nNodes)
+        successors.resize(nNodes, vector(nNodes, false));
+    for (auto &row: successors) {
+        if (row.size() != nNodes)
+            row.resize(nNodes);
+        fill(row.begin(), row.end(), false);
+    }
+
+    if (predecessors.size() != nNodes)
+        predecessors.resize(nNodes, vector<bool>(nNodes, false));
+    for (auto &row: predecessors) {
+        if (row.size() != nNodes)
+            row.resize(nNodes);
+        fill(row.begin(), row.end(), false);
+    }
 
     for (const auto &[fst, snd]: gEdges) {
         const long fromN = fst;
@@ -128,75 +162,133 @@ void Graph::readTypeOfNodes() {
 }
 
 void Graph::readAsapAlap() {
-    vector asap(nNodes, 0L);
-    vector alap(nNodes, 0L);
-    dAsapAlap = vector<long>(nNodes, 0);
+    // Optimization
+    if (asap.size() != nNodes) {
+        asap.resize(nNodes);
+        alap.resize(nNodes);
+        slack.resize(nNodes);
+    }
 
-    // DFS in->out for ASAP
-    const vector<long> inputList = inputNodes;
+    static vector<long> pendingPred;
+    static vector<long> pendingSucc;
+    if (pendingPred.size() != nNodes) {
+        pendingPred.resize(nNodes);
+        pendingSucc.resize(nNodes);
+    }
 
-    // Inicializa a pilha com inputList
-    vector<long> stack(inputList);
-    vector visited(nNodes, false);
+    fill(asap.begin(), asap.end(), 1);
+    fill(pendingPred.begin(), pendingPred.end(), 0);
+    fill(pendingSucc.begin(), pendingSucc.end(), 0);
 
-    while (!stack.empty()) {
-        long n = stack.back();
-        stack.pop_back();
-
-        if (visited[n])
-            continue;
-
-        visited[n] = true;
-
-        // Coleta os vizinhos ainda não visitados
-        vector<long> neighbors;
-        for (int i = 0; i < nNodes; i++) {
-            if (successors[n][i] && !visited[i])
-                neighbors.push_back(i);
-        }
-
-        // Ordena os vizinhos para priorizar os maiores caminhos
-        sort(neighbors.begin(), neighbors.end(), [this](const long a, const long b) {
-            // Critério para ordenar: pode ser baseado na quantidade de sucessores
-            return count(successors[a].begin(), successors[a].end(), true) >
-                   count(successors[b].begin(), successors[b].end(), true);
-        });
-
-        // Adiciona os vizinhos à pilha e armazena as arestas
-        for (auto neighbor: neighbors) {
-            stack.push_back(neighbor);
-            edges.emplace_back(n, neighbor);
+    for (long u = 0; u < nNodes; ++u) {
+        for (const long v: adjList[u]) {
+            pendingPred[v]++;
+            pendingSucc[u]++;
         }
     }
 
-    return edges;
+    //-----ASAP-----
+    queue<long> q;
+    // Enqueue the input nodes
+    for (const auto &node: inputNodes) {
+        q.push(node);
+    }
+
+    while (!q.empty()) {
+        const long node = q.front();
+        q.pop();
+
+        for (const long succ: adjList[node]) {
+            asap[succ] = max(asap[succ], asap[node] + 1);
+            pendingPred[succ]--;
+            if (pendingPred[succ] == 0) {
+                q.push(succ);
+            }
+        }
+    }
+
+    //-----ALAP-----
+    const long maxLevel = *max_element(asap.begin(), asap.end());
+    fill(alap.begin(), alap.end(), 0);
+
+    // Enqueue the output nodes
+    for (const auto &node: outputNodes) {
+        q.push(node);
+    }
+
+    // ALAP traversal (backward)
+    while (!q.empty()) {
+        const long node = q.front();
+        q.pop();
+
+        for (const long pred: predList[node]) {
+            alap[pred] = min(alap[pred], alap[node] - 1);
+            pendingSucc[pred]--;
+            if (pendingSucc[pred] == 0) {
+                q.push(pred);
+            }
+        }
+    }
+
+    for (auto i = 0; i < nNodes; i++) {
+        slack[i] = alap[i] - asap[i];
+    }
 }
 
-vector<pair<long, long> > Graph::getEdgesDepthFirst() {
-    // Copy input nodes and shuffle if needed
-    vector<long> inputList = inputNodes;
+vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst() {
+    static vector<pair<long, long> > edges;
+    edges.clear();
 
-    randomVector(inputList);
+    static vector<long> visited;
+    if (visited.size() != nNodes) {
+        visited.resize(nNodes);
+    }
+    fill(visited.begin(), visited.end(), false);
 
-    vector stack(inputList); // Initialize stack with input_list
-    vector<pair<long, long> > edges;
-    vector visited(nNodes, false);
+    static stack<long> s;
+    while (!s.empty()) {
+        s.pop();
+    }
 
-    while (!stack.empty()) {
-        long n = stack.back();
-        stack.pop_back();
+    //sort outputs by slack
+    vector<long> outputList = outputNodes;
+    randomVector(outputList);
+    sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
+        return slack[a] > slack[b];
+    });
 
-        if (visited[n])
+    //insert face edges to output nodes
+    for (const auto node: outputList) {
+        s.push(node);
+        edges.emplace_back(-1, node);
+    }
+
+    vector<long> neigh;
+
+    while (!s.empty()) {
+        const long node = s.top();
+        s.pop();
+
+        neigh.clear();
+
+        if (visited[node])
             continue;
 
-        visited[n] = true;
+        visited[node] = true;
         // Process all neighbors
-        for (long i = 0; i < nNodes; i++) {
-            if (successors[n][i]) {
-                if (!visited[i]) {
-                    stack.push_back(i);
-                    edges.emplace_back(n, i);
-                }
+
+        for (const auto pred: predList[node]) {
+            neigh.push_back(pred);
+        }
+
+        sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
+            return slack[a] > slack[b];
+        });
+
+        for (const auto pred: neigh) {
+            if (!visited[pred]) {
+                s.push(pred);
+                edges.emplace_back(node, pred);
             }
         }
     }
@@ -444,3 +536,5 @@ void Graph::isolateMultiInputOutputs() {
 
     updateG(); // atualiza estruturas internas
 }
+
+

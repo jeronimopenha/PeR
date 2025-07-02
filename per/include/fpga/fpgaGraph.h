@@ -31,6 +31,13 @@ public:
 
     //void findLongestPath();
 
+    std::pair<long, long> findClosestBorderSpot(long row, long col);
+
+    std::vector<std::pair<long, long>> generateOffsetsVertical(long maxRows, long baseRow);
+
+    std::vector<std::pair<long, long>> generateOffsetsHorizontal(long maxCols, long baseCol);
+
+
     std::vector<std::pair<long, long> > getEdgesDepthFirstPriority();
 };
 

@@ -42,34 +42,53 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     ed = g.getEdgesDepthFirstPriority();
     alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF
-    ed = g.getEdgesDepthFirst();
+    ed = g.getEdgesDepthFirstOutFirst();
     alg_type = "DEPTH_FIRST";
-#endif
-
-
-#ifndef FPGA_YOTO_ZZ
-    //for Deptfh First Search with or without priority
-    //I need to place every input at the beginning of execution
-    for (auto n: g.inputNodes) {
-        const long ioCell = inOutCells.back();
-        inOutCells.pop_back();
-        if (c2n[ioCell] == -1) {
-            c2n[ioCell] = n;
-            n2c[n] = ioCell;
-        }
-    }
 #endif
 
     //time counting
     auto start = chrono::high_resolution_clock::now();
 
+
     for (auto [a,b]: ed) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-#ifdef CACHE
-        cacheMisses += cacheN2C.readCache(a, n2c);
+
+#ifdef PRINT
+        fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
+
+        long targetNode = -1;
+        bool cont = false;
+
+        if (a == -1) {
+            targetNode = b;
+            cont = true;
+        } else if (n2c[a] == -1) {
+#ifdef CACHE
+            cacheMisses += cacheN2C.readCache(a, n2c);
+#endif
+            targetNode = a;
+        }
+
+        if (targetNode != -1) {
+            bool found = false;
+            while (!found) {
+                const long ioCell = inOutCells.back();
+                inOutCells.pop_back();
+#ifdef CACHE
+                cacheMisses += cacheC2N.readCache(ioCell, c2n);
+#endif
+                if (c2n[ioCell] == -1) {
+                    c2n[ioCell] = targetNode;
+                    n2c[targetNode] = ioCell;
+                    found = true;
+                }
+            }
+            if (cont)
+                continue;
+        }
 
         if (n2c[a] == -1) {
             bool found = false;
@@ -167,7 +186,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //#ifdef FPGA_TOTAL_COST
     const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
-    const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+    //fixme
+    const long tlpc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
     //#endif
 
     const long tries = (clbTries + ioTries);

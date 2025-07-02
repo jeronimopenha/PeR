@@ -194,7 +194,8 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     //#ifdef FPGA_TOTAL_COST
     const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
-    const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+    //fixme
+    //const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
     //#endif
 
     const long tries = (clbTries + ioTries);
