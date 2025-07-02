@@ -1,4 +1,4 @@
-#include <common/parameters.h>
+#include <common/parametersFpga.h>
 #include <common/cache.h>
 #include <qca/qcaYott.h>
 

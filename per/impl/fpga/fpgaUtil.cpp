@@ -10,7 +10,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                const long cacheMisses, const long w, const long wCost, const long cachePenalties,
                                const long clbTries, const long ioTries, const long tries, const long triesP,
                                const long swaps, string edges_algorithm, const long totalCost, const long lPCost,
-                               const vector<long> &placement, const vector<long> &n2c)
+                               const vector<long> &placement, const vector<long> &n2c,
+                               std::vector<std::vector<long> > hist)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -28,7 +29,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       totalCost(totalCost),
       lPCost(lPCost),
       placement(placement),
-      n2c(n2c) {
+      n2c(n2c),
+      hist(std::move(hist)) {
 }
 
 // Serialize ReportData to a JSON string

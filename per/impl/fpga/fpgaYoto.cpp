@@ -1,5 +1,5 @@
 #include <fpga/fpgaYoto.h>
-#include <common/parameters.h>
+#include <common/parametersFpga.h>
 #include <common/cache.h>
 #include <vector>
 
@@ -10,6 +10,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCells = g.nCells;
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
+
+    std::vector hist(nCells, 0L);
 
     vector<long> c2n(nCells, -1);
     vector<long> n2c(nNodes, -1);
@@ -159,11 +161,11 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     //long tc = 0;
     // commented to take the cost of the longest path
-//#ifdef FPGA_TOTAL_COST
+    //#ifdef FPGA_TOTAL_COST
     const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-//#elifdef FPGA_LONG_PATH_COST
+    //#elifdef FPGA_LONG_PATH_COST
     const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-//#endif
+    //#endif
 
     const long tries = (clbTries + ioTries);
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;

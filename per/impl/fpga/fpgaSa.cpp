@@ -1,5 +1,5 @@
 #include <fpga/fpgaSa.h>
-#include <common/parameters.h>
+#include <common/parametersFpga.h>
 
 using namespace std;
 

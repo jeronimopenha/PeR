@@ -1,4 +1,4 @@
-#include <common/parameters.h>
+#include <common/parametersFpga.h>
 #include  <fpga/fpgaUtil.h>
 #include  <fpga/fpgaGraph.h>
 #include "fpga/fpgaYoto.h"
@@ -15,26 +15,9 @@ int main() {
     const string rootPath = verifyPath(getProjectRoot());
     const string benchExt = ".dot";
 
-#ifdef DEBUG
-    const string benchPath = "benchmarks/fpga/bench_test/";
-#else
-#ifdef TRETS
-    const string benchPath = "benchmarks/fpga/eval/TRETS/";
-#elifdef EPFL
-    const string benchPath = "benchmarks/fpga/eval/EPFL/";
-#endif
-
-
-#endif
-    const string reportPath = "reports/fpga";
-    string algPath;
-
-
     cout << rootPath << endl;
 
-
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
-    // vector<vector<string>> files = {{"path/to/file.dot", "file.dot"}};
 
     for (const auto &[fst, snd]: files) {
         cout << fst << endl;
@@ -71,7 +54,7 @@ int main() {
 #endif
 
 #ifdef DEBUG
-            constexpr int nExec = 1;
+        constexpr int nExec = 1;
 #elifdef RUN_10
         algPath += "_x10";
         constexpr int nExec = 10;
@@ -86,14 +69,6 @@ int main() {
 #ifdef BEST_ONLY
         algPath += "_best_only";
 #endif
-
-        /*#ifdef DEBUG
-                constexpr int nExec = 1;
-        #elifdef  FPGA_SA
-                constexpr int    nExec = 10;
-        #else
-                constexpr int nExec = 100;
-        #endif*/
 
         vector<FpgaReportData> reports;
         auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
@@ -114,11 +89,11 @@ int main() {
 #endif
 
 
-            for (int exec = 0; exec < nExec; exec++) {
-                //cout << exec << " ";
-                FpgaReportData report;
+        for (int exec = 0; exec < nExec; exec++) {
+            //cout << exec << " ";
+            FpgaReportData report;
 #if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
-                report = fpgaYoto(g);
+            report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
                 report = fpgaYott(g);
 #elifdef FPGA_SA
@@ -127,7 +102,7 @@ int main() {
 #ifndef DEBUG
 #pragma omp critical
 #endif
-                {
+            {
 #ifndef DEBUG
 
 #ifdef FPGA_TOTAL_COST
@@ -144,9 +119,9 @@ int main() {
                             reports.pop_back();
                     }
 #endif
-                    //reports.push_back(report);
-                }
+                //reports.push_back(report);
             }
+        }
 #ifndef DEBUG
         }
 #endif
