@@ -209,7 +209,7 @@ void Graph::readAsapAlap() {
 
     //-----ALAP-----
     const long maxLevel = *max_element(asap.begin(), asap.end());
-    fill(alap.begin(), alap.end(), 0);
+    fill(alap.begin(), alap.end(), maxLevel);
 
     // Enqueue the output nodes
     for (const auto &node: outputNodes) {

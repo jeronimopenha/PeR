@@ -46,13 +46,16 @@
 //#define RUN_1000
 
 // Benchmarks
+#define TEST
 //#define TRETS
 #define EPFL
+
 //###############################
 
 //debugging defines
 #define DEBUG
-#define PRINT
+//#define PRINT
+#define MAKE_METRICS
 //*******************************
 
 
@@ -60,7 +63,7 @@
 
 
 inline std::string benchPath = [] {
-#ifdef DEBUG
+#ifdef TEST
     return "benchmarks/fpga/bench_test/";
 #elif defined(TRETS)
     return "benchmarks/fpga/eval/TRETS/";
