@@ -79,16 +79,16 @@ int main() {
 #ifdef FPGA_TOTAL_COST
                     if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
 #elifdef FPGA_LONG_PATH_COST
-                    if (reports.size() < 10 || report.lPCost < reports.back().lPCost) {
+                if (reports.size() < 10 || report.lPCost < reports.back().lPCost) {
 #endif
-                        // encontra a posição onde deve ser inserido
-                        auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
-                        reports.insert(pos, report);
+                    // encontra a posição onde deve ser inserido
+                    auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
+                    reports.insert(pos, report);
 
-                        // se passou de 10, remove o pior
-                        if (reports.size() > 10)
-                            reports.pop_back();
-                    }
+                    // se passou de 10, remove o pior
+                    if (reports.size() > 10)
+                        reports.pop_back();
+                }
 #endif
                 //reports.push_back(report);
             }
@@ -101,8 +101,8 @@ int main() {
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
 #else
-            const int limit = min(10, static_cast<int>(reports.size()));
-            for (int i = 0; i < limit; i++) {
+        const int limit = min(10, static_cast<int>(reports.size()));
+        for (int i = 0; i < limit; i++) {
 #endif
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;
@@ -114,6 +114,9 @@ int main() {
 #if !defined(CACHE)
             //generate reports and files for vpr
             fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
+#endif
+#ifdef MAKE_METRICS
+            generateHeatmap(reports[i].heatEnd,reports[i].heatBegin,g.nCellsSqrt, rootPath, reportPath, algPath, fileName);
 #endif
         }
 #endif

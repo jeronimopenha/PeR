@@ -1,10 +1,16 @@
 #ifndef FPGA_UTIL_H
 #define FPGA_UTIL_H
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include <algorithm>
 #include <fpga/fpgaGraph.h>
 #include <common/util.h>
+#include <map>
 
+struct RGB {
+    int r, g, b;
+};
 
 struct FpgaReportData {
     double _time = 0.0;
@@ -25,14 +31,17 @@ struct FpgaReportData {
     long lPCost = 0;
     std::vector<long> placement;
     std::vector<long> n2c;
-    std::vector<std::vector<long> > hist;
+    std::vector<std::map<long, long> > hist;
+    std::vector<long> heatEnd;
+    std::vector<long> heatBegin;
 
     FpgaReportData();
 
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long cacheMisses, long w,
                    long wCost, long cachePenalties, long clbTries, long ioTries, long tries, long triesP, long swaps,
                    std::string edges_algorithm, long totalCost, long lPCost, const std::vector<long> &placement,
-                   const std::vector<long> &n2c, std::vector<std::vector<long> > hist);
+                   const std::vector<long> &n2c, std::vector<std::map<long, long> > hist, std::vector<long> heatEnd,
+                   std::vector<long> heatBegin);
 
     [[nodiscard]] std::string to_json() const;
 };
@@ -66,4 +75,15 @@ void fpgaWriteVprData(const std::string &basePath,
                       const std::string &fileName,
                       const FpgaReportData &data,
                       FPGAGraph g);
+
+RGB valueToRGB(const float normValue);
+
+void generateHeatmap(const std::vector<long> &heatEnd,
+                     const std::vector<long> &heatbegin,
+                     long nCellsSqrt,
+                     const std::string &basePath,
+                     const std::string &reportPath,
+                     const std::string &algPath,
+                     const std::string &fileName);
+
 #endif

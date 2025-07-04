@@ -52,8 +52,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef MAKE_METRICS
-    vector heatEnd(nCells,0L);
-    vector heatBegin(nCells,0L);
+    vector heatEnd(nCells, 0L);
+    vector heatBegin(nCells, 0L);
 
     vector<map<long, long> > histogramFull;
     map<long, long> histogram;
@@ -321,7 +321,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         tlpc,
         c2n,
         n2c,
-        std::vector<std::vector<long> >()
+        histogramFull,
+        heatEnd,
+        heatBegin
     );
     return report;
 }

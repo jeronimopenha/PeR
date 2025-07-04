@@ -1,5 +1,7 @@
 #include <fpga/fpgaUtil.h>
 #include <utility>
+#include <common/std_image_write.h>
+
 
 using namespace std;
 
@@ -10,8 +12,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                const long cacheMisses, const long w, const long wCost, const long cachePenalties,
                                const long clbTries, const long ioTries, const long tries, const long triesP,
                                const long swaps, string edges_algorithm, const long totalCost, const long lPCost,
-                               const vector<long> &placement, const vector<long> &n2c,
-                               std::vector<std::vector<long> > hist)
+                               const vector<long> &placement, const vector<long> &n2c, vector<map<long, long> > hist,
+                               vector<long> heatEnd, vector<long> heatBegin)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -30,7 +32,9 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       lPCost(lPCost),
       placement(placement),
       n2c(n2c),
-      hist(std::move(hist)) {
+      hist(hist),
+      heatEnd(std::move(heatEnd)),
+      heatBegin(std::move(heatBegin)) {
 }
 
 // Serialize ReportData to a JSON string
@@ -372,4 +376,108 @@ bool fpgaIsIOCell(const long cell, const long nCellsSqrt) {
     const long l = cell / nCellsSqrt;
     const long c = cell % nCellsSqrt;
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
+}
+
+// Function to map normalized value (0 to 1) to simple RGB (blue to red)
+RGB valueToRGB(const float normValue) {
+    struct ColorPoint {
+        float position; // between 0.0 e 1.0
+        int r, g, b;
+    };
+
+    const vector<ColorPoint> colors = {
+        {0.0f, 255, 255, 255},   // white
+        {0.33f, 100, 149, 237},  // lightblue
+        {0.66f, 138, 43, 226},   // purple
+        {1.0f, 255, 0, 0}        // red
+    };
+
+    // limitar value entre 0 e 1
+    //value = max(0.0f, min(1.0f, value));
+
+    // encontrar faixa para interpolar
+    for (size_t i = 1; i < colors.size(); ++i) {
+        if (normValue <= colors[i].position) {
+            const auto& c0 = colors[i - 1];
+            const auto& c1 = colors[i];
+
+            float range = c1.position - c0.position;
+            float localVal = (normValue - c0.position) / range;
+
+            const int r = c0.r + (c1.r - c0.r) * localVal;
+            const int g = c0.g + (c1.g - c0.g) * localVal;
+            const int b = c0.b + (c1.b - c0.b) * localVal;
+
+            return {r, g, b};
+        }
+    }
+
+    // fallback (deve nunca acontecer)
+    return {255, 255, 255};
+}
+
+void generateHeatmap(const vector<long> &heatEnd,
+                     const vector<long> &heatbegin,
+                     const long nCellsSqrt,
+                     const string &basePath,
+                     const string &reportPath,
+                     const string &algPath,
+                     const string &fileName) {
+    string heatmapPath = basePath + reportPath + algPath + "/heatmap/";
+    string heatmapFile = heatmapPath + fileName + "_end.jpeg";
+    createDir(heatmapPath);
+
+    const int imageWidth = 1000;
+    const int imageHeight = 1000;
+    long minVal = *min_element(heatEnd.begin(), heatEnd.end());
+    long maxVal = *max_element(heatEnd.begin(), heatEnd.end());
+
+    vector<unsigned char> imageData(imageWidth * imageHeight * 3);
+
+    cv::Mat image(imageHeight, imageWidth, CV_8UC3);
+    //ofstream outBegin(heatmapFile);
+    //outBegin << "P3\n" << imageWidth << " " << imageHeight << "\n255\n";
+
+    for (long y = 0; y < imageHeight; y++) {
+        for (long x = 0; x < imageWidth; x++) {
+            const long srcX = x * nCellsSqrt / imageWidth;
+            const long srcY = y * nCellsSqrt / imageHeight;
+            const long idx = srcY * nCellsSqrt + srcX;
+            const long val = heatEnd[idx];
+
+            const float normVal = static_cast<float>(val - minVal) / (maxVal - minVal + 1e-5f);
+            const auto [r, g, b] = valueToRGB(normVal);
+
+            const long pixelIndex = (y * imageWidth + x) * 3;
+            imageData[pixelIndex + 0] = r;
+            imageData[pixelIndex + 1] = g;
+            imageData[pixelIndex + 2] = b;
+        }
+    }
+
+    stbi_write_jpg(heatmapFile.c_str(), imageWidth, imageHeight, 3, imageData.data(), 90);
+
+    heatmapFile = heatmapPath + fileName + "_begin.jpeg";
+
+    minVal = *min_element(heatbegin.begin(), heatbegin.end());
+    maxVal = *max_element(heatbegin.begin(), heatbegin.end());
+
+    for (long y = 0; y < imageHeight; y++) {
+        for (long x = 0; x < imageWidth; x++) {
+            const long srcX = x * nCellsSqrt / imageWidth;
+            const long srcY = y * nCellsSqrt / imageHeight;
+            const long idx = srcY * nCellsSqrt + srcX;
+
+            const long val = heatbegin[idx];
+
+            const float normVal = (float) (val - minVal) / (maxVal - minVal + 1e-5f);
+            const auto [r, g, b] = valueToRGB(normVal);
+
+            const long pixelIndex = (y * imageWidth + x) * 3;
+            imageData[pixelIndex + 0] = r;
+            imageData[pixelIndex + 1] = g;
+            imageData[pixelIndex + 2] = b;
+        }
+    }
+    stbi_write_jpg(heatmapFile.c_str(), imageWidth, imageHeight, 3, imageData.data(), 90);
 }
