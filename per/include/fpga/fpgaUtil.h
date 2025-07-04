@@ -29,7 +29,7 @@ struct FpgaReportData {
     std::string edgesAlgorithm;
     long totalCost = 0;
     long lPCost = 0;
-    std::vector<long> placement;
+    std::vector<long> c2n;
     std::vector<long> n2c;
     std::vector<std::map<long, long> > hist;
     std::vector<long> heatEnd;
@@ -39,7 +39,7 @@ struct FpgaReportData {
 
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long cacheMisses, long w,
                    long wCost, long cachePenalties, long clbTries, long ioTries, long tries, long triesP, long swaps,
-                   std::string edges_algorithm, long totalCost, long lPCost, const std::vector<long> &placement,
+                   std::string edges_algorithm, long totalCost, long lPCost, const std::vector<long> &c2n,
                    const std::vector<long> &n2c, std::vector<std::map<long, long> > hist, std::vector<long> heatEnd,
                    std::vector<long> heatBegin);
 
@@ -78,12 +78,173 @@ void fpgaWriteVprData(const std::string &basePath,
 
 RGB valueToRGB(const float normValue);
 
-void generateHeatmap(const std::vector<long> &heatEnd,
-                     const std::vector<long> &heatbegin,
-                     long nCellsSqrt,
-                     const std::string &basePath,
-                     const std::string &reportPath,
-                     const std::string &algPath,
-                     const std::string &fileName);
+void writeHeatmap(const std::vector<long> &heatData,
+                  const std::vector<long> &c2n,
+                  long nCellsSqrt,
+                  const std::string &basePath,
+                  const std::string &reportPath,
+                  const std::string &algPath,
+                  const std::string &fileName,
+                  const std::string &suffix);
+
+void writeHist(const std::map<long, long> &hist,
+               const std::string &basePath,
+               const std::string &reportPath,
+               const std::string &algPath,
+               const std::string &fileName,
+               const std::string &suffix);
+
+void writeBoxplot(const std::map<long, long>& hist,
+                  const std::string& basePath,
+                  const std::string& reportPath,
+                  const std::string& algPath,
+                  const std::string& fileName,
+                  const std::string& suffix);
+
+const std::map<char, std::vector<std::string> > font5x7 = {
+    {
+        '0', {
+            " ### ",
+            "#   #",
+            "#  ##",
+            "# # #",
+            "##  #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '1', {
+            "  #  ",
+            " ##  ",
+            "# #  ",
+            "  #  ",
+            "  #  ",
+            "  #  ",
+            "#####"
+        }
+    },
+    {
+        '2', {
+            " ### ",
+            "#   #",
+            "    #",
+            "   # ",
+            "  #  ",
+            " #   ",
+            "#####"
+        }
+    },
+    {
+        '3', {
+            " ### ",
+            "#   #",
+            "    #",
+            " ### ",
+            "    #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '4', {
+            "   # ",
+            "  ## ",
+            " # # ",
+            "#  # ",
+            "#####",
+            "   # ",
+            "   # "
+        }
+    },
+    {
+        '5', {
+            "#####",
+            "#    ",
+            "#    ",
+            "#### ",
+            "    #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '6', {
+            " ### ",
+            "#   #",
+            "#    ",
+            "#### ",
+            "#   #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '7', {
+            "#####",
+            "    #",
+            "   # ",
+            "  #  ",
+            "  #  ",
+            "  #  ",
+            "  #  "
+        }
+    },
+    {
+        '8', {
+            " ### ",
+            "#   #",
+            "#   #",
+            " ### ",
+            "#   #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '9', {
+            " ### ",
+            "#   #",
+            "#   #",
+            " ####",
+            "    #",
+            "#   #",
+            " ### "
+        }
+    },
+    {
+        '-', {
+            "     ",
+            "     ",
+            "     ",
+            " ### ",
+            "     ",
+            "     ",
+            "     "
+        }
+    },
+    {
+        '.', {
+            "     ",
+            "     ",
+            "     ",
+            "     ",
+            "     ",
+            "  ## ",
+            "  ## "
+        }
+    },
+    {
+        ' ', {
+            "     ",
+            "     ",
+            "     ",
+            "     ",
+            "     ",
+            "     ",
+            "     "
+        }
+    }
+};
 
 #endif

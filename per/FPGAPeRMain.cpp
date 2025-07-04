@@ -116,7 +116,12 @@ int main() {
             fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif
 #ifdef MAKE_METRICS
-            generateHeatmap(reports[i].heatEnd,reports[i].heatBegin,g.nCellsSqrt, rootPath, reportPath, algPath, fileName);
+            writeHeatmap(reports[i].heatEnd, reports[i].c2n, g.nCellsSqrt, rootPath, reportPath, algPath, fileName,
+                         "end");
+            writeHeatmap(reports[i].heatBegin, reports[i].c2n, g.nCellsSqrt, rootPath, reportPath, algPath, fileName,
+                         "begin");
+            //writeHist(reports[i].hist[9], rootPath, reportPath, algPath, fileName, "9");
+            //writeBoxplot(reports[i].hist[9], rootPath, reportPath, algPath, fileName, "9");
 #endif
         }
 #endif
