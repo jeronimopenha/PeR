@@ -293,6 +293,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //#ifdef FPGA_TOTAL_COST
     const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
+
     //fixme
     const long tlpc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
     //#endif
@@ -300,6 +301,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long tries = (clbTries + ioTries);
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
+    const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
 
     //FIXME reports
     auto report = FpgaReportData(
@@ -307,6 +309,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         g.dotName,
         g.dotPath,
         "yoto",
+        nCellsSqrt,
+        nNodes,
+        nIOs,
         cacheMisses,
         CACHE_W_PARAMETER,
         CACHE_W_COST,

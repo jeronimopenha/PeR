@@ -8,16 +8,19 @@ using namespace std;
 FpgaReportData::FpgaReportData() = default;
 
 // Constructor for easy initialization
-FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer,
-                               const long cacheMisses, const long w, const long wCost, const long cachePenalties,
-                               const long clbTries, const long ioTries, const long tries, const long triesP,
-                               const long swaps, string edges_algorithm, const long totalCost, const long lPCost,
-                               const vector<long> &c2n, const vector<long> &n2c, vector<map<long, long> > hist,
-                               vector<long> heatEnd, vector<long> heatBegin)
+FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer, long size,
+                               long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
+                               const long cachePenalties, const long clbTries, const long ioTries, const long tries,
+                               const long triesP, const long swaps, string edges_algorithm, const long totalCost,
+                               const long lPCost, const vector<long> &c2n, const vector<long> &n2c,
+                               vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
       placer(std::move(placer)),
+      size(size),
+      nNodes(nNodes),
+      nIOs(nIOs),
       cacheMisses(cacheMisses),
       w(w),
       wCost(wCost),
@@ -45,6 +48,9 @@ string FpgaReportData::to_json() const {
             << "  \"dotName\": \"" << dotName << "\",\n"
             << "  \"dotPath\": \"" << dotPath << "\",\n"
             << "  \"placer\": \"" << placer << "\",\n"
+            << "  \"size\": \"" << size << "x" << size << "\",\n"
+            << "  \"nNodes\": \"" << nNodes << "\",\n"
+            << "  \"nIOs\": \"" << nIOs << "\",\n"
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
             << "  \"w\": " << w << ",\n"
             << "  \"wCost\": " << wCost << ",\n"
@@ -75,6 +81,49 @@ if (i < n2c.size() - 1) oss << ", ";
 oss << "]\n";*/
 
     oss << "}\n";
+    return oss.str();
+}
+
+
+string FpgaReportData::metrics_to_json() const {
+    std::ostringstream oss;
+    oss << "{\n";
+
+    // heatBegin
+    oss << "  \"heatBegin\": [";
+    for (size_t i = 0; i < heatBegin.size(); ++i) {
+        oss << heatBegin[i];
+        if (i != heatBegin.size() - 1) oss << ", ";
+    }
+    oss << "],\n";
+
+    // heatEnd
+    oss << "  \"heatEnd\": [";
+    for (size_t i = 0; i < heatEnd.size(); ++i) {
+        oss << heatEnd[i];
+        if (i != heatEnd.size() - 1) oss << ", ";
+    }
+    oss << "],\n";
+
+    // Histogramas
+    oss << "  \"hist\": {\n";
+    for (size_t h = 0; h < hist.size(); ++h) {
+        oss << "    \"" << h << "\": {";
+        const auto &map = hist[h];
+        size_t count = 0;
+        for (const auto &[k, v] : map) {
+            oss << "\"" << k << "\": " << v;
+            if (++count != map.size()) oss << ", ";
+        }
+        oss << "}";
+        if (h != hist.size() - 1) oss << ",";
+        oss << "\n";
+    }
+    oss << "  }\n";
+
+    oss << "}\n";
+
+
     return oss.str();
 }
 
@@ -229,24 +278,41 @@ long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
     return std::min({d_top, d_bottom, d_left, d_right});
 }
 
-void fpgaWriteJson(const string &basePath,
-                   const string &reportPath,
-                   const string &algPath,
-                   const string &fileName,
-                   const FpgaReportData &data) {
-    string finalPath = basePath + reportPath + algPath + "/json/";
-    string jsonFile = finalPath + fileName + ".json";
 
-    createDir(finalPath);
+void fpgaWriteReports(const std::string &basePath,
+                      const std::string &reportPath,
+                      const std::string &algPath,
+                      const std::string &fileName,
+                      const FpgaReportData &data) {
+    string reportFullPath = basePath + reportPath + algPath + "/json/";
+    string reportFile = reportFullPath + fileName + ".json";
 
-    ofstream file(jsonFile);
+    createDir(reportFullPath);
 
-    if (file.is_open()) {
-        file << data.to_json();; // Write JSON string to file
-        file.close();
+    ofstream reportWriter(reportFile);
+
+    if (reportWriter.is_open()) {
+        reportWriter << data.to_json();
+        reportWriter.close();
     } else {
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
+
+#ifdef MAKE_METRICS
+    reportFullPath = basePath + reportPath + algPath + "/metrics/";
+    reportFile = reportFullPath + fileName + ".json";
+
+    createDir(reportFullPath);
+
+    reportWriter = ofstream(reportFile);
+
+    if (reportWriter.is_open()) {
+        reportWriter << data.metrics_to_json();
+        reportWriter.close();
+    } else {
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+    }
+#endif
 }
 
 void fpgaWriteVprData(const string &basePath,
@@ -494,7 +560,12 @@ void writeHeatmap(const std::vector<long> &heatData,
                    imageData.data(), 100);
 }
 
-void drawChar(std::vector<unsigned char> &image, int imgWidth, int x, int y, char c, int scale = 1) {
+void drawChar(std::vector<unsigned char> &image,
+              const int imgWidth,
+              const int x,
+              const int y,
+              const char c,
+              const int scale) {
     /*static const std::map<char, std::vector<std::string> > font5x7 = {
         {'0', {" ### ", "#   #", "#  ##", "# # #", "##  #", "#   #", " ### "}},
         {'1', {"  #  ", " ##  ", "# #  ", "  #  ", "  #  ", "  #  ", "#####"}},
@@ -511,7 +582,7 @@ void drawChar(std::vector<unsigned char> &image, int imgWidth, int x, int y, cha
         {' ', {"     ", "     ", "     ", "     ", "     ", "     ", "     "}}
     };*/
 
-    auto it = font5x7.find(c);
+    const auto it = font5x7.find(c);
     if (it == font5x7.end()) return;
 
     const auto &glyph = it->second;
@@ -535,7 +606,12 @@ void drawChar(std::vector<unsigned char> &image, int imgWidth, int x, int y, cha
     }
 }
 
-void drawText(std::vector<unsigned char> &image, int imgWidth, int x, int y, const std::string &text, int scale = 1) {
+void drawText(std::vector<unsigned char> &image,
+              const int imgWidth,
+              const int x,
+              const int y,
+              const std::string &text,
+              const int scale) {
     for (size_t i = 0; i < text.size(); ++i) {
         drawChar(image, imgWidth, x + i * 6 * scale, y, text[i], scale);
     }
@@ -619,13 +695,12 @@ void writeHist(const std::map<long, long> &hist,
     stbi_write_jpg(histFile.c_str(), imageWidth, imageHeight, 3, image.data(), 90);
 }
 
-void writeBoxplot(const std::map<long, long>& hist,
-                  const std::string& basePath,
-                  const std::string& reportPath,
-                  const std::string& algPath,
-                  const std::string& fileName,
-                  const std::string& suffix) {
-
+void writeBoxplot(const std::map<long, long> &hist,
+                  const std::string &basePath,
+                  const std::string &reportPath,
+                  const std::string &algPath,
+                  const std::string &fileName,
+                  const std::string &suffix) {
     const std::string outPath = basePath + reportPath + algPath + "/boxplot/";
     const std::string outFile = outPath + fileName + "_" + suffix + ".jpeg";
     createDir(outPath);
@@ -638,7 +713,7 @@ void writeBoxplot(const std::map<long, long>& hist,
 
     // Reconstroi os dados brutos
     std::vector<long> rawData;
-    for (const auto& [val, count] : hist)
+    for (const auto &[val, count]: hist)
         rawData.insert(rawData.end(), count, val);
 
     std::sort(rawData.begin(), rawData.end());
@@ -662,13 +737,13 @@ void writeBoxplot(const std::map<long, long>& hist,
     long maxNonOut = *std::upper_bound(rawData.begin(), rawData.end(), Q3 + 1.5 * IQR);
 
     std::vector<long> outliers;
-    for (long v : rawData)
+    for (long v: rawData)
         if (v < minNonOut || v > maxNonOut)
             outliers.push_back(v);
 
     // Escala horizontal (de minNonOut a maxNonOut)
     auto scale = [&](long v) -> int {
-        return padding + static_cast<int>((float)(v - minNonOut) / (maxNonOut - minNonOut) * (width - 2 * padding));
+        return padding + static_cast<int>((float) (v - minNonOut) / (maxNonOut - minNonOut) * (width - 2 * padding));
     };
 
     int boxY1 = height / 2 - 30;
@@ -680,14 +755,18 @@ void writeBoxplot(const std::map<long, long>& hist,
     for (int y = boxY1; y <= boxY2; ++y)
         for (int x = x1; x <= x2; ++x) {
             int idx = (y * width + x) * 3;
-            image[idx + 0] = 200; image[idx + 1] = 200; image[idx + 2] = 200;
+            image[idx + 0] = 200;
+            image[idx + 1] = 200;
+            image[idx + 2] = 200;
         }
 
     // Linhas verticais (whiskers e mediana)
     auto drawVLine = [&](int x, int y1, int y2, RGB color) {
         for (int y = y1; y <= y2; ++y) {
             int idx = (y * width + x) * 3;
-            image[idx + 0] = color.r; image[idx + 1] = color.g; image[idx + 2] = color.b;
+            image[idx + 0] = color.r;
+            image[idx + 1] = color.g;
+            image[idx + 2] = color.b;
         }
     };
     drawVLine(scale(Q1), boxY1, boxY2, {0, 0, 0});
@@ -698,25 +777,31 @@ void writeBoxplot(const std::map<long, long>& hist,
     int yMid = (boxY1 + boxY2) / 2;
     for (int x = scale(minNonOut); x <= scale(Q1); ++x) {
         int idx = (yMid * width + x) * 3;
-        image[idx + 0] = 0; image[idx + 1] = 0; image[idx + 2] = 0;
+        image[idx + 0] = 0;
+        image[idx + 1] = 0;
+        image[idx + 2] = 0;
     }
     for (int x = scale(Q3); x <= scale(maxNonOut); ++x) {
         int idx = (yMid * width + x) * 3;
-        image[idx + 0] = 0; image[idx + 1] = 0; image[idx + 2] = 0;
+        image[idx + 0] = 0;
+        image[idx + 1] = 0;
+        image[idx + 2] = 0;
     }
 
     drawVLine(scale(minNonOut), yMid - 5, yMid + 5, {0, 0, 0});
     drawVLine(scale(maxNonOut), yMid - 5, yMid + 5, {0, 0, 0});
 
     // Outliers
-    for (long v : outliers) {
+    for (long v: outliers) {
         int x = scale(v);
         for (int dy = -2; dy <= 2; ++dy)
             for (int dx = -2; dx <= 2; ++dx) {
                 int px = x + dx, py = yMid + dy;
                 if (px >= 0 && px < width && py >= 0 && py < height) {
                     int idx = (py * width + px) * 3;
-                    image[idx + 0] = 0; image[idx + 1] = 0; image[idx + 2] = 255;
+                    image[idx + 0] = 0;
+                    image[idx + 1] = 0;
+                    image[idx + 2] = 255;
                 }
             }
     }

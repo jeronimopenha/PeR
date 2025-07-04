@@ -7,6 +7,7 @@
 #include <fpga/fpgaGraph.h>
 #include <common/util.h>
 #include <map>
+#include <fpga/fpgaPar.h>
 
 struct RGB {
     int r, g, b;
@@ -17,6 +18,9 @@ struct FpgaReportData {
     std::string dotName;
     std::string dotPath;
     std::string placer;
+    long size = 0;
+    long nNodes = 0;
+    long nIOs = 0;
     long cacheMisses = 0;
     long w = 0;
     long wCost = 0;
@@ -37,13 +41,15 @@ struct FpgaReportData {
 
     FpgaReportData();
 
-    FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long cacheMisses, long w,
-                   long wCost, long cachePenalties, long clbTries, long ioTries, long tries, long triesP, long swaps,
-                   std::string edges_algorithm, long totalCost, long lPCost, const std::vector<long> &c2n,
-                   const std::vector<long> &n2c, std::vector<std::map<long, long> > hist, std::vector<long> heatEnd,
-                   std::vector<long> heatBegin);
+    FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long size, long nNodes,
+                   long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
+                   long tries, long triesP, long swaps, std::string edges_algorithm, long totalCost, long lPCost,
+                   const std::vector<long> &c2n, const std::vector<long> &n2c, std::vector<std::map<long, long> > hist,
+                   std::vector<long> heatEnd, std::vector<long> heatBegin);
 
     [[nodiscard]] std::string to_json() const;
+
+    [[nodiscard]] std::string metrics_to_json() const;
 };
 
 void fpgaSavePlacedDot(std::vector<long> &n2c, const std::vector<std::pair<long, long> > &ed, long nCellsSqrt,
@@ -57,17 +63,14 @@ long fpgaCalcGraphTotalDistance(const std::vector<long> &n2c, const std::vector<
 long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
                              long nCellsSqrt);
 
-bool fpgaIsInvalidCell(long cell, long nCellsSqrt);
-
-bool fpgaIsIOCell(long cell, long nCellsSqrt);
-
 long fpgaMinBorderDist(long cell, long nCellsSqrt);
 
-void fpgaWriteJson(const std::string &basePath,
-                   const std::string &reportPath,
-                   const std::string &algPath,
-                   const std::string &fileName,
-                   const FpgaReportData &data);
+
+void fpgaWriteReports(const std::string &basePath,
+                      const std::string &reportPath,
+                      const std::string &algPath,
+                      const std::string &fileName,
+                      const FpgaReportData &data);
 
 void fpgaWriteVprData(const std::string &basePath,
                       const std::string &reportPath,
@@ -76,7 +79,11 @@ void fpgaWriteVprData(const std::string &basePath,
                       const FpgaReportData &data,
                       FPGAGraph g);
 
-RGB valueToRGB(const float normValue);
+bool fpgaIsInvalidCell(long cell, long nCellsSqrt);
+
+bool fpgaIsIOCell(long cell, long nCellsSqrt);
+
+RGB valueToRGB(float normValue);
 
 void writeHeatmap(const std::vector<long> &heatData,
                   const std::vector<long> &c2n,
@@ -87,6 +94,20 @@ void writeHeatmap(const std::vector<long> &heatData,
                   const std::string &fileName,
                   const std::string &suffix);
 
+void drawChar(std::vector<unsigned char> &image,
+              int imgWidth,
+              int x,
+              int y,
+              char c,
+              int scale = 1);
+
+void drawText(std::vector<unsigned char> &image,
+              int imgWidth,
+              int x,
+              int y,
+              const std::string &text,
+              int scale = 1);
+
 void writeHist(const std::map<long, long> &hist,
                const std::string &basePath,
                const std::string &reportPath,
@@ -94,12 +115,12 @@ void writeHist(const std::map<long, long> &hist,
                const std::string &fileName,
                const std::string &suffix);
 
-void writeBoxplot(const std::map<long, long>& hist,
-                  const std::string& basePath,
-                  const std::string& reportPath,
-                  const std::string& algPath,
-                  const std::string& fileName,
-                  const std::string& suffix);
+void writeBoxplot(const std::map<long, long> &hist,
+                  const std::string &basePath,
+                  const std::string &reportPath,
+                  const std::string &algPath,
+                  const std::string &fileName,
+                  const std::string &suffix);
 
 const std::map<char, std::vector<std::string> > font5x7 = {
     {

@@ -109,19 +109,11 @@ int main() {
             string fileName = g.dotName + "_" + to_string(i);
 
             //save reports for the 10 better placements
-            fpgaWriteJson(rootPath, reportPath, algPath, fileName, reports[i]);
+            fpgaWriteReports(rootPath, reportPath, algPath, fileName, reports[i]);
 
 #if !defined(CACHE)
             //generate reports and files for vpr
             fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
-#endif
-#ifdef MAKE_METRICS
-            writeHeatmap(reports[i].heatEnd, reports[i].c2n, g.nCellsSqrt, rootPath, reportPath, algPath, fileName,
-                         "end");
-            writeHeatmap(reports[i].heatBegin, reports[i].c2n, g.nCellsSqrt, rootPath, reportPath, algPath, fileName,
-                         "begin");
-            //writeHist(reports[i].hist[9], rootPath, reportPath, algPath, fileName, "9");
-            //writeBoxplot(reports[i].hist[9], rootPath, reportPath, algPath, fileName, "9");
 #endif
         }
 #endif
