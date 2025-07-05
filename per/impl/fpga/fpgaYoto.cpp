@@ -64,7 +64,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     long edCounter = 0;
 #endif
 
-    //IO placemente control
+    //IO placement control
     vector<vector<long> > searchSequence = g.generateOffsets();
     std::vector<BorderInfo> borderSequence;
     long sequenceCounter = 0;
@@ -127,11 +127,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     found = true;
 #ifdef MAKE_METRICS
                     unicTry++;
+                    swaps++;
                     if (histogram.find(unicTry) != histogram.end()) {
                         histogram[unicTry]++;
                     } else {
                         histogram[unicTry] = 1;
                     }
+                    heatEnd[ioCell] = unicTry;
+                    heatBegin[n2c[a]]++;
 #endif
                 }
             }
@@ -302,6 +305,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
     const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
+    if (swaps != nNodes) {
+        cout << "Erro ao processar o arquivo " << g.dotName<< "Nem todo os nós foram posicionados" << endl;
+    }
 
     //FIXME reports
     auto report = FpgaReportData(
