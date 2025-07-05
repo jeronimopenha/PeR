@@ -13,7 +13,7 @@ using namespace std;
 //Choose the algorithm in util.h defines
 int main() {
     const string rootPath = verifyPath(getProjectRoot());
-    const string benchExt = ".dot";
+
 
     cout << rootPath << endl;
 
@@ -22,23 +22,14 @@ int main() {
     for (const auto &[fst, snd]: files) {
         cout << fst << endl;
 
-        //Creating graph important variables
+        // Reading graphs
         auto g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
 
-
-        //execution parameters
-#ifdef DEBUG
-        constexpr int nExec = 1;
-#elifdef RUN_10
-        constexpr int nExec = 10;
-#elifdef RUN_100
-        constexpr int nExec = 100;
-#elifdef RUN_1000
-        constexpr int nExec = 1000;
-#endif
-
+        // reports vector
         vector<FpgaReportData> reports;
 
+
+        //fixme The costs functions are not working well
 #ifdef REPORT
         auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
 #ifdef FPGA_TOTAL_COST
@@ -60,9 +51,10 @@ int main() {
 #endif
 
         for (int exec = 0; exec < nExec; exec++) {
-            //cout << exec << " ";
             FpgaReportData report;
-#if defined(FPGA_YOTO_DF)||defined(FPGA_YOTO_DF_PRIO)||defined(FPGA_YOTO_ZZ)
+
+            //defining which algorithm will be run
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
             report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
                 report = fpgaYott(g);
@@ -76,21 +68,21 @@ int main() {
             {
 #ifdef REPORT
 
+                //fixme the total costs are not working well
 #ifdef FPGA_TOTAL_COST
                     if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
 #elifdef FPGA_LONG_PATH_COST
                 if (reports.size() < 10 || report.lPCost < reports.back().lPCost) {
 #endif
-                    // encontra a posição onde deve ser inserido
+                    // look for the right insertion position
                     auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
                     reports.insert(pos, report);
 
-                    // se passou de 10, remove o pior
+                    // if size is greather than 10, then remove the worst one. The last onde
                     if (reports.size() > 10)
                         reports.pop_back();
                 }
 #endif
-                //reports.push_back(report);
             }
         }
 #ifndef DEBUG

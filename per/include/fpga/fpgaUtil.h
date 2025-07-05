@@ -122,6 +122,7 @@ void writeBoxplot(const std::map<long, long> &hist,
                   const std::string &fileName,
                   const std::string &suffix);
 
+//fonts in pixel map
 const std::map<char, std::vector<std::string> > font5x7 = {
     {
         '0', {

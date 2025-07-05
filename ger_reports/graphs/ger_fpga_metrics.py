@@ -45,7 +45,7 @@ def plot_heatmap_with_used_mask(data, used_mask, output_path, title="", leg_labe
     ax.set_yticks([])  # Remove os números do eixo Y
 
     cbar = fig.colorbar(
-        plt.cm.ScalarMappable(norm=norm, cmap=custom_cmap),
+        plt.cm.ScalarMappable(norm=norm,cmap=custom_cmap),
         ax=ax,
         shrink=0.8,
         orientation='vertical',
@@ -81,7 +81,7 @@ def process_json_heatmaps_with_mask(folder_path):
 
         # Plot heatEnd com máscara
         output2 = os.path.join(folder_path, base_name + "_End.jpg")
-        plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destimo", "Tentativas")
+        plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
 
         # Plot heatBegin com máscara
         output1 = os.path.join(folder_path, base_name + "_Begin.jpg")
@@ -132,7 +132,7 @@ def generate_heatmaps_from_json_folder(folder_path):
 if __name__ == "__main__":
     import sys
 
-    folder = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x10_debug/metrics/"
+    folder = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/"
     # folder_path = os.path.dirname(os.path.abspath(__file__))  # Pasta atual
     folder_path = os.path.dirname(os.path.abspath(folder))  # Pasta atual
     process_json_heatmaps_with_mask(folder)

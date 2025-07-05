@@ -23,8 +23,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector<long> c2n(nCells, -1);
     vector<long> n2c(nNodes, -1);
 
-    //todo posicionamento de IOs
-    //todo Direcionar
+    //todo posicionamento Melhorar um dia
+    //todo Direcionar após dist 4 a 8 testar o posicionamento de CLBs
     vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
     //vector<long> delta = g.gerarDyIntercalado();
     vector<long> inOutCells = g.getInOutPos();
@@ -32,7 +32,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     randomVector(inOutCells);
 
     long cacheMisses = 0;
-    //long tries = 0;
     long ioTries = 0;
     long clbTries = 0;
     long swaps = 0;
@@ -51,12 +50,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     alg_type = "DEPTH_FIRST";
 #endif
 
-#ifdef MAKE_METRICS
     vector heatEnd(nCells, 0L);
     vector heatBegin(nCells, 0L);
-
     vector<map<long, long> > histogramFull;
+
+#ifdef MAKE_METRICS
+
     map<long, long> histogram;
+
     long unicTry;
     long maxEd = static_cast<long>(ed.size());
     //(A + (B-1)) / B
@@ -125,16 +126,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     c2n[ioCell] = targetNode;
                     n2c[targetNode] = ioCell;
                     found = true;
+                    swaps++;
 #ifdef MAKE_METRICS
                     unicTry++;
-                    swaps++;
                     if (histogram.find(unicTry) != histogram.end()) {
                         histogram[unicTry]++;
                     } else {
                         histogram[unicTry] = 1;
                     }
                     heatEnd[ioCell] = unicTry;
-                    heatBegin[n2c[a]]++;
 #endif
                 }
             }
@@ -306,7 +306,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long triesP = tries + cachePenalties;
     const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
     if (swaps != nNodes) {
-        cout << "Erro ao processar o arquivo " << g.dotName<< "Nem todo os nós foram posicionados" << endl;
+        cout << "Erro ao processar o arquivo " << g.dotName << "Nem todo os nós foram posicionados" << endl;
     }
 
     //FIXME reports

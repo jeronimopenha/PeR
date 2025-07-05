@@ -3,20 +3,7 @@
 
 #include <string>
 
-
 //PER FPGA PARAMETERS
-
-//Generate report or not
-#define REPORT
-
-#ifdef REPORT
-
-//Choose a type of total cost
-//#define FPGA_TOTAL_COST
-#define FPGA_LONG_PATH_COST
-
-#endif
-//*******************************
 
 //Choose if Cache will be used
 //#define CACHE
@@ -40,8 +27,21 @@
 //#define FPGA_SA
 //*******************************
 
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#define UNLIMITED_DIST
+
+#ifndef UNLIMITED_DIST
+#define LIMIT_DIST 4
+//#define LIMIT_DIST 5
+//#define LIMIT_DIST  6
+//#define LIMIT_DIST 7
+//#define LIMIT_DIST 8
+#endif
+#endif
+
 // Tests Quantity
-#define RUN_10
+#define RUN_1
+//#define RUN_10
 //#define RUN_100
 //#define RUN_1000
 
@@ -55,9 +55,22 @@
 //debugging defines
 #define DEBUG
 //#define PRINT
-#define MAKE_METRICS
 //*******************************
 
+//Generate report or not
+
+#define REPORT
+#ifdef REPORT
+
+//Choose write Make metrics reports
+#define MAKE_METRICS
+
+//Choose a type of total cost
+//#define FPGA_TOTAL_COST
+#define FPGA_LONG_PATH_COST
+
+#endif
+//*******************************
 
 //Some standard variables
 
@@ -97,6 +110,12 @@ inline std::string algPath = [] {
     path += "/sa";
 #endif
 
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#ifndef UNLIMITED_DIST
+    path += "_limit_" + std::to_string(LIMIT_DIST);
+#endif
+#endif
+
 #ifdef CACHE
     path += "_cache_" + std::to_string(CACHE_LINES_EXP) + "x" +
             std::to_string(CACHE_COLUMNS_EXP) + "_W_" +
@@ -104,7 +123,9 @@ inline std::string algPath = [] {
             std::to_string(CACHE_W_COST);
 #endif
 
-#ifdef RUN_10
+#ifdef RUN_1
+    path += "_x1";
+#elifdef RUN_10
     path += "_x10";
 #elif defined(RUN_100)
     path += "_x100";
@@ -124,5 +145,17 @@ inline std::string algPath = [] {
 }();
 
 inline constexpr const char *reportPath = "reports/fpga";
+inline constexpr const char *benchExt = ".dot";
+
+//Execution quantity parameter
+#ifdef RUN_1
+inline constexpr int nExec = 1;
+#elifdef RUN_10
+inline constexpr  int nExec = 10;
+#elifdef RUN_100
+inline constexpr  int nExec = 100;
+#elifdef RUN_1000
+inline constexpr  int nExec = 1000;
+#endif
 
 #endif //FPGA_PAR_H
