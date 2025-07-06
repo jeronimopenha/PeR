@@ -25,7 +25,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     //todo posicionamento Melhorar um dia
     //todo Direcionar após dist 4 a 8 testar o posicionamento de CLBs
-    vector<vector<long> > distCells = fpgaGetAdjCellsDist(nCellsSqrt);
+    vector<vector<vector<long> > > distCells;
+    for (int i = 0; i < N_DIST_VECTORS; i++) {
+        distCells.push_back(fpgaGetAdjCellsDist(nCellsSqrt));
+    }
     //vector<long> delta = g.gerarDyIntercalado();
     vector<long> inOutCells = g.getInOutPos();
 
@@ -82,10 +85,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     auto start = chrono::high_resolution_clock::now();
     long unicTry;
 
+    long distVectorCounter = 0;
+
     for (auto [a,b]: ed) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
+
+        distVectorCounter++;
+        if (distVectorCounter >= 4) distVectorCounter = 0;
 
         const long cellA = n2c[a];
 
@@ -159,7 +167,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
 
         //Then I will look for a cell next to A's cell
-        for (const auto &ij: distCells) {
+        for (const auto &ij: distCells[distVectorCounter]) {
             unicTry++;
 
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
@@ -276,7 +284,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 orDest[cellA].push_back(targetCell);
 #endif
                 long _max = 2 * dist * (dist + 1);
-                if ((unicTry > _max) && ! IsBIoNode) {
+                if ((unicTry > _max) && !IsBIoNode) {
                     int asd = 1;
 #ifdef PRINT
                     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");

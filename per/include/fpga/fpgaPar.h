@@ -28,6 +28,8 @@
 //*******************************
 
 #if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#define N_DIST_VECTORS 4
+
 #define UNLIMITED_DIST
 
 #ifndef UNLIMITED_DIST
