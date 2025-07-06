@@ -93,7 +93,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         //the variable lastIdxIOCellUsed is for optimize future looks
 
         distVectorCounter++;
-        if (distVectorCounter >= 4) distVectorCounter = 0;
+        if (distVectorCounter >= N_DIST_VECTORS) distVectorCounter = 0;
 
         const long cellA = n2c[a];
 
