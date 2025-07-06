@@ -52,11 +52,20 @@ def plot_heatmap_with_used_mask(data, used_mask, output_path, title="", leg_labe
     plt.close()
 
 
-def draw_lines_between_cells(origins_to_dests, heat_end, output_path, title="", subtitle="", threshold=10):
-    n = heat_end.shape[0]
-    image = np.ones((n, n, 3))  # fundo branco
+def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path, title="", subtitle="", threshold=10):
+    target_pixels = 1024
+    dpi = 100
+    figsize = (target_pixels / dpi, target_pixels / dpi)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
+    used_mask = np.array(used_mask)
+    used_mask = np.array(used_mask)
+    image = np.ones((*used_mask.shape, 3))
+    image[used_mask] = [224 / 255, 224 / 255, 224 / 255]
+
+    n = heat_end.shape[0]
+
+
+    fig, ax = plt.subplots(figsize=figsize)
     ax.set_title(f"{title}\n{subtitle}, Threshold={threshold}")
     ax.axis("on")
     ax.set_xticks([])  # Remove os números do eixo X
@@ -78,7 +87,8 @@ def draw_lines_between_cells(origins_to_dests, heat_end, output_path, title="", 
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
-            if heat_end[dy, dx] > threshold:
+            tries = heat_end[dy, dx]
+            if tries > threshold:
                 oy, ox = divmod(origin, n)
                 image[oy, ox] = [153 / 255, 153 / 255, 255 / 255]  # azul claro
                 image[dy, dx] = [255 / 255, 153 / 255, 153 / 255]  # vermelho suave
@@ -88,7 +98,8 @@ def draw_lines_between_cells(origins_to_dests, heat_end, output_path, title="", 
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
-            if heat_end[dy, dx] > threshold:
+            tries = heat_end[dy, dx]
+            if tries > threshold:
                 oy, ox = divmod(origin, n)
                 ax.plot([ox, dx], [oy, dy], color='black', linewidth=0.15)
 
@@ -177,18 +188,19 @@ def process_json_metrics(folder_path):
 
         # Plot heatEnd com máscara
         output2 = os.path.join(folder_path, base_name + "_End.jpg")
-        #plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
+        plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
 
         # Plot heatBegin com máscara
         output1 = os.path.join(folder_path, base_name + "_Begin.jpg")
-        #plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
+        plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
 
         origins_to_dests = {int(k): v for k, v in data["orDest"].items()}
         output3 = os.path.join(folder_path, base_name + "_Lines.jpg")
-        draw_lines_between_cells(origins_to_dests, heat_end, output3, base_name, "Origens e Destinos com Linhas")
+        draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output3, base_name,
+                                 "Origens e Destinos com Linhas")
 
         hist_list = list(data["hist"].values())  # pega todos os dicionários num vetor
-        #plot_histograms(hist_list, base_name, folder_path, base_name)
+        plot_histograms(hist_list, base_name, folder_path, base_name)
         plot_boxplots(hist_list, base_name, folder_path)
 
 

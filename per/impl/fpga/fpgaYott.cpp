@@ -89,10 +89,10 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
             const long targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
             // Check if the target cell is nor allowed, go to next
-            if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
+            if (fpgaIsInvalidCell(lB,cB, nCellsSqrt))
                 continue;
 
-            const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
+            const bool isTargetCellIO = fpgaIsIOCell(lB,cB, nCellsSqrt);
             //const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells

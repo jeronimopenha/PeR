@@ -80,9 +80,9 @@ void fpgaWriteVprData(const std::string &basePath,
                       const FpgaReportData &data,
                       FPGAGraph g);
 
-bool fpgaIsInvalidCell(long cell, long nCellsSqrt);
+bool fpgaIsInvalidCell(long l, long c, long nCellsSqrt);
 
-bool fpgaIsIOCell(long cell, long nCellsSqrt);
+bool fpgaIsIOCell(long l, long c, long nCellsSqrt);
 
 RGB valueToRGB(float normValue);
 

@@ -14,7 +14,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                const long triesP, const long swaps, string edges_algorithm, const long totalCost,
                                const long lPCost, const vector<long> &c2n, const vector<long> &n2c,
                                vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin,
-                              map<long, vector<long> > orDest)
+                               map<long, vector<long> > orDest)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -130,7 +130,7 @@ string FpgaReportData::metrics_to_json() const {
     for (const auto &[k, v]: orDest) {
         oss << " \"" << k << "\": [";
         size_t vCount = 0;
-        for (const auto dest:v) {
+        for (const auto dest: v) {
             oss << dest;
             if (++vCount != v.size()) oss << ", ";
         }
@@ -227,7 +227,8 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
 
             // Lambda to check if a coordinate pair is already in a list
             auto contains = [](const vector<vector<long> > &vec, const vector<long> &pair) {
-                return find(vec.begin(), vec.end(), pair) != vec.end();
+                bool found = find(vec.begin(), vec.end(), pair) != vec.end();
+                return found;
             };
 
             // Add unique coordinates to the distance table
@@ -443,10 +444,7 @@ void fpgaWriteVprData(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
 }
 
-bool fpgaIsInvalidCell(const long cell, const long nCellsSqrt) {
-    const long l = cell / nCellsSqrt;
-    const long c = cell % nCellsSqrt;
-
+bool fpgaIsInvalidCell(const long l, const long c, const long nCellsSqrt) {
     const bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
 
     const bool isCorner =
@@ -458,9 +456,7 @@ bool fpgaIsInvalidCell(const long cell, const long nCellsSqrt) {
     return outOfBounds || isCorner;
 }
 
-bool fpgaIsIOCell(const long cell, const long nCellsSqrt) {
-    const long l = cell / nCellsSqrt;
-    const long c = cell % nCellsSqrt;
+bool fpgaIsIOCell(const long l, const long c, const long nCellsSqrt) {
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
 }
 
@@ -546,7 +542,7 @@ void writeHeatmap(const std::vector<long> &heatData,
                 const long srcY = y / cellSize;
                 const long cellIdx = srcY * nCellsSqrt + srcX;
 
-                if (isGridLine || fpgaIsInvalidCell(cellIdx, nCellsSqrt)) {
+                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
                     //grid or invalid cell
                     pixel = {255, 255, 255};
                 } else {

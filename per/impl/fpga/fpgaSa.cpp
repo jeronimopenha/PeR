@@ -68,19 +68,23 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         for (int cellA = 1; cellA < nCells; cellA++) {
             for (int cellB = 1; cellB < nCells; cellB++) {
                 tries++;
+                const long lA = cellA / nCellsSqrt;
+                const long cA = cellA % nCellsSqrt;
+                const long lB = cellB / nCellsSqrt;
+                const long cB = cellB % nCellsSqrt;
 
                 if (cellA == cellB)
                     continue;
                 // Check if cellA is nor allowed, go to next
-                if (fpgaIsInvalidCell(cellA, nCellsSqrt))
+                if (fpgaIsInvalidCell(lA, cA, nCellsSqrt))
                     continue;
-                if (fpgaIsInvalidCell(cellB, nCellsSqrt))
+                if (fpgaIsInvalidCell(lB, cB, nCellsSqrt))
                     continue;
 
                 //prevents IO nodes to be not put in IO cells
                 //and put a non IO node in an IO cell
-                const bool isCellAIO = fpgaIsIOCell(cellA, nCellsSqrt);
-                const bool isCellBIO = fpgaIsIOCell(cellB, nCellsSqrt);
+                const bool isCellAIO = fpgaIsIOCell(lA, cA, nCellsSqrt);
+                const bool isCellBIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
 
                 if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;
