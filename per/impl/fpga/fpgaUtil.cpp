@@ -13,7 +13,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long swaps, string edges_algorithm, const long totalCost,
                                const long lPCost, const vector<long> &c2n, const vector<long> &n2c,
-                               vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin)
+                               vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin,
+                              map<long, vector<long> > orDest)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -37,7 +38,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       n2c(n2c),
       hist(std::move(hist)),
       heatEnd(std::move(heatEnd)),
-      heatBegin(std::move(heatBegin)) {
+      heatBegin(std::move(heatBegin)),
+      orDest(std::move(orDest)) {
 }
 
 // Serialize ReportData to a JSON string
@@ -112,7 +114,7 @@ string FpgaReportData::metrics_to_json() const {
         oss << "    \"" << h << "\": {";
         const auto &map = hist[h];
         size_t count = 0;
-        for (const auto &[k, v] : map) {
+        for (const auto &[k, v]: map) {
             oss << "\"" << k << "\": " << v;
             if (++count != map.size()) oss << ", ";
         }
@@ -120,7 +122,24 @@ string FpgaReportData::metrics_to_json() const {
         if (h != hist.size() - 1) oss << ",";
         oss << "\n";
     }
-    oss << "  }\n";
+    oss << "  },\n";
+
+    // orDest
+    oss << "  \"orDest\": {\n";
+    size_t count = 0;
+    for (const auto &[k, v]: orDest) {
+        oss << " \"" << k << "\": [";
+        size_t vCount = 0;
+        for (const auto dest:v) {
+            oss << dest;
+            if (++vCount != v.size()) oss << ", ";
+        }
+        oss << "]";
+        if (++count != orDest.size()) oss << ", ";
+        oss << "\n";
+    }
+    oss << "}";
+    oss << "\n";
 
     oss << "}\n";
 

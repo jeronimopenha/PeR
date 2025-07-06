@@ -53,6 +53,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector heatEnd(nCells, 0L);
     vector heatBegin(nCells, 0L);
     vector<map<long, long> > histogramFull;
+    std::map<long, vector<long>> orDest;
 
 #ifdef MAKE_METRICS
 
@@ -85,6 +86,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
 
+        const long cellA = n2c[a];
+
 #ifdef PRINT
         fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
@@ -107,7 +110,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             targetNode = b;
             _continue = true;
             ioTries++;
-        } else if (n2c[a] == -1) {
+        } else if (cellA == -1) {
 #ifdef CACHE
             cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
@@ -155,8 +158,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
-        const long lA = n2c[a] / nCellsSqrt;
-        const long cA = n2c[a] % nCellsSqrt;
+        const long lA = cellA / nCellsSqrt;
+        const long cA = cellA % nCellsSqrt;
 
 
         //Then I will look for a cell next to A's cell
@@ -272,7 +275,11 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     histogram[unicTry] = 1;
                 }
                 heatEnd[targetCell] = unicTry;
-                heatBegin[n2c[a]]++;
+                heatBegin[cellA]++;
+                if (orDest.find(cellA) == orDest.end()) {
+                    orDest[a] = vector<long>();
+                }
+                orDest[a].push_back(targetCell);
 #endif
                 break;
             }
@@ -334,7 +341,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         n2c,
         histogramFull,
         heatEnd,
-        heatBegin
+        heatBegin,
+        orDest
     );
     return report;
 }

@@ -38,6 +38,7 @@ struct FpgaReportData {
     std::vector<std::map<long, long> > hist;
     std::vector<long> heatEnd;
     std::vector<long> heatBegin;
+    std::map<long, std::vector<long> > orDest;
 
     FpgaReportData();
 
@@ -45,7 +46,7 @@ struct FpgaReportData {
                    long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
                    long tries, long triesP, long swaps, std::string edges_algorithm, long totalCost, long lPCost,
                    const std::vector<long> &c2n, const std::vector<long> &n2c, std::vector<std::map<long, long> > hist,
-                   std::vector<long> heatEnd, std::vector<long> heatBegin);
+                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> >);
 
     [[nodiscard]] std::string to_json() const;
 
