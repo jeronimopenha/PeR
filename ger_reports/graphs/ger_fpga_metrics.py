@@ -90,7 +90,7 @@ def draw_lines_between_cells(origins_to_dests, heat_end, output_path, title="", 
             dy, dx = divmod(dest, n)
             if heat_end[dy, dx] > threshold:
                 oy, ox = divmod(origin, n)
-                ax.plot([ox, dx], [oy, dy], color='black', linewidth=0.5)
+                ax.plot([ox, dx], [oy, dy], color='black', linewidth=0.15)
 
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
@@ -185,7 +185,7 @@ def process_json_metrics(folder_path):
 
         origins_to_dests = {int(k): v for k, v in data["orDest"].items()}
         output3 = os.path.join(folder_path, base_name + "_Lines.jpg")
-        #draw_lines_between_cells(origins_to_dests, heat_end, output3, base_name, "Origens e Destinos com Linhas")
+        draw_lines_between_cells(origins_to_dests, heat_end, output3, base_name, "Origens e Destinos com Linhas")
 
         hist_list = list(data["hist"].values())  # pega todos os dicionários num vetor
         #plot_histograms(hist_list, base_name, folder_path, base_name)
