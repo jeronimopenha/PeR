@@ -1,48 +1,52 @@
 import json
 import os
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 
+gray = [224 / 255] * 3
+light_blue = [153 / 255, 153 / 255, 255 / 255]
+light_red = [255 / 255, 153 / 255, 153 / 255]
+light_purple = [204 / 255, 153 / 255, 204 / 255]
+purple = [128 / 255, 0 / 255, 128 / 255]
+red = [255 / 255, 0, 0]
+
+
+def get_figsize(target_pixels=1024, dpi=100):
+    size = target_pixels / dpi
+    return (size, size), dpi
+
 
 def plot_heatmap_with_used_mask(data, used_mask, output_path, title="", leg_label=""):
-    target_pixels = 1024
-    dpi = 100
-    figsize = (target_pixels / dpi, target_pixels / dpi)
-
-    used_mask = np.array(used_mask)
+    (figsize, dpi) = get_figsize()
 
     image = np.ones((*used_mask.shape, 3))
+    image[used_mask] = gray
 
-    image[used_mask] = [224 / 255, 224 / 255, 224 / 255]
-
-    norm = Normalize(vmin=0, vmax=np.max(data))
-
+    norm = Normalize(vmin=1, vmax=np.max(data))
     custom_cmap = LinearSegmentedColormap.from_list("custom", [
-        (0.0, "#ADD8E6"),  # azul claro
-        (0.5, "#800080"),  # roxo
-        (1.0, "#FF0000"),  # vermelho
+        (0.0, light_blue),
+        (0.5, purple),
+        (1.0, red),
     ])
 
-    # Aplica o heatmap por cima do cinza
-    for y in range(data.shape[0]):
-        for x in range(data.shape[1]):
-            if data[y, x] > 0:
-                r, g, b, _ = custom_cmap(norm(data[y, x]))
-                image[y, x] = [r, g, b]
+    mask_nonzero = data > 0
+    colored_pixels = custom_cmap(norm(data[mask_nonzero]))[:, :3]
+    image[mask_nonzero] = colored_pixels
 
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
     ax.imshow(image, interpolation="nearest")
     ax.set_title(title)
-    ax.axis("on")  # Mostra a moldura dos eixos
-    ax.set_xticks([])  # Remove os números do eixo X
-    ax.set_yticks([])  # Remove os números do eixo Y
+    ax.axis("on")
+    ax.set_xticks([])
+    ax.set_yticks([])
 
     cbar = fig.colorbar(
         plt.cm.ScalarMappable(norm=norm, cmap=custom_cmap),
         ax=ax,
-        shrink=0.8,
+        shrink=1.0,  # 0.8
         orientation='vertical',
         pad=0.02
     )
@@ -53,78 +57,85 @@ def plot_heatmap_with_used_mask(data, used_mask, output_path, title="", leg_labe
 
 
 def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path, title="", subtitle="", threshold=10):
-    target_pixels = 1024
-    dpi = 100
-    figsize = (target_pixels / dpi, target_pixels / dpi)
+    def is_color(pixel, target_rgb, tol=1e-2):
+        return np.allclose(pixel, np.array(target_rgb), atol=1e-2)
 
-    used_mask = np.array(used_mask)
-    used_mask = np.array(used_mask)
+    (figsize, dpi) = get_figsize()
     image = np.ones((*used_mask.shape, 3))
-    image[used_mask] = [224 / 255, 224 / 255, 224 / 255]
+    image[used_mask] = gray
 
     n = heat_end.shape[0]
-
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.set_title(f"{title}\n{subtitle}, Threshold={threshold}")
     ax.axis("on")
-    ax.set_xticks([])  # Remove os números do eixo X
-    ax.set_yticks([])  # Remove os números do eixo Y
+    ax.set_xticks([])  # remove the X numbers
+    ax.set_yticks([])  # remove the Y numbers
 
     legend_elements = [
-        Patch(facecolor=(153 / 255, 153 / 255, 255 / 255), edgecolor='black', label='Origem'),
-        Patch(facecolor=(255 / 255, 153 / 255, 153 / 255), edgecolor='black', label='Destino')
+        Patch(facecolor=tuple(light_blue), edgecolor='black', label='Origem'),
+        Patch(facecolor=tuple(light_red), edgecolor='black', label='Destino'),
+        Patch(facecolor=tuple(light_purple), edgecolor='black', label='Origem\\\nDestino')
     ]
-    ax.legend(handles=legend_elements, loc='upper right')
     ax.legend(
         handles=legend_elements,
         loc='center left',
-        bbox_to_anchor=(1, 0.5),  # Fora da imagem, à direita
+        bbox_to_anchor=(1, 0.5),
         borderaxespad=0.5,
         frameon=False
     )
 
+    '''lines_offset = 0.1
+    for origin, dests in origins_to_dests.items():
+        oy, ox = divmod(origin, n)
+        for dest in dests:
+            dy, dx = divmod(dest, n)
+            tries = heat_end[dy, dx]
+            if tries <= threshold:
+                continue
+
+            if is_color(image[oy, ox], light_red):
+                image[oy, ox] = light_purple
+            else:
+                image[oy, ox] = light_blue
+            image[dy, dx] = light_red
+            ax.plot([ox, dx], [oy - lines_offset, dy + lines_offset], color='black', linewidth=0.15)'''
+
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
             tries = heat_end[dy, dx]
             if tries > threshold:
                 oy, ox = divmod(origin, n)
-                image[oy, ox] = [153 / 255, 153 / 255, 255 / 255]  # azul claro
-                image[dy, dx] = [255 / 255, 153 / 255, 153 / 255]  # vermelho suave
+                image[oy, ox] = light_blue  # light blue
+                image[dy, dx] = light_red  # light red
+
+    lines_offset = 0.1
+    for origin, dests in origins_to_dests.items():
+        for dest in dests:
+            dy, dx = divmod(dest, n)
+            tries = heat_end[dy, dx]
+            if tries > threshold:
+                oy, ox = divmod(origin, n)
+                if is_color(image[oy, ox], light_red):
+                    image[oy, ox] = light_purple
+                ax.plot([ox, dx], [oy - lines_offset, dy + lines_offset], color='black', linewidth=0.15)
 
     ax.imshow(image, interpolation="nearest")
-
-    for origin, dests in origins_to_dests.items():
-        for dest in dests:
-            dy, dx = divmod(dest, n)
-            tries = heat_end[dy, dx]
-            if tries > threshold:
-                oy, ox = divmod(origin, n)
-                ax.plot([ox, dx], [oy, dy], color='black', linewidth=0.15)
-
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
 
 
 def plot_histograms(hist_list, output_prefix, folder_path, baseName=""):
     for idx, hist in enumerate(hist_list):
-        keys = list(map(int, hist.keys()))
-        values = list(map(int, hist.values()))
-
-        if not keys:
-            continue  # pular histograma vazio
-
-        min_k, max_k = min(keys), max(keys)
-
-        # Organizar dados
-        sorted_items = sorted(zip(keys, values))
+        if not hist:
+            continue
+        sorted_items = sorted((int(k), int(v)) for k, v in hist.items())
         sorted_keys, sorted_vals = zip(*sorted_items)
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.bar(sorted_keys, sorted_vals, color="black", width=0.8)
-
-        ax.set_xlim(min_k - 1, max_k + 1)
+        ax.set_xlim(min(sorted_keys) - 1, max(sorted_keys) + 1)
         ax.set_title(f"{baseName} Histograma {idx}")
         ax.set_xlabel("Tentativas")
         ax.set_ylabel("Frequência")
@@ -142,7 +153,7 @@ def plot_boxplots(hist_list, output_prefix, folder_path):
     for hist in hist_list:
         samples = []
         for k, v in hist.items():
-            samples.extend([int(k)] * int(v))  # repete o valor pela frequência
+            samples.extend([int(k)] * int(v))
         data_for_boxplot.append(samples)
 
     if not data_for_boxplot:
@@ -174,6 +185,7 @@ def process_json_metrics(folder_path):
             data = json.load(f)
 
         base_name = os.path.splitext(file_name)[0]
+        print("working on {}".format(base_name))
 
         # Converte vetores para matriz quadrada
         def vector_to_matrix(vec):
@@ -199,12 +211,18 @@ def process_json_metrics(folder_path):
         draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output3, base_name,
                                  "Origens e Destinos com Linhas")
 
-        hist_list = list(data["hist"].values())  # pega todos os dicionários num vetor
+        hist_list = list(data["hist"].values())
         plot_histograms(hist_list, base_name, folder_path, base_name)
         plot_boxplots(hist_list, base_name, folder_path)
 
 
-# Uso direto
+'''if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Uso: python script.py <caminho_da_pasta>")
+        sys.exit(1)
+    folder = sys.argv[1]
+    process_json_metrics(folder)'''
+
 if __name__ == "__main__":
     folder = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/"
     folder_path = os.path.dirname(os.path.abspath(folder))  # Pasta atual

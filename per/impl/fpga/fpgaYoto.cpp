@@ -95,6 +95,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         distVectorCounter++;
         if (distVectorCounter >= N_DIST_VECTORS) distVectorCounter = 0;
 
+#ifdef CACHE
+        cacheMisses += cacheN2C.readCache(a, n2c);
+#endif
         const long cellA = n2c[a];
 
 
@@ -114,10 +117,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         if (a == -1) {
             targetNode = b;
         } else if (cellA == -1) {
-#ifdef CACHE
-            cacheMisses += cacheN2C.readCache(a, n2c);
-#endif
-            targetNode = a;
             cout << "Error while placing A node";
             exit(1);
         }
@@ -159,9 +158,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-#ifdef CACHE
-        cacheMisses += cacheN2C.readCache(a, n2c);
-#endif
         const long lA = cellA / nCellsSqrt;
         const long cA = cellA % nCellsSqrt;
 
@@ -289,8 +285,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef PRINT
                     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
-                    //cout << "Error while placing: dist=" << dist << " max tries:" << _max;
-                    //cout << ". Total tries" << unicTry;
+                    cout << "Error while placing: dist=" << dist << " max tries:" << _max;
+                    cout << ". Total tries" << unicTry;
                     //exit(1);
                 }
                 break;
