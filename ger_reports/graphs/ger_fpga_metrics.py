@@ -104,7 +104,7 @@ def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path,
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
-            if dy == 0 or dx == 0 or (dy == n-1) or (dx == n-1):
+            if dy == 0 or dx == 0 or (dy == n - 1) or (dx == n - 1):
                 continue
             tries = heat_end[dy, dx]
             if tries > threshold:
@@ -116,7 +116,7 @@ def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path,
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
-            if dy == 0 or dx == 0 or dy == n-1 or dx == n-1:
+            if dy == 0 or dx == 0 or dy == n - 1 or dx == n - 1:
                 continue
             tries = heat_end[dy, dx]
             if tries > threshold:
@@ -169,12 +169,26 @@ def plot_boxplots(hist_list, output_prefix, folder_path):
                boxprops=dict(facecolor='lightblue', color='blue'),
                medianprops=dict(color='red'))
 
+    '''for i, data in enumerate(data_for_boxplot):
+        if not data:
+            continue
+        mean_val = np.mean(data)
+        ax.plot([i + 1 - 0.3, i + 1 + 0.3], [mean_val, mean_val], color='green', linestyle='--', linewidth=1)'''
+
+    means = [np.mean(data) if data else 0 for data in data_for_boxplot]
+    x = range(1, len(means) + 1)
+    ax.plot(x, means, color='green', linestyle='--', marker='o', label='Média')
+    ax.legend()
+
     ax.set_title(f"{output_prefix}")
     ax.set_xlabel("Histograma")
     ax.set_ylabel("Tentativas")
     ax.set_yscale("log")
     ax.set_xticks(range(1, len(data_for_boxplot) + 1))
     ax.set_xticklabels([str(i) for i in range(len(data_for_boxplot))])
+
+    #ax.axhline(mean_val, color='green', linestyle='--', linewidth=1, label=f'Média: {mean_val:.2f}')
+    ax.legend(loc='lower right',bbox_to_anchor=(1, 1))
 
     output_file = os.path.join(folder_path, f"{output_prefix}_Boxplots.jpg")
     plt.savefig(output_file, bbox_inches="tight", dpi=300)
@@ -204,20 +218,20 @@ def process_json_metrics(folder_path):
 
         # Plot heatEnd com máscara
         output2 = os.path.join(folder_path, base_name + "_End.jpg")
-        #plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
+        # plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
 
         # Plot heatBegin com máscara
         output1 = os.path.join(folder_path, base_name + "_Begin.jpg")
-        #plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
+        # plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
 
         origins_to_dests = {int(k): v for k, v in data["orDest"].items()}
         output3 = os.path.join(folder_path, base_name + "_Lines.jpg")
-        draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output3, base_name,
-                                 "Origens e Destinos com Linhas")
+        #draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output3, base_name,
+        #                         "Origens e Destinos com Linhas")
 
         hist_list = list(data["hist"].values())
-        #plot_histograms(hist_list, base_name, folder_path, base_name)
-        #plot_boxplots(hist_list, base_name, folder_path)
+        # plot_histograms(hist_list, base_name, folder_path, base_name)
+        plot_boxplots(hist_list, base_name, folder_path)
 
 
 '''if __name__ == "__main__":
