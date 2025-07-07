@@ -235,7 +235,7 @@ void Graph::readAsapAlap() {
     }
 }
 
-vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst() {
+vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalPriority) {
     static vector<pair<long, long> > edges;
     edges.clear();
 

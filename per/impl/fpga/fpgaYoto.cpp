@@ -6,41 +6,52 @@
 
 using namespace std;
 
-
+//todo posicionamento Melhorar um dia
+//ideia colocar blocks de neg e pos para col e cell pra tudo
+//pra isso vetores de offset serão gerados por delta col e delta line
+//todo Direcionar após dist 4 a 8 testar o posicionamento de CLBs
+//ainda falta implementar
 FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCells = g.nCells;
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
 
-#ifdef CACHE
-    auto cacheC2N = Cache();
-    auto cacheN2C = Cache();
-#endif
-
-
-    std::vector hist(nCells, 0L);
-
-    vector<long> c2n(nCells, -1);
-    vector<long> n2c(nNodes, -1);
-
-    //todo posicionamento Melhorar um dia
-    //todo Direcionar após dist 4 a 8 testar o posicionamento de CLBs
     vector<vector<vector<long> > > distCells;
-    for (int i = 0; i < N_DIST_VECTORS; i++) {
-        distCells.push_back(fpgaGetAdjCellsDist(nCellsSqrt));
-    }
-    //vector<long> delta = g.gerarDyIntercalado();
+    vector<pair<long, long> > ed;
     vector<long> inOutCells = g.getInOutPos();
 
-    randomVector(inOutCells);
-
-    long cacheMisses = 0;
     long ioTries = 0;
     long clbTries = 0;
     long swaps = 0;
 
     string alg_type;
-    vector<pair<long, long> > ed;
+
+#ifdef CACHE
+    auto cacheC2N = Cache();
+    auto cacheN2C = Cache();
+#endif
+    //fixme cache variable
+    long cacheMisses = 0;
+
+    //fixme metrics variables
+    std::vector hist(nCells, 0L);
+    vector heatEnd(nCells, 0L);
+    vector heatBegin(nCells, 0L);
+    vector<map<long, long> > histogramFull;
+    std::map<long, vector<long> > orDest;
+
+
+    //fill the distCells vector
+    for (int i = 0; i < N_DIST_VECTORS; i++) {
+        distCells.push_back(fpgaGetAdjCellsDist(nCellsSqrt));
+    }
+
+    //shuffle the possible IO cells
+    randomVector(inOutCells);
+
+    //choosing the edges generator by algorithm type
+    //todo I->O  and O->I (the last one is implemented)
+    //todo with critical path priority or not
 #if defined(FPGA_YOTO_ZZ)
     vector<pair<long, long>> convergence;
     ed = g.getEdgesZigzag(convergence);
@@ -53,29 +64,24 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     alg_type = "DEPTH_FIRST";
 #endif
 
-    vector heatEnd(nCells, 0L);
-    vector heatBegin(nCells, 0L);
-    vector<map<long, long> > histogramFull;
-    std::map<long, vector<long> > orDest;
 
+    //filling the metrics variables
 #ifdef MAKE_METRICS
-
     map<long, long> histogram;
     long maxEd = static_cast<long>(ed.size());
-    //(A + (B-1)) / B
-    long edOffset = (maxEd + (10 - 1)) / 10;
+    long edOffset = (maxEd + (10 - 1)) / 10; //(A + (B-1)) / B
     long edCounter = 0;
 #endif
 
     //IO placement control
-    vector<vector<long> > searchSequence = g.generateOffsets();
+    vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
     std::vector<BorderInfo> borderSequence;
     long sequenceCounter = 0;
-    long dCounter = 0;
+    long distCounter = 0;
     bool setBorder = false;
-    bool blockNegative = false;
-    bool blockPositive = false;
-    int tickTack = 0;
+    bool blockBorderNegative = false;
+    bool blockBorderPositive = false;
+    int borderTickTack = 0;
 
 #ifdef PRINT
     fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
@@ -88,18 +94,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     long distVectorCounter = 0;
 
     for (auto [a,b]: ed) {
-        //Verify if A is placed
-        //if it is not placed, then place in a random inout cell.
-        //the variable lastIdxIOCellUsed is for optimize future looks
-
         distVectorCounter++;
-        if (distVectorCounter >= N_DIST_VECTORS) distVectorCounter = 0;
-
-#ifdef CACHE
-        cacheMisses += cacheN2C.readCache(a, n2c);
-#endif
-        const long cellA = n2c[a];
-
+        if (distVectorCounter >= N_DIST_VECTORS)
+            distVectorCounter = 0;
 
 #ifdef MAKE_METRICS
         edCounter++;
@@ -148,6 +145,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             continue;
         }
 
+        //Verify if A is placed
+        //if it is not placed, then place in a random inout cell.
+        //the variable lastIdxIOCellUsed is for optimize future looks
+#ifdef CACHE
+        cacheMisses += cacheN2C.readCache(a, n2c);
+#endif
+        const long cellA = n2c[a];
+
         //Now, if B is placed, go to next edge
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(b, n2c);
@@ -183,27 +188,27 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 if (!setBorder) {
                     borderSequence = g.getBordersSequence(lA, cA);
                     sequenceCounter = 0;
-                    dCounter = 0;
-                    blockNegative = false;
-                    blockPositive = false;
+                    distCounter = 0;
+                    blockBorderNegative = false;
+                    blockBorderPositive = false;
                     setBorder = true;
-                    tickTack = 0;
+                    borderTickTack = 0;
                 }
 
                 long d;
-                if (blockNegative) {
-                    d = searchSequence[0][dCounter];
-                    dCounter++;
-                } else if (blockPositive) {
-                    d = searchSequence[1][dCounter];
-                    dCounter++;
+                if (blockBorderNegative) {
+                    d = ioSearchSequence[0][distCounter];
+                    distCounter++;
+                } else if (blockBorderPositive) {
+                    d = ioSearchSequence[1][distCounter];
+                    distCounter++;
                 } else {
-                    d = searchSequence[tickTack][dCounter];
-                    if (tickTack == 0) {
-                        tickTack = 1;
+                    d = ioSearchSequence[borderTickTack][distCounter];
+                    if (borderTickTack == 0) {
+                        borderTickTack = 1;
                     } else {
-                        tickTack = 0;
-                        dCounter++;
+                        borderTickTack = 0;
+                        distCounter++;
                     }
                 }
                 switch (borderSequence[sequenceCounter].direction) {
@@ -228,15 +233,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 targetCell = lB * nCellsSqrt + cB;
 
                 if (lB < 0 || cB < 0) {
-                    blockNegative = true;
+                    blockBorderNegative = true;
                 } else if (lB >= nCellsSqrt || cB >= nCellsSqrt)
-                    blockPositive = true;
-                if (dCounter == nCellsSqrt || (blockNegative && blockPositive)) {
-                    dCounter = 0;
+                    blockBorderPositive = true;
+                if (distCounter == nCellsSqrt || (blockBorderNegative && blockBorderPositive)) {
+                    distCounter = 0;
                     sequenceCounter += 1;
-                    blockNegative = false;
-                    blockPositive = false;
-                    tickTack = 0;
+                    blockBorderNegative = false;
+                    blockBorderPositive = false;
+                    borderTickTack = 0;
                 }
             } else {
                 lB = lA + ij[0];

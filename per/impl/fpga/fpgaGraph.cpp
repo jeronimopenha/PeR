@@ -148,7 +148,7 @@ unordered_map<string, vector<pair<long, long> > > FPGAGraph::fpgaGetGraphAnnotat
     return annotations;
 }
 
-vector<vector<long> > FPGAGraph::generateOffsets() {
+vector<vector<long> > FPGAGraph::generateIoOffsets() {
     const long nCells = nCellsSqrt;
     vector<long> negatives;
     vector<long> positives;

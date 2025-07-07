@@ -1,6 +1,9 @@
 #ifndef FPGA_PAR_H
 #define FPGA_PAR_H
 
+//todo Unified param header for all project and stop using parameters to choose something
+//todo those parameters will be used to choose what code will be compiled
+
 #include <string>
 
 //PER FPGA PARAMETERS

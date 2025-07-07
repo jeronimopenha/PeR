@@ -38,7 +38,7 @@ public:
         const std::vector<std::pair<long, long> > &convergences
     );
 
-    std::vector<std::vector<long> > generateOffsets();
+    std::vector<std::vector<long> > generateIoOffsets();
 
     std::vector<BorderInfo> getBordersSequence(long l, long c);
 
