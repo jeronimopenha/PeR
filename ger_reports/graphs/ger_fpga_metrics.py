@@ -104,6 +104,8 @@ def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path,
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
+            if dy == 0 or dx == 0 or (dy == n-1) or (dx == n-1):
+                continue
             tries = heat_end[dy, dx]
             if tries > threshold:
                 oy, ox = divmod(origin, n)
@@ -114,6 +116,8 @@ def draw_lines_between_cells(origins_to_dests, used_mask, heat_end, output_path,
     for origin, dests in origins_to_dests.items():
         for dest in dests:
             dy, dx = divmod(dest, n)
+            if dy == 0 or dx == 0 or dy == n-1 or dx == n-1:
+                continue
             tries = heat_end[dy, dx]
             if tries > threshold:
                 oy, ox = divmod(origin, n)
@@ -200,11 +204,11 @@ def process_json_metrics(folder_path):
 
         # Plot heatEnd com máscara
         output2 = os.path.join(folder_path, base_name + "_End.jpg")
-        plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
+        #plot_heatmap_with_used_mask(heat_end, used_mask, output2, base_name + " Custo de Destino", "Tentativas")
 
         # Plot heatBegin com máscara
         output1 = os.path.join(folder_path, base_name + "_Begin.jpg")
-        plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
+        #plot_heatmap_with_used_mask(heat_begin, used_mask, output1, base_name + " Pontos de Origem", "Posicionamentos")
 
         origins_to_dests = {int(k): v for k, v in data["orDest"].items()}
         output3 = os.path.join(folder_path, base_name + "_Lines.jpg")
@@ -212,8 +216,8 @@ def process_json_metrics(folder_path):
                                  "Origens e Destinos com Linhas")
 
         hist_list = list(data["hist"].values())
-        plot_histograms(hist_list, base_name, folder_path, base_name)
-        plot_boxplots(hist_list, base_name, folder_path)
+        #plot_histograms(hist_list, base_name, folder_path, base_name)
+        #plot_boxplots(hist_list, base_name, folder_path)
 
 
 '''if __name__ == "__main__":
@@ -225,5 +229,6 @@ def process_json_metrics(folder_path):
 
 if __name__ == "__main__":
     folder = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/"
+    folder = "/home/jeronimo/Documentos/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/"
     folder_path = os.path.dirname(os.path.abspath(folder))  # Pasta atual
     process_json_metrics(folder)
