@@ -5,6 +5,15 @@
 #include <common/graph.h>
 #include <common/util.h>
 
+struct BorderInfo {
+    long distance;
+    //0 - top
+    //1 - bottom
+    //2 - left
+    //3-  right
+    int direction;
+    std::pair<long, long> coord; // coordenada da borda mais próxima
+};
 
 class FPGAGraph : public Graph {
 public:
@@ -14,13 +23,7 @@ public:
     //Neighbors vector
     std::vector<std::vector<long> > neighbors;
 
-    std::vector<long> clbNodes;
-
-    std::vector<long> longestPath;
-
     FPGAGraph(const std::string &dotPath, const std::string &dotName);
-
-    void updateG();
 
     void readNeighbors();
 
@@ -35,7 +38,9 @@ public:
         const std::vector<std::pair<long, long> > &convergences
     );
 
-    void findLongestPath();
+    std::vector<std::vector<long> > generateIoOffsets();
+
+    std::vector<BorderInfo> getBordersSequence(long l, long c);
 
     std::vector<std::pair<long, long> > getEdgesDepthFirstPriority();
 };

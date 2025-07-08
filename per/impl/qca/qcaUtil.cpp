@@ -3,7 +3,7 @@
 #include <random>
 #include <utility>
 #include <common/util.h>
-#include <common/parameters.h>
+#include <../../include/fpga/parametersFpga.h>
 
 using namespace std;
 

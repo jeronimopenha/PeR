@@ -1,4 +1,4 @@
-#include <common/parameters.h>
+#include <../../include/fpga/parametersFpga.h>
 #include <qca/qcaSa.h>
 #include <unordered_set>
 

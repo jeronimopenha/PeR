@@ -1,4 +1,4 @@
-#include <common/parameters.h>
+#include <fpga/fpgaPar.h>
 #include <common/cache.h>
 #include <fpga/fpgaYott.h>
 
@@ -89,10 +89,10 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
             const long targetCellDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
             // Check if the target cell is nor allowed, go to next
-            if (fpgaIsInvalidCell(targetCell, nCellsSqrt))
+            if (fpgaIsInvalidCell(lB,cB, nCellsSqrt))
                 continue;
 
-            const bool isTargetCellIO = fpgaIsIOCell(targetCell, nCellsSqrt);
+            const bool isTargetCellIO = fpgaIsIOCell(lB,cB, nCellsSqrt);
             //const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
             //prevents IO nodes to be not put in IO cells
@@ -194,14 +194,15 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     //#ifdef FPGA_TOTAL_COST
     const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
-    const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+    //fixme
+    //const long tlpc = fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
     //#endif
 
     const long tries = (clbTries + ioTries);
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
 
-    auto report = FpgaReportData(
+    /*auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
@@ -220,7 +221,7 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
         tlpc,
         c2n,
         n2c
-    );
+    );*/
 
-    return report;
+    return FpgaReportData();
 }

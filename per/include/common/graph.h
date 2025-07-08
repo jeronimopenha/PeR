@@ -28,7 +28,8 @@ public:
     std::vector<long> gNodes;
 
     //adjacency list
-    std::unordered_map<long, std::vector<long> > adjList;
+    std::vector<std::vector<long> > adjList;
+    std::vector<std::vector<long> > predList;
 
     std::vector<long> nSuccV;
     std::vector<long> nPredV;
@@ -36,6 +37,10 @@ public:
     std::vector<long> inputNodes;
     std::vector<long> outputNodes;
     std::vector<long> otherNodes;
+
+    std::vector<long> asap;
+    std::vector<long> alap;
+    std::vector<long> slack;
 
 
     Graph(const std::string &dotPath, const std::string &dotName, bool str = false);
@@ -50,11 +55,13 @@ public:
 
     void readAdjList();
 
-    void readIONodes();
-
     void readSuccPred();
 
-    std::vector<std::pair<long, long> > getEdgesDepthFirst();
+    void readAsapAlap();
+
+void readTypeOfNodes();
+
+    std::vector<std::pair<long, long> > getEdgesDepthFirstOutFirst(bool criticalPriority = true);
 
     std::vector<std::pair<long, long> > getEdgesZigzag(
         std::vector<std::pair<long, long> > &convergence,
@@ -64,5 +71,7 @@ public:
 
     void dfs(long idx, const std::vector<std::vector<long> > &adj, std::vector<bool> &visited,
              std::vector<long> &topo_order);
+
+
 };
 #endif

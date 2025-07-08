@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include <common/parameters.h>
+#include <include/fpga/parametersFpga.h>
 #include  <common/util.h>
 #include  <qca/qcaGraph.h>
 #include <qca/qcaYoto.h>

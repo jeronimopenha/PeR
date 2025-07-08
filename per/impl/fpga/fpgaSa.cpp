@@ -1,5 +1,5 @@
 #include <fpga/fpgaSa.h>
-#include <common/parameters.h>
+#include <fpga/fpgaPar.h>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     }
 
     //place the clb nodes to their initial positions
-    vector<long> clbNodes = g.clbNodes;
+    vector<long> clbNodes = g.outputNodes;
 
     idx = 0;
     for (auto node: clbNodes) {
@@ -72,19 +72,23 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         for (int cellA = 1; cellA < nCells; cellA++) {
             for (int cellB = 1; cellB < nCells; cellB++) {
                 tries++;
+                const long lA = cellA / nCellsSqrt;
+                const long cA = cellA % nCellsSqrt;
+                const long lB = cellB / nCellsSqrt;
+                const long cB = cellB % nCellsSqrt;
 
                 if (cellA == cellB)
                     continue;
                 // Check if cellA is nor allowed, go to next
-                if (fpgaIsInvalidCell(cellA, nCellsSqrt))
+                if (fpgaIsInvalidCell(lA, cA, nCellsSqrt))
                     continue;
-                if (fpgaIsInvalidCell(cellB, nCellsSqrt))
+                if (fpgaIsInvalidCell(lB, cB, nCellsSqrt))
                     continue;
 
                 //prevents IO nodes to be not put in IO cells
                 //and put a non IO node in an IO cell
-                const bool isCellAIO = fpgaIsIOCell(cellA, nCellsSqrt);
-                const bool isCellBIO = fpgaIsIOCell(cellB, nCellsSqrt);
+                const bool isCellAIO = fpgaIsIOCell(lA, cA, nCellsSqrt);
+                const bool isCellBIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
 
                 if ((isCellAIO && !isCellBIO) || (!isCellAIO && isCellBIO))
                     continue;
@@ -140,7 +144,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
 
-    auto report = FpgaReportData(
+    /*auto report = FpgaReportData(
         _time,
         g.dotName,
         g.dotPath,
@@ -156,8 +160,8 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
         0,
         c2n,
         n2c
-    );
-    return report;
+    );*/
+    return FpgaReportData();
 }
 
 
