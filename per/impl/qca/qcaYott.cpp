@@ -4,37 +4,37 @@
 
 
 QcaReportData qcaYott(QCAGraph &g) {
-    const int nCells = g.nCells;
-    const int nCellsSqrt = g.nCellsSqrt;
-    const int nNodes = g.nNodes;
-    const vector<pair<int, int> > ed = g.gEdges;
+    const long nCells = g.nCells;
+    const long nCellsSqrt = g.nCellsSqrt;
+    const long nNodes = g.nNodes;
+    const vector<pair<long, long> > ed = g.gEdges;
 
-    vector c2n(nCells, -1);
-    vector n2c(nNodes, -1);
+    vector<long> c2n(nCells, -1);
+    vector<long> n2c(nNodes, -1);
 
-    vector<int> cells(nCells);
+    vector<long> cells(nCells);
 #ifdef USE
     iota(cells.begin(), cells.end(), 0);
     randomVector(cells);
 #elifdef WAVE2D
-    vector<int> outCells = g.getInterleavedOutputCellsQCA();
+    vector<long> outCells = g.getInterleavedOutputCellsQCA();
 #endif
 
 #ifdef PRINT
     qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
 
-    int tries = 0;
-    int swaps = 0;
+    long tries = 0;
+    long swaps = 0;
 
 
     string alg_type;
 
-    vector<pair<int, int> > convergence;
-    vector<tuple<int, int, string> > ed_zz;
+    vector<pair<long, long> > convergence;
+    vector<tuple<long, long, string> > ed_zz;
     const vector ed_tmp = g.getEdgesZigzag(convergence, &ed_zz);
 
-    unordered_map<string, vector<pair<int, int> > > annotations = g.qcaGetGraphAnnotations(ed_tmp, convergence);
+    unordered_map<string, vector<pair<long, long> > > annotations = g.qcaGetGraphAnnotations(ed_tmp, convergence);
 
     alg_type = "ZIG_ZAG";
 
@@ -49,7 +49,7 @@ QcaReportData qcaYott(QCAGraph &g) {
         if (n2c[a] == -1) {
             bool found = false;
             while (!found) {
-                int cell = cells.back();
+                long cell = cells.back();
                 cells.pop_back();
                 if (c2n[cell] == -1) {
                     c2n[cell] = a;
@@ -71,10 +71,10 @@ QcaReportData qcaYott(QCAGraph &g) {
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-        const int xA = getX(n2c[a], nCellsSqrt);
-        const int yA = getY(n2c[a], nCellsSqrt);
+        const long xA = getX(n2c[a], nCellsSqrt);
+        const long yA = getY(n2c[a], nCellsSqrt);
 
-        vector<pair<int, int> > distCells;
+        vector<pair<long, long> > distCells;
 
         if (dir == "IN")
             distCells = qcaGetInputDirections(xA, yA);
@@ -83,19 +83,19 @@ QcaReportData qcaYott(QCAGraph &g) {
 
         randomVector(distCells);
 
-        int betterCell = -1;
-        int betterCellDist = nCells;
+        long betterCell = -1;
+        long betterCellDist = nCells;
 
         bool placed = false;
 
         //Then I will look for a cell next to A's cell
         for (const auto &[fst,snd]: distCells) {
             ++tries;
-            const int yB = yA + snd;
-            const int xB = xA + fst;
+            const long yB = yA + snd;
+            const long xB = xA + fst;
 
             //find the idx for the target cell
-            const int targetCell = yB * nCellsSqrt + xB;
+            const long targetCell = yB * nCellsSqrt + xB;
 
             // Check if the target cell is not allowed, go to next
             if (qcaIsInvalidCell(xB, yB, nCellsSqrt))
@@ -108,20 +108,20 @@ QcaReportData qcaYott(QCAGraph &g) {
 
             //beginning with an annotation if it exists
             const string key = to_string(a) + " " + to_string(b);
-            const vector<pair<int, int> > annotation = annotations[key];
+            const vector<pair<long, long> > annotation = annotations[key];
 
             //if we have an annotation
             if (!annotation.empty()) {
                 if (c2n[targetCell] != -1)
                     continue;
 
-                int modDist = 0;
+                long modDist = 0;
                 bool found = true;
                 //find the distance of the target cell to the annotated cell and compare if they are equal
                 for (auto &[fst, snd]: annotation) {
-                    const int annCell = n2c[fst];
-                    const int annDist = snd + 1;
-                    const int tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
+                    const long annCell = n2c[fst];
+                    const long annDist = snd + 1;
+                    const long tAnnDist = getManhattanDist(targetCell, annCell, nCellsSqrt);
 
                     modDist += abs(annDist - tAnnDist);
                 }
@@ -156,7 +156,7 @@ QcaReportData qcaYott(QCAGraph &g) {
     double _time = duration.count();
 
     //if this placement valid?
-    int wrongEdges;
+    long wrongEdges;
     bool success = g.verifyPlacement(n2c, ed, &wrongEdges);
     bool nodesPlaced = allPlaced(n2c);
     AreaMetrics saMetrics = computeOccupiedAreaMetrics(nCellsSqrt, c2n);
@@ -170,8 +170,8 @@ QcaReportData qcaYott(QCAGraph &g) {
         g.dotPath,
         "SA",
         nCellsSqrt,
-        static_cast<int>(g.dummyMap.size()),
-        static_cast<int>(g.nNodes - g.dummyMap.size()),
+        static_cast<long>(g.dummyMap.size()),
+        static_cast<long>(g.nNodes - g.dummyMap.size()),
         tries,
         swaps,
         wrongEdges,

@@ -5,6 +5,7 @@
 #include <../../include/fpga/parametersFpga.h>
 #include <qca/qcaUtil.h>
 
+using namespace std;
 
 QCAGraph::QCAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
 #ifdef PRINT
@@ -17,16 +18,16 @@ QCAGraph::QCAGraph(const string &dotPath, const string &dotName): Graph(dotPath,
 
 void QCAGraph::updateG() {
     Graph::updateG();
-    outNeighbors = std::vector<std::vector<int> >(nNodes);
-    inNeighbors = std::vector<std::vector<int> >(nNodes);
+    outNeighbors = std::vector<std::vector<long> >(nNodes);
+    inNeighbors = std::vector<std::vector<long> >(nNodes);
     updateNeighbors();
 }
 
 void QCAGraph::updateNeighbors() {
-    const int nNodes = QCAGraph::nNodes;
+    const long nNodes = QCAGraph::nNodes;
 
-    for (int node = 0; node < nNodes; node++) {
-        for (int neigh = 0; neigh < nNodes; neigh++) {
+    for (long node = 0; node < nNodes; node++) {
+        for (long neigh = 0; neigh < nNodes; neigh++) {
             if (successors[node][neigh])
                 outNeighbors[node].push_back(neigh);
 
@@ -37,43 +38,43 @@ void QCAGraph::updateNeighbors() {
 }
 
 void QCAGraph::calcMatrix() {
-    const int ioMax = static_cast<int>(max(inputNodes.size(), outputNodes.size()));
-    const int numDesiredLevels = numLevels + 2;
-    const int estimatedSide = static_cast<int>(ceil(sqrt(nNodes))) + 2;
-    const int cellSqrt = max({estimatedSide, ioMax, numDesiredLevels + 2});
+    const long ioMax = static_cast<long>(max(inputNodes.size(), outputNodes.size()));
+    const long numDesiredLevels = numLevels + 2;
+    const long estimatedSide = static_cast<long>(ceil(sqrt(nNodes))) + 2;
+    const long cellSqrt = max({estimatedSide, ioMax, numDesiredLevels + 2});
 
     nCellsSqrt = cellSqrt;
     nCells = nCellsSqrt * nCellsSqrt;
 }
 
 void QCAGraph::fixFanout() {
-    unordered_map<int, vector<int> > fanouts;
+    unordered_map<long, vector<long> > fanouts;
     for (auto [fst, snd]: gEdges)
         fanouts[fst].push_back(snd);
 
-    vector<pair<int, int> > newEdges;
-    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
-    int dummyCount = 0;
+    vector<pair<long, long> > newEdges;
+    long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    long dummyCount = 0;
 
     for (auto &[fst, outs]: fanouts) {
         if (outs.size() <= 2) {
-            for (int snd: outs) newEdges.emplace_back(fst, snd);
+            for (long snd: outs) newEdges.emplace_back(fst, snd);
             continue;
         }
 
-        queue<int> leaves;
-        for (int snd: outs)
+        queue<long> leaves;
+        for (long snd: outs)
             leaves.push(snd);
 
-        vector<int> dummyNodes;
+        vector<long> dummyNodes;
 
         while (leaves.size() > 1) {
-            int a = leaves.front();
+            long a = leaves.front();
             leaves.pop();
-            int b = leaves.front();
+            long b = leaves.front();
             leaves.pop();
 
-            int dummy = nextId++;
+            long dummy = nextId++;
             gNodes.push_back(dummy);
             dummyMap[dummy] = "dummy" + to_string(dummyCount++);
 
@@ -84,12 +85,12 @@ void QCAGraph::fixFanout() {
             dummyNodes.push_back(dummy);
         }
 
-        int root = leaves.front();
+        long root = leaves.front();
         newEdges.emplace_back(fst, root);
     }
 
     gEdges = newEdges;
-    nEdges = static_cast<int>(gEdges.size());
+    nEdges = static_cast<long>(gEdges.size());
     nNodes = nextId;
     updateG();
 
@@ -99,32 +100,32 @@ void QCAGraph::fixFanout() {
 }
 
 void QCAGraph::fixFanin() {
-    unordered_map<int, vector<int> > fanins;
+    unordered_map<long, vector<long> > fanins;
     for (auto [fst, snd]: gEdges)
         fanins[snd].push_back(fst);
 
 
-    vector<pair<int, int> > newEdges;
-    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
-    int dummyCount = 0;
+    vector<pair<long, long> > newEdges;
+    long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    long dummyCount = 0;
 
     for (auto &[snd, ins]: fanins) {
         if (ins.size() <= 2) {
-            for (int fst: ins) newEdges.emplace_back(fst, snd);
+            for (long fst: ins) newEdges.emplace_back(fst, snd);
             continue;
         }
 
-        queue<int> leaves;
-        for (int fst: ins)
+        queue<long> leaves;
+        for (long fst: ins)
             leaves.push(fst);
 
         while (leaves.size() > 1) {
-            int a = leaves.front();
+            long a = leaves.front();
             leaves.pop();
-            int b = leaves.front();
+            long b = leaves.front();
             leaves.pop();
 
-            int dummy = nextId++;
+            long dummy = nextId++;
             gNodes.push_back(dummy);
             dummyMap[dummy] = "dummy" + to_string(dummyCount++);
 
@@ -134,12 +135,12 @@ void QCAGraph::fixFanin() {
             leaves.push(dummy);
         }
 
-        int root = leaves.front();
+        long root = leaves.front();
         newEdges.emplace_back(root, snd);
     }
 
     gEdges = newEdges;
-    nEdges = static_cast<int>(gEdges.size());
+    nEdges = static_cast<long>(gEdges.size());
     nNodes = nextId;
     updateG();
 #ifdef PRINT
@@ -152,22 +153,22 @@ void QCAGraph::computeLevels() {
     levelSuccessors.clear();
     levelPredecessors.clear();
 
-    unordered_map<int, int> inDegree;
+    unordered_map<long, long> inDegree;
     for (const auto [fst, snd]: gEdges)
         inDegree[snd]++;
 
 
-    queue<int> q;
-    for (int node: inputNodes) {
+    queue<long> q;
+    for (long node: inputNodes) {
         q.push(node);
         level[node] = 0;
     }
 
     // Kahn's algorithm to compute topological levels
     while (!q.empty()) {
-        const int fst = q.front();
+        const long fst = q.front();
         q.pop();
-        for (int snd: adjList[fst]) {
+        for (long snd: adjList[fst]) {
             level[snd] = max(level[snd], level[fst] + 1);
             if (--inDegree[snd] == 0)
                 q.push(snd);
@@ -181,15 +182,15 @@ void QCAGraph::computeLevels() {
     }
 
     //find the minor level between the output nodes
-    minOutputLevel = numeric_limits<int>::max();
-    for (int out: outputNodes) {
+    minOutputLevel = numeric_limits<long>::max();
+    for (long out: outputNodes) {
         if (level.count(out)) {
             minOutputLevel = min(minOutputLevel, level[out]);
         }
     }
 
     //find the total levels
-    int maxLevel = 0;
+    long maxLevel = 0;
     for (const auto &[_, lvl]: level) {
         maxLevel = max(maxLevel, lvl);
     }
@@ -202,20 +203,20 @@ void QCAGraph::computeLevels() {
 void QCAGraph::balanceGraphAll() {
     computeLevels();
 
-    vector<pair<int, int> > balancedEdges;
-    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
-    int dummyCount = 0;
+    vector<pair<long, long> > balancedEdges;
+    long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    long dummyCount = 0;
 
     for (auto [src, dst]: gEdges) {
-        const int levelSrc = level[src];
-        const int levelDst = level[dst];
+        const long levelSrc = level[src];
+        const long levelDst = level[dst];
 
         if (levelDst == levelSrc + 1)
             balancedEdges.emplace_back(src, dst);
         else if (levelDst > levelSrc + 1) {
-            int prev = src;
-            for (int i = 0; i < levelDst - levelSrc - 1; ++i) {
-                int dummy = nextId++;
+            long prev = src;
+            for (long i = 0; i < levelDst - levelSrc - 1; ++i) {
+                long dummy = nextId++;
                 gNodes.push_back(dummy);
                 dummyMap[dummy] = "dummy" + to_string(dummyCount++);
 
@@ -226,7 +227,7 @@ void QCAGraph::balanceGraphAll() {
         }
     }
     gEdges = move(balancedEdges);
-    nEdges = static_cast<int>(gEdges.size());
+    nEdges = static_cast<long>(gEdges.size());
     nNodes = nextId;
 
     updateG();
@@ -238,19 +239,19 @@ void QCAGraph::balanceGraphAll() {
 }
 
 // Insert dummy layer between nodes at level L and L+1
-void QCAGraph::insertDummyLayerAtLevel(const int targetLevel) {
+void QCAGraph::insertDummyLayerAtLevel(const long targetLevel) {
     computeLevels();
 
-    vector<pair<int, int> > updatedEdges;
-    int nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
-    int dummyCount = 0;
+    vector<pair<long, long> > updatedEdges;
+    long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
+    long dummyCount = 0;
 
     for (auto [src, dst]: gEdges) {
-        const int levelSrc = level[src];
-        const int levelDst = level[dst];
+        const long levelSrc = level[src];
+        const long levelDst = level[dst];
 
         if (levelSrc == targetLevel && levelDst == targetLevel + 1) {
-            int dummy = nextId++;
+            long dummy = nextId++;
             gNodes.push_back(dummy);
             dummyMap[dummy] = "dummy" + to_string(dummyCount++);
 
@@ -261,7 +262,7 @@ void QCAGraph::insertDummyLayerAtLevel(const int targetLevel) {
     }
 
     gEdges = move(updatedEdges);
-    nEdges = static_cast<int>(gEdges.size());
+    nEdges = static_cast<long>(gEdges.size());
     nNodes = nextId;
 
     updateG();
@@ -286,7 +287,7 @@ void QCAGraph::exportUpGToDot(const string &filename) {
     fout << "digraph network {\n";
 
     // Declara os nós com estilo
-    for (const int node: gNodes) {
+    for (const long node: gNodes) {
         fout << "  " << node;
         if (dummyMap.count(node))
             fout << " [style=dashed]";
@@ -315,16 +316,16 @@ void QCAGraph::saveDummyMap(const string &filename) {
     //cout << "Dummy map saved to: " << filename << endl;
 }
 
-bool QCAGraph::verifyPlacement(const vector<int> &n2c, const vector<pair<int, int> > &edges,
-                               int *invalidEdgesCount) const {
-    const int nCellsSqrt = QCAGraph::nCellsSqrt;
+bool QCAGraph::verifyPlacement(const vector<long> &n2c, const vector<pair<long, long> > &edges,
+                               long *invalidEdgesCount) const {
+    const long nCellsSqrt = QCAGraph::nCellsSqrt;
 
     bool allValid = true;
-    int totalInvalid = 0;
+    long totalInvalid = 0;
 
     for (const auto &[src, dst]: edges) {
-        const int srcCell = n2c[src];
-        const int dstCell = n2c[dst];
+        const long srcCell = n2c[src];
+        const long dstCell = n2c[dst];
 
         if (srcCell == -1 || dstCell == -1) {
             ++totalInvalid;
@@ -332,15 +333,15 @@ bool QCAGraph::verifyPlacement(const vector<int> &n2c, const vector<pair<int, in
             continue;
         }
 
-        const int srcX = getX(srcCell, nCellsSqrt);
-        const int srcY = getY(srcCell, nCellsSqrt);
-        const int dstX = getX(dstCell, nCellsSqrt);
-        const int dstY = getY(dstCell, nCellsSqrt);
+        const long srcX = getX(srcCell, nCellsSqrt);
+        const long srcY = getY(srcCell, nCellsSqrt);
+        const long dstX = getX(dstCell, nCellsSqrt);
+        const long dstY = getY(dstCell, nCellsSqrt);
 
         const auto outputDirs = qcaGetOutputDirections(srcX, srcY);
 
         const bool isValidEdge = std::any_of(outputDirs.begin(), outputDirs.end(),
-                                             [&](const std::pair<int, int> &dir) {
+                                             [&](const std::pair<long, long> &dir) {
                                                  return dstX == srcX + dir.first && dstY == srcY + dir.second;
                                              });
 
@@ -369,25 +370,25 @@ bool QCAGraph::verifyPlacement(const vector<int> &n2c, const vector<pair<int, in
     return allValid;
 }
 
-unordered_map<string, vector<pair<int, int> > > QCAGraph::qcaGetGraphAnnotations(
-    const vector<pair<int, int> > &edges,
-    const vector<pair<int, int> > &convergences
+unordered_map<string, vector<pair<long, long> > > QCAGraph::qcaGetGraphAnnotations(
+    const vector<pair<long, long> > &edges,
+    const vector<pair<long, long> > &convergences
 ) {
-    unordered_map<string, vector<pair<int, int> > > annotations;
-    vector<int> placed;
+    unordered_map<string, vector<pair<long, long> > > annotations;
+    vector<long> placed;
     // Initialization of the dictionary
 
     for (const auto &[cycleBegin,cycleEnd]: convergences) {
-        //const int cycleBegin = cycleBegin;
-        //int cycleEnd = cycleEnd;
+        //const long cycleBegin = cycleBegin;
+        //long cycleEnd = cycleEnd;
         list<string> walkKeys;
         bool found_start = false;
-        int count = 0;
-        int current = -1;
+        long count = 0;
+        long current = -1;
 
         for (auto it = edges.rbegin(); it != edges.rend(); ++it) {
-            const int src = it->first;
-            const int dst = it->second;
+            const long src = it->first;
+            const long dst = it->second;
 
             if (!found_start && cycleBegin == dst) {
                 current = src;
@@ -396,7 +397,7 @@ unordered_map<string, vector<pair<int, int> > > QCAGraph::qcaGetGraphAnnotations
                 annotations[key].emplace_back(cycleEnd, count++);
                 found_start = true;
             } else if (found_start && (dst == current || src == cycleEnd)) {
-                //const int dst = dst;
+                //const long dst = dst;
                 const string key = funcKey(to_string(current), to_string(dst));
                 current = src;
 
@@ -405,9 +406,9 @@ unordered_map<string, vector<pair<int, int> > > QCAGraph::qcaGetGraphAnnotations
                     annotations[key].emplace_back(cycleEnd, count++);
                 } else {
                     // Go back and update values
-                    const int half = count / 2;
+                    const long half = count / 2;
                     auto it2 = walkKeys.begin();
-                    for (int k = 0; k < half; ++k, ++it2) {
+                    for (long k = 0; k < half; ++k, ++it2) {
                         auto &dic_actual = annotations[*it2];
                         for (auto &[target,annotationValue]: dic_actual) {
                             if (target == cycleEnd)
@@ -423,23 +424,23 @@ unordered_map<string, vector<pair<int, int> > > QCAGraph::qcaGetGraphAnnotations
     return annotations;
 }
 
-vector<int> QCAGraph::getInterleavedOutputCellsQCA() const {
-    const int edge = this->nCellsSqrt - 1;
+vector<long> QCAGraph::getInterleavedOutputCellsQCA() const {
+    const long edge = this->nCellsSqrt - 1;
 
-    vector<int> outputCells;
-    int row = edge;
-    int col = edge;
+    vector<long> outputCells;
+    long row = edge;
+    long col = edge;
 
     while (row >= 0 || col >= 0) {
         if (row >= 0) {
-            const int cell = row * nCellsSqrt + edge;
+            const long cell = row * nCellsSqrt + edge;
             outputCells.push_back(cell);
             --row;
         }
 
         if (col != edge)
             if (col >= 0) {
-                const int cell = edge * nCellsSqrt + col;
+                const long cell = edge * nCellsSqrt + col;
                 outputCells.push_back(cell);
                 --col;
             }
