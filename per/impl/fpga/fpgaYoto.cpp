@@ -16,6 +16,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
 
+    vector<long> c2n(nCells, -1);
+    vector<long> n2c(nNodes, -1);
+
     vector<vector<vector<long> > > distCells;
     vector<pair<long, long> > ed;
     vector<long> inOutCells = g.getInOutPos();
@@ -113,10 +116,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
         if (a == -1) {
             targetNode = b;
-        } else if (cellA == -1) {
+        } /*else if (cellA == -1) {
             cout << "Error while placing A node";
             exit(1);
-        }
+        }*/
 
         if (targetNode != -1) {
             bool found = false;
