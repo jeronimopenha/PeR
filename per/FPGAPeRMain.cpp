@@ -105,7 +105,8 @@ int main() {
 
 #if !defined(CACHE)
             //generate reports and files for vpr
-            fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
+            //FIXME!!!!!!!!!!!!!1
+            //fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
             /*
         * std::string folderPath = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/";
         std::string command = "python3 script.py \"" + folderPath + "\"";

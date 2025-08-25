@@ -12,9 +12,9 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long swaps, string edges_algorithm, const long totalCost,
-                               const long lPCost, const vector<long> &c2n, const vector<long> &n2c,
-                               vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin,
-                               map<long, vector<long> > orDest)
+                               const long lPCost, const vector<vector<long> > &c2n,
+                               const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
+                               vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -147,19 +147,15 @@ string FpgaReportData::metrics_to_json() const {
     return oss.str();
 }
 
-void fpgaSavePlacedDot(vector<pair<long,long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
+void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
                        const long nCellsSqrt, const string &filename) {
-    ofstream file(filename);
-    if (!file) {
-        cerr << "Error!" << endl;
-        return;
-    }
+    string fileString = "";
 
     // write the dot header
-    file << "digraph layout{" << endl;
-    file << "rankdir=TB; \n" << endl;
-    file << "splines=ortho; \n" << endl;
-    file << "node [style=filled shape=square fixedsize=true width=0.6];" << endl;
+    fileString += "digraph layout{\n";
+    fileString += "rankdir=TB; \n\n";
+    fileString += "splines=ortho; \n\n";
+    fileString += "node [style=filled shape=square fixedsize=true width=0.6];\n";
 
     for (long i = 0; i < c2n.size(); i++) {
         string label = "[label = \"";
@@ -174,51 +170,58 @@ void fpgaSavePlacedDot(vector<pair<long,long> > &n2c, vector<vector<long> > &c2n
                 label += ",\n";
             label += std::to_string(c2n[i][j]);
         }
-        file << i << label << "\", fontsize=8, fillcolor=";
+        fileString += to_string(i) + label + "\", fontsize=8, fillcolor=";
 
         if (flag)
-            file << "\"#a9ccde\"];";
+            fileString += "\"#a9ccde\"];";
         else
-            file << "\"#ffffff\"];";
+            fileString += "\"#ffffff\"];";
 
-        file << endl;
+        fileString += "\n";
     }
-    file << "edge [constraint=false, style=vis];" << endl;
+    fileString += "edge [constraint=false, style=vis];\n";
     //normal edges
-    /*for (auto &[fst,snd]: ed) {
-        if (n2c[fst] != -1 && n2c[snd] != -1)
-            file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
+    for (auto &[fst,snd]: ed) {
+        if (n2c[fst].first != -1 && n2c[snd].first != -1)
+            fileString += to_string(n2c[fst].first) + " -> " + to_string(n2c[snd].first) + ";\n";
     }
-*/
 
-    file << "edge [constraint=true, style=invis];" << endl;
+
+    fileString += "edge [constraint=true, style=invis];\n";
     //structural edges
     for (long j = 0; j < nCellsSqrt; j++) {
         for (long i = 0; i < nCellsSqrt; i++) {
             long c = j + i * nCellsSqrt;
             if (i == nCellsSqrt - 1) {
-                file << c << ";" << endl;
+                fileString += to_string(c) + ";\n";
             } else {
-                file << c << " -> ";
+                fileString += to_string(c) + " -> ";
             }
         }
     }
 
     for (long i = 0; i < nCellsSqrt; i++) {
-        file << "rank = same { ";
+        fileString += "rank = same { ";
         for (long j = 0; j < nCellsSqrt; j++) {
             long c = i * nCellsSqrt + j;
             if (j == nCellsSqrt - 1) {
-                file << c << ";";
+                fileString += to_string(c) + ";";
             } else {
-                file << c << " -> ";
+                fileString += to_string(c) + " -> ";
             }
         }
-        file << "};" << endl;
+        fileString += "};\n";
     }
 
     // write the dot footer
-    file << "}" << endl;
+    fileString += "}\n";
+
+    ofstream file(filename);
+    if (!file) {
+        cerr << "Error!" << endl;
+        return;
+    }
+    file << fileString;
     file.close();
 }
 
@@ -345,13 +348,14 @@ void fpgaWriteReports(const std::string &basePath,
 #endif
 }
 
+//fixme
 void fpgaWriteVprData(const string &basePath,
                       const string &reportPath,
                       const string &algPath,
                       const string &fileName,
                       const FpgaReportData &data,
                       FPGAGraph g) {
-    string placePath = basePath + reportPath + algPath + "/place/";
+    /*string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
     string netBasePath = reportPath + algPath + "/net/";
@@ -450,7 +454,7 @@ void fpgaWriteVprData(const string &basePath,
 
         file.close();
     } else
-        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;*/
 }
 
 bool fpgaIsInvalidCell(const long l, const long c, const long nCellsSqrt) {

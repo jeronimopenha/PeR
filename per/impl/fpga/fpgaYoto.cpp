@@ -171,6 +171,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         const long lA = cellA / nCellsSqrt;
         const long cA = cellA % nCellsSqrt;
 
+        bool isTargetCellIO = true;
+
 
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells[distVectorCounter]) {
@@ -255,7 +257,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 //find the idx for the target cell
                 targetCell = lB * nCellsSqrt + cB;
 
-                const bool isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
 
                 //prevents put a non IO noce in an IO cell
                 if (isTargetCellIO)
@@ -267,11 +269,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 continue;
             dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
+            const bool placeFlag = (isTargetCellIO) ? c2n[targetCell].size() < IO_NUMBER : c2n[targetCell].empty();
+
+
             // Place the node if `placement[targetCell]` is unoccupied
 #ifdef CACHE
             cacheMisses += cacheC2N.readCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell].size() < IO_NUMBER) {
+            if (placeFlag) {
                 c2n[targetCell].push_back(b);
                 n2c[b].first = targetCell;
                 n2c[b].second = c2n[targetCell].size() - 1;
@@ -291,7 +296,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 orDest[cellA].push_back(targetCell);
 #endif
 #ifdef PRINT
-                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+                //fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
                 long _max = 2 * dist * (dist + 1);
                 if ((unicTry > _max) && !IsBIoNode) {
@@ -321,8 +326,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //long tc = 0;
     // commented to take the cost of the longest path
     //#ifdef FPGA_TOTAL_COST
-//fixme
-    //const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    //fixme
+    const long tc = -1; //fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
 
     //fixme
@@ -336,7 +341,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     if (swaps != nNodes) {
         cout << "Erro ao processar o arquivo " << g.dotName << "Nem todo os nós foram posicionados" << endl;
     }
-/*
     //FIXME reports
     auto report = FpgaReportData(
         _time,
@@ -366,6 +370,4 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         orDest
     );
     return report;
-    */
-
 }

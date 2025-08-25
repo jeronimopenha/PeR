@@ -9,7 +9,7 @@
 //PER FPGA PARAMETERS
 
 //Choose the I/O qty of ports per cell
-#define IO_NUMBER  2
+#define IO_NUMBER  3
 
 //Choose if Cache will be used
 //#define CACHE
@@ -26,9 +26,9 @@
 //#define BEST_ONLY
 
 //Choose the algorithm to be run
-#define FPGA_YOTO_DF
+//#define FPGA_YOTO_DF
 //#define FPGA_YOTO_DF_PRIO
-//#define FPGA_YOTO_ZZ
+#define FPGA_YOTO_ZZ
 //#define FPGA_YOTT
 //#define FPGA_SA
 //*******************************
