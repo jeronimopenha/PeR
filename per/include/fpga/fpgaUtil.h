@@ -21,6 +21,7 @@ struct FpgaReportData {
     long size = 0;
     long nNodes = 0;
     long nIOs = 0;
+    long nIOpCell = IO_NUMBER;
     long cacheMisses = -1;
     long w = 0;
     long wCost = 0;

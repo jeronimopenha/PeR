@@ -146,6 +146,8 @@ inline std::string algPath = [] {
     path += "_best_only";
 #endif
 
+    path += "_ION_" + std::to_string(IO_NUMBER);
+
 #ifdef DEBUG
     path += "_debug";
 #endif

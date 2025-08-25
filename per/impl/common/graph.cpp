@@ -254,7 +254,9 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
     vector<long> outputList = outputNodes;
     randomVector(outputList);
     sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
-        return slack[a] > slack[b];
+        const long slack_a = slack[a];
+        const long slack_b = slack[b];
+        return slack_a > slack_b;
     });
 
     //insert face edge to output nodes
@@ -282,9 +284,9 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
         }
 
         sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
-            const long slack_a =slack[a];
-            const long slack_b =slack[b];
-            return  slack_a > slack_b;
+            const long slack_a = slack[a];
+            const long slack_b = slack[b];
+            return slack_a > slack_b;
         });
 
         for (const auto pred: neigh) {
@@ -307,6 +309,11 @@ vector<pair<long, long> > Graph::getEdgesZigzag(
         outputList.emplace_back(node, "IN");
 
     randomVector(outputList);
+    sort(outputList.begin(), outputList.end(), [&](const pair<long, string> &a, const pair<long, string> &b) {
+        const long slack_a = slack[a.first];
+        const long slack_b = slack[b.first];
+        return slack_a > slack_b;
+    });
 
     vector stack(outputList.begin(), outputList.end());
     vector<pair<long, long> > edges;
@@ -325,7 +332,17 @@ vector<pair<long, long> > Graph::getEdgesZigzag(
             }
         }
         randomVector(fanOut[i]);
+        sort(fanOut[i].begin(), fanOut[i].end(), [&](const long a, const long b) {
+            const long slack_a = slack[a];
+            const long slack_b = slack[b];
+            return slack_a > slack_b;
+        });
         randomVector(fanIn[i]);
+        sort(fanIn[i].begin(), fanIn[i].end(), [&](const long a, const long b) {
+            const long slack_a = slack[a];
+            const long slack_b = slack[b];
+            return slack_a > slack_b;
+        });
     }
 
 
@@ -538,5 +555,3 @@ void Graph::isolateMultiInputOutputs() {
 
     updateG(); // atualiza estruturas internas
 }
-
-

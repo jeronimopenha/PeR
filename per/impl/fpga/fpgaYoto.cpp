@@ -111,15 +111,16 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         unicTry = 0;
 #endif
 
-
-        //if (a == -1) {
-        //    targetNode = b;
-        //} else if (cellA == -1) {
-        //    cout << "Error while placing A node";
-        //    exit(1);
-        //}
-
+        long targetNode = -1;
+        bool breakLoop = false;
         if (a == -1) {
+            targetNode = b;
+            breakLoop = true;
+        } else if (n2c[a].first == -1) {
+            targetNode = a;
+        }
+
+        if (targetNode != -1) {
             bool found = false;
             while (!found) {
                 ioTries++;
@@ -129,9 +130,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                c2n[ioCell].push_back(b);
-                n2c[b].first = ioCell;
-                n2c[b].second = c2n[ioCell].size() - 1;
+                c2n[ioCell].push_back(targetNode);
+                n2c[targetNode].first = ioCell;
+                n2c[targetNode].second = c2n[ioCell].size() - 1;
                 found = true;
                 swaps++;
 #ifdef MAKE_METRICS
@@ -147,7 +148,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef PRINT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
-            continue;
+            if (breakLoop)
+                continue;
+            unicTry = 0;
         }
 
         //Verify if A is placed
@@ -296,7 +299,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 orDest[cellA].push_back(targetCell);
 #endif
 #ifdef PRINT
-                //fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
                 long _max = 2 * dist * (dist + 1);
                 if ((unicTry > _max) && !IsBIoNode) {

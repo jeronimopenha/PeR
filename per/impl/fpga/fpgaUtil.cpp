@@ -54,6 +54,7 @@ string FpgaReportData::to_json() const {
             << "  \"border\": " << size << ",\n"
             << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"nIOs\": " << nIOs << ",\n"
+            << "  \"nIOpCell\": " << nIOpCell << ",\n"
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
             << "  \"w\": " << w << ",\n"
             << "  \"wCost\": " << wCost << ",\n"
