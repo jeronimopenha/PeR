@@ -16,8 +16,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
 
-    vector<long> c2n(nCells, -1);
-    vector<long> n2c(nNodes, -1);
+    vector<vector<long> > c2n(nCells, vector<long>());
+    vector<pair<long, long> > n2c(nNodes, {-1, -1});
 
     vector<vector<vector<long> > > distCells;
     vector<pair<long, long> > ed;
@@ -87,7 +87,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     int borderTickTack = 0;
 
 #ifdef PRINT
-    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
     //time counting
@@ -112,12 +112,12 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 
-        /*if (a == -1) {
-            targetNode = b;
-        } else if (cellA == -1) {
-            cout << "Error while placing A node";
-            exit(1);
-        }*/
+        //if (a == -1) {
+        //    targetNode = b;
+        //} else if (cellA == -1) {
+        //    cout << "Error while placing A node";
+        //    exit(1);
+        //}
 
         if (a == -1) {
             bool found = false;
@@ -129,8 +129,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                c2n[ioCell] = b;
-                n2c[b] = ioCell;
+                c2n[ioCell].push_back(b);
+                n2c[b].first = ioCell;
+                n2c[b].second = c2n[ioCell].size() - 1;
                 found = true;
                 swaps++;
 #ifdef MAKE_METRICS
@@ -144,7 +145,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
             }
 #ifdef PRINT
-            fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
             continue;
         }
@@ -155,13 +156,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
-        const long cellA = n2c[a];
+        const long cellA = n2c[a].first;
 
         //Now, if B is placed, go to next edge
 #ifdef CACHE
         cacheMisses += cacheN2C.readCache(b, n2c);
 #endif
-        if (n2c[b] != -1)
+        if (n2c[b].first != -1)
             continue;
 
         // Now I will try to find an adjacent cell from A to place B
@@ -270,9 +271,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
             cacheMisses += cacheC2N.readCache(targetCell, c2n);
 #endif
-            if (c2n[targetCell] == -1) {
-                c2n[targetCell] = b;
-                n2c[b] = targetCell;
+            if (c2n[targetCell].size() < IO_NUMBER) {
+                c2n[targetCell].push_back(b);
+                n2c[b].first = targetCell;
+                n2c[b].second = c2n[targetCell].size() - 1;
                 ++swaps;
                 setBorder = false;
 #ifdef MAKE_METRICS
@@ -289,7 +291,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 orDest[cellA].push_back(targetCell);
 #endif
 #ifdef PRINT
-                fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
                 long _max = 2 * dist * (dist + 1);
                 if ((unicTry > _max) && !IsBIoNode) {
@@ -309,7 +311,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef PRINT
-    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
     auto end = chrono::high_resolution_clock::now();
@@ -319,7 +321,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //long tc = 0;
     // commented to take the cost of the longest path
     //#ifdef FPGA_TOTAL_COST
-    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+//fixme
+    //const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
 
     //fixme
@@ -333,7 +336,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     if (swaps != nNodes) {
         cout << "Erro ao processar o arquivo " << g.dotName << "Nem todo os nós foram posicionados" << endl;
     }
-
+/*
     //FIXME reports
     auto report = FpgaReportData(
         _time,
@@ -363,4 +366,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         orDest
     );
     return report;
+    */
+
 }

@@ -53,7 +53,8 @@ struct FpgaReportData {
     [[nodiscard]] std::string metrics_to_json() const;
 };
 
-void fpgaSavePlacedDot(std::vector<long> &n2c, const std::vector<std::pair<long, long> > &ed, long nCellsSqrt,
+void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std::vector<long> > &c2n,
+                       const std::vector<std::pair<long, long> > &ed, const long nCellsSqrt,
                        const std::string &filename);
 
 std::vector<std::vector<long> > fpgaGetAdjCellsDist(long nCellsSqrt);

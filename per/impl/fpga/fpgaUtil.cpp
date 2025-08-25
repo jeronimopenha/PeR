@@ -147,19 +147,12 @@ string FpgaReportData::metrics_to_json() const {
     return oss.str();
 }
 
-void fpgaSavePlacedDot(vector<long> &n2c, const vector<pair<long, long> > &ed, const long nCellsSqrt,
-                       const string &filename) {
+void fpgaSavePlacedDot(vector<pair<long,long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
+                       const long nCellsSqrt, const string &filename) {
     ofstream file(filename);
     if (!file) {
         cerr << "Error!" << endl;
         return;
-    }
-
-    vector<long> cells(nCellsSqrt * nCellsSqrt, -1);
-
-    for (long i = 0; i < static_cast<long>(n2c.size()); i++) {
-        if (n2c[i] > -1)
-            cells[n2c[i]] = i;
     }
 
     // write the dot header
@@ -168,20 +161,35 @@ void fpgaSavePlacedDot(vector<long> &n2c, const vector<pair<long, long> > &ed, c
     file << "splines=ortho; \n" << endl;
     file << "node [style=filled shape=square fixedsize=true width=0.6];" << endl;
 
-    for (long i = 0; i < cells.size(); i++) {
-        if (cells[i] == -1) {
-            file << i << "[label=\"\", fontsize=8, fillcolor=\"#ffffff\"];" << endl;
-        } else {
-            file << i << "[label=\"" << cells[i] << "\", fontsize=8, fillcolor=\"#a9ccde\"];" << endl;
+    for (long i = 0; i < c2n.size(); i++) {
+        string label = "[label = \"";
+        bool flag = !c2n[i].empty();
+
+        for (long j = 0; j < c2n[i].size(); j++) {
+            if (c2n[i][j] == -1) {
+                break;
+            }
+            flag = true;
+            if (j > 0)
+                label += ",\n";
+            label += std::to_string(c2n[i][j]);
         }
+        file << i << label << "\", fontsize=8, fillcolor=";
+
+        if (flag)
+            file << "\"#a9ccde\"];";
+        else
+            file << "\"#ffffff\"];";
+
+        file << endl;
     }
     file << "edge [constraint=false, style=vis];" << endl;
     //normal edges
-    for (auto &[fst,snd]: ed) {
+    /*for (auto &[fst,snd]: ed) {
         if (n2c[fst] != -1 && n2c[snd] != -1)
             file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
     }
-
+*/
 
     file << "edge [constraint=true, style=invis];" << endl;
     //structural edges
@@ -679,7 +687,8 @@ void writeHist(const std::map<long, long> &hist,
         const long xStart = padding + i * barWidth;
         const long xEnd = std::min(xStart + barWidth - 1, padding + width);
 
-        for (long y = imageHeight - padding - labelHeight - 1; y >= imageHeight - padding - labelHeight - barHeight; --
+        for (long y = imageHeight - padding - labelHeight - 1; y >= imageHeight - padding - labelHeight - barHeight;
+             --
              y) {
             for (long x = xStart; x <= xEnd; ++x) {
                 long idx = (y * imageWidth + x) * 3;
@@ -760,7 +769,8 @@ void writeBoxplot(const std::map<long, long> &hist,
 
     // Escala horizontal (de minNonOut a maxNonOut)
     auto scale = [&](long v) -> int {
-        return padding + static_cast<int>((float) (v - minNonOut) / (maxNonOut - minNonOut) * (width - 2 * padding));
+        return padding + static_cast<int>((float) (v - minNonOut) / (maxNonOut - minNonOut) * (
+                                              width - 2 * padding));
     };
 
     int boxY1 = height / 2 - 30;
