@@ -257,7 +257,7 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
         return slack[a] > slack[b];
     });
 
-    //insert face edges to output nodes
+    //insert face edge to output nodes
     for (const auto node: outputList) {
         s.push(node);
         edges.emplace_back(-1, node);
@@ -282,7 +282,9 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
         }
 
         sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
-            return slack[a] > slack[b];
+            const long slack_a =slack[a];
+            const long slack_b =slack[b];
+            return  slack_a > slack_b;
         });
 
         for (const auto pred: neigh) {

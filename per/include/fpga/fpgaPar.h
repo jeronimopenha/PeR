@@ -53,13 +53,13 @@
 // Benchmarks
 #define TEST
 //#define TRETS
-#define EPFL
+//#define EPFL
 
 //###############################
 
 //debugging defines
 #define DEBUG
-//#define PRINT
+#define PRINT
 //*******************************
 
 //Generate report or not
@@ -94,8 +94,9 @@ inline std::string benchPath = [] {
 
 inline std::string algPath = [] {
     std::string path;
-
-#ifdef TRETS
+#ifdef TEST
+    path = "/TEST";
+#elifdef TRETS
     path = "/TRETS";
 #elif defined(EPFL)
     path = "/EPFL";
@@ -149,18 +150,18 @@ inline std::string algPath = [] {
     return path;
 }();
 
-inline constexpr const char *reportPath = "reports/fpga";
-inline constexpr const char *benchExt = ".dot";
+inline constexpr auto reportPath = "reports/fpga";
+inline constexpr auto benchExt = ".dot";
 
 //Execution quantity parameter
 #ifdef RUN_1
 inline constexpr int nExec = 1;
 #elifdef RUN_10
-inline constexpr  int nExec = 10;
+inline constexpr int nExec = 10;
 #elifdef RUN_100
-inline constexpr  int nExec = 100;
+inline constexpr int nExec = 100;
 #elifdef RUN_1000
-inline constexpr  int nExec = 1000;
+inline constexpr int nExec = 1000;
 #endif
 
 #endif //FPGA_PAR_H

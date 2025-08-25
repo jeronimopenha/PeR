@@ -56,7 +56,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //todo I->O  and O->I (the last one is implemented)
     //todo with critical path priority or not
 #if defined(FPGA_YOTO_ZZ)
-    vector<pair<long, long>> convergence;
+    vector<pair<long, long> > convergence;
     ed = g.getEdgesZigzag(convergence);
     alg_type = "ZIG_ZAG";
 #elifdef FPGA_YOTO_DF_PRIO
@@ -112,16 +112,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 
-        long targetNode = -1;
-
-        if (a == -1) {
+        /*if (a == -1) {
             targetNode = b;
-        } /*else if (cellA == -1) {
+        } else if (cellA == -1) {
             cout << "Error while placing A node";
             exit(1);
         }*/
 
-        if (targetNode != -1) {
+        if (a == -1) {
             bool found = false;
             while (!found) {
                 ioTries++;
@@ -131,8 +129,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                c2n[ioCell] = targetNode;
-                n2c[targetNode] = ioCell;
+                c2n[ioCell] = b;
+                n2c[b] = ioCell;
                 found = true;
                 swaps++;
 #ifdef MAKE_METRICS
@@ -145,6 +143,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 heatEnd[ioCell] = unicTry;
 #endif
             }
+#ifdef PRINT
+            fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
             continue;
         }
 
@@ -259,9 +260,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 if (isTargetCellIO)
                     continue;
             }
-            const bool isValidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
+            const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
             // Check if the target cell is nor allowed, go to next
-            if (isValidCell)
+            if (isInvalidCell)
                 continue;
             dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
@@ -287,12 +288,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 orDest[cellA].push_back(targetCell);
 #endif
+#ifdef PRINT
+                fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
                 long _max = 2 * dist * (dist + 1);
                 if ((unicTry > _max) && !IsBIoNode) {
                     int asd = 1;
-#ifdef PRINT
-                    fpgaSavePlacedDot(n2c, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
+
                     cout << "Error while placing: dist=" << dist << " max tries:" << _max;
                     cout << ". Total tries" << unicTry;
                     //exit(1);
