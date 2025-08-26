@@ -1,16 +1,24 @@
-# This is a sample Python script.
+# Define the decision tree as a dictionary
+tree = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': ['H', 'I'],
+    'E': ['J', 'K'],
+    'F': ['L', 'M'],
+    'G': ['N', 'O'],
+    'H': [], 'I': [], 'J': [], 'K': [],
+    'L': [], 'M': [], 'N': [], 'O': []
+}
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def dfs_recursive(tree, node, visited=None):
+    if visited is None:
+        visited = set()  # Initialize the visited set
+    visited.add(node)    # Mark the node as visited
+    print(node)          # Print the current node (for illustration)
+    for child in tree[node]:  # Recursively visit children
+        if child not in visited:
+            dfs_recursive(tree, child, visited)
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Run DFS starting from node 'A'
+dfs_recursive(tree, 'A')

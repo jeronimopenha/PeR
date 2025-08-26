@@ -89,14 +89,13 @@ long getCellIndex(const long x, const long y, const long nCellsSqrt) {
 }
 
 int randomInt(const int min, const int max) {
-    static std::mt19937 gen(std::random_device{}());
+    std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> distrib(min, max);
     return distrib(gen);
 }
 
 float randomFloat(const float min, const float max) {
-    static std::mt19937 gen(std::random_device{}());
+    std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<float> distrib(min, max);
     return distrib(gen);
 }
-

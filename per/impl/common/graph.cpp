@@ -169,8 +169,8 @@ void Graph::readAsapAlap() {
         slack.resize(nNodes);
     }
 
-    static vector<long> pendingPred;
-    static vector<long> pendingSucc;
+    vector<long> pendingPred;
+    vector<long> pendingSucc;
     if (pendingPred.size() != nNodes) {
         pendingPred.resize(nNodes);
         pendingSucc.resize(nNodes);
@@ -236,16 +236,16 @@ void Graph::readAsapAlap() {
 }
 
 vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalPriority) {
-    static vector<pair<long, long> > edges;
+     vector<pair<long, long> > edges;
     edges.clear();
 
-    static vector<long> visited;
+     vector<long> visited;
     if (visited.size() != nNodes) {
         visited.resize(nNodes);
     }
     fill(visited.begin(), visited.end(), false);
 
-    static stack<long> s;
+     stack<pair<long, long> > s;
     while (!s.empty()) {
         s.pop();
     }
@@ -260,27 +260,39 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
     });
 
     //insert face edge to output nodes
-    for (const auto node: outputList) {
+    /*for (const auto node: outputList) {
         s.push(node);
         edges.emplace_back(-1, node);
-    }
+    }*/
+
+    s.emplace(-1, -1);
 
     vector<long> neigh;
 
     while (!s.empty()) {
-        const long node = s.top();
+        const long last = s.top().first;
+        const long node = s.top().second;
+
         s.pop();
 
         neigh.clear();
 
-        if (visited[node])
-            continue;
-
-        visited[node] = true;
+        if (node != -1) {
+            if (visited[node])
+                continue;
+            visited[node] = true;
+        }
         // Process all neighbors
 
-        for (const auto pred: predList[node]) {
-            neigh.push_back(pred);
+        if (node != -1) {
+            edges.emplace_back(last, node);
+        }
+
+        if (node == -1) {
+            neigh.insert(neigh.end(), outputList.begin(), outputList.end());
+        } else {
+            for (const auto pred: predList[node])
+                neigh.push_back(pred);
         }
 
         sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
@@ -291,8 +303,8 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstOutFirst(const bool criticalP
 
         for (const auto pred: neigh) {
             if (!visited[pred]) {
-                s.push(pred);
-                edges.emplace_back(node, pred);
+                s.emplace(node, pred);
+                //edges.emplace_back(node, pred);
             }
         }
     }
