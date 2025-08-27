@@ -356,19 +356,19 @@ void fpgaWriteVprData(const string &basePath,
                       const string &fileName,
                       const FpgaReportData &data,
                       FPGAGraph g) {
-    /*string placePath = basePath + reportPath + algPath + "/place/";
+    string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
-    string netBasePath = reportPath + algPath + "/net/";
-    string netPath = basePath + netBasePath;
-    string netFile = netPath + fileName + ".net";
+    string netBasePath = reportPath + algPath + "/blif/";
+    string blifPath = basePath + netBasePath;
+    string blifFile = blifPath + fileName + ".blif";
 
     createDir(placePath);
-    createDir(netPath);
+    createDir(blifPath);
 
-    long k = 3;
+    long k = 6;
 
-    if (fileName.find("_k3") != string::npos)
+    /*if (fileName.find("_k3") != string::npos)
         k = 3;
 
     else if (fileName.find("_k4") != string::npos)
@@ -378,10 +378,10 @@ void fpgaWriteVprData(const string &basePath,
         k = 5;
 
     else if (fileName.find("_k6") != string::npos)
-        k = 6;
+        k = 6;*/
 
 
-    ofstream file(netFile);
+    ofstream file(blifFile);
     if (file.is_open()) {
         for (long node = 0; node < g.nNodes; node++) {
             const long inDegree = g.nPredV[node];
@@ -424,7 +424,9 @@ void fpgaWriteVprData(const string &basePath,
     } else {
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
-    file = ofstream(placeFile);
+
+    //fixme
+    /*file = ofstream(placeFile);
     if (file.is_open()) {
         file << "Netlist file: " + netBasePath << fileName << ".net Architecture file: arch/k" << k <<
                 "-n1.xml" << endl;

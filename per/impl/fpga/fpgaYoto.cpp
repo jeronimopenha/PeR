@@ -104,7 +104,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef MAKE_METRICS
         edCounter++;
         const long _off = edCounter / edOffset;
-        if (_off > histogramFull.size()) {
+        if (_off > static_cast<long>(histogramFull.size())) {
             histogramFull.push_back(histogram);
         }
 
@@ -130,27 +130,29 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
-                c2n[ioCell].push_back(targetNode);
-                n2c[targetNode].first = ioCell;
-                n2c[targetNode].second = c2n[ioCell].size() - 1;
-                found = true;
-                swaps++;
+                if (static_cast<long>(c2n[ioCell].size()) < IO_NUMBER) {
+                    c2n[ioCell].push_back(targetNode);
+                    n2c[targetNode].first = ioCell;
+                    n2c[targetNode].second = static_cast<long>(c2n[ioCell].size()) - 1;
+                    found = true;
+                    swaps++;
 #ifdef MAKE_METRICS
 
-                if (histogram.find(unicTry) != histogram.end()) {
-                    histogram[unicTry]++;
-                } else {
-                    histogram[unicTry] = 1;
+                    if (histogram.find(unicTry) != histogram.end()) {
+                        histogram[unicTry]++;
+                    } else {
+                        histogram[unicTry] = 1;
+                    }
+                    heatEnd[ioCell] = unicTry;
+#endif
                 }
-                heatEnd[ioCell] = unicTry;
-#endif
-            }
 #ifdef PRINT
-            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
-            if (breakLoop)
-                continue;
-            unicTry = 0;
+                if (breakLoop)
+                    continue;
+                unicTry = 0;
+            }
         }
 
         //Verify if A is placed
@@ -272,7 +274,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 continue;
             dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
 
-            const bool placeFlag = (isTargetCellIO) ? c2n[targetCell].size() < IO_NUMBER : c2n[targetCell].empty();
+            const bool ioPlaceFlag = (isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
+            const bool clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
+            const bool placeFlag = ioPlaceFlag || clbPlaceFlag;
 
 
             // Place the node if `placement[targetCell]` is unoccupied
@@ -281,8 +285,11 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
             if (placeFlag) {
                 c2n[targetCell].push_back(b);
+                /*if (static_cast<long>(c2n[targetCell].size()) > 3) {
+                    int asd = 1;
+                }*/
                 n2c[b].first = targetCell;
-                n2c[b].second = c2n[targetCell].size() - 1;
+                n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
                 ++swaps;
                 setBorder = false;
 #ifdef MAKE_METRICS

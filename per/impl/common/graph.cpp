@@ -545,7 +545,7 @@ void Graph::isolateMultiInputOutputs() {
     long nextId = *max_element(gNodes.begin(), gNodes.end()) + 1;
 
     for (auto node: outputNodes) {
-        const bool hasMoreInput = count(predecessors[node].begin(), predecessors[node].end(), true) > 1;;
+        const bool hasMoreInput = count(predecessors[node].begin(), predecessors[node].end(), true) > 1;
 
         if (hasMoreInput) {
             // Cria dummy de saída
