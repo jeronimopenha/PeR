@@ -41,7 +41,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector heatEnd(nCells, 0L);
     vector heatBegin(nCells, 0L);
     vector<map<long, long> > histogramFull;
-    std::map<long, vector<long> > orDest;
+    std::map<long, vector<long> > originDestin;
 
 
     //fill the distCells vector
@@ -63,7 +63,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     ed = g.getEdgesDepthFirstPriority();
     alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF
-    ed = g.getEdgesDepthFirstOutFirst();
+    ed = g.getEdgesDepthFirstCritical();
     alg_type = "DEPTH_FIRST";
 #endif
 
@@ -78,13 +78,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     //IO placement control
     vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
-    std::vector<BorderInfo> borderSequence;
-    long sequenceCounter = 0;
-    long distCounter = 0;
-    bool setBorder = false;
-    bool blockBorderNegative = false;
-    bool blockBorderPositive = false;
-    int borderTickTack = 0;
+    std::vector<BorderInfo> ioBorderSequence;
+    long ioSequenceCounter = 0;
+    long ioDistCounter = 0;
+    bool ioSetBorder = false;
+    bool ioBlockBorderNegative = false;
+    bool ioBlockBorderPositive = false;
+    int ioBorderTickTack = 0;
 
 #ifdef PRINT
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
@@ -92,15 +92,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     //time counting
     auto start = chrono::high_resolution_clock::now();
-    long unicTry;
 
     long distVectorCounter = 0;
 
     for (auto [a,b]: ed) {
-        distVectorCounter++;
-        if (distVectorCounter >= N_DIST_VECTORS)
-            distVectorCounter = 0;
-
 #ifdef MAKE_METRICS
         edCounter++;
         const long _off = edCounter / edOffset;
@@ -108,14 +103,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             histogramFull.push_back(histogram);
         }
 
-        unicTry = 0;
+        long unicTry = 0;
 #endif
 
         long targetNode = -1;
-        bool breakLoop = false;
+        bool nextEdge = false;
         if (a == -1) {
             targetNode = b;
-            breakLoop = true;
+            nextEdge = true;
         } else if (n2c[a].first == -1) {
             targetNode = a;
         }
@@ -146,14 +141,16 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     heatEnd[ioCell] = unicTry;
 #endif
                 }
-#ifdef PRINT
-                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-                if (breakLoop)
-                    continue;
-                unicTry = 0;
             }
+#ifdef PRINT
+            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+#endif
+            if (nextEdge)
+                continue;
+            unicTry = 0;
         }
+
+        distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
 
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
@@ -197,47 +194,47 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             long dist;
 
             if (IsBIoNode) {
-                if (!setBorder) {
-                    borderSequence = g.getBordersSequence(lA, cA);
-                    sequenceCounter = 0;
-                    distCounter = 0;
-                    blockBorderNegative = false;
-                    blockBorderPositive = false;
-                    setBorder = true;
-                    borderTickTack = 0;
+                if (!ioSetBorder) {
+                    ioBorderSequence = g.getIoBordersSequence(lA, cA);
+                    ioSequenceCounter = 0;
+                    ioDistCounter = 0;
+                    ioBlockBorderNegative = false;
+                    ioBlockBorderPositive = false;
+                    ioSetBorder = true;
+                    ioBorderTickTack = 0;
                 }
 
-                long d;
-                if (blockBorderNegative) {
-                    d = ioSearchSequence[0][distCounter];
-                    distCounter++;
-                } else if (blockBorderPositive) {
-                    d = ioSearchSequence[1][distCounter];
-                    distCounter++;
+                long ioD;
+                if (ioBlockBorderNegative) {
+                    ioD = ioSearchSequence[0][ioDistCounter];
+                    ioDistCounter++;
+                } else if (ioBlockBorderPositive) {
+                    ioD = ioSearchSequence[1][ioDistCounter];
+                    ioDistCounter++;
                 } else {
-                    d = ioSearchSequence[borderTickTack][distCounter];
-                    if (borderTickTack == 0) {
-                        borderTickTack = 1;
+                    ioD = ioSearchSequence[ioBorderTickTack][ioDistCounter];
+                    if (ioBorderTickTack == 0) {
+                        ioBorderTickTack = 1;
                     } else {
-                        borderTickTack = 0;
-                        distCounter++;
+                        ioBorderTickTack = 0;
+                        ioDistCounter++;
                     }
                 }
-                switch (borderSequence[sequenceCounter].direction) {
+                switch (ioBorderSequence[ioSequenceCounter].direction) {
                     case 0: // top
                         lB = 0;
-                        cB = borderSequence[sequenceCounter].coord.first + d;
+                        cB = ioBorderSequence[ioSequenceCounter].coord.first + ioD;
                         break;
                     case 1: // bottom
                         lB = nCellsSqrt - 1;
-                        cB = borderSequence[sequenceCounter].coord.first + d;
+                        cB = ioBorderSequence[ioSequenceCounter].coord.first + ioD;
                         break;
                     case 2: // left
-                        lB = borderSequence[sequenceCounter].coord.second + d;
+                        lB = ioBorderSequence[ioSequenceCounter].coord.second + ioD;
                         cB = 0;
                         break;
                     case 3: // right
-                        lB = borderSequence[sequenceCounter].coord.second + d;
+                        lB = ioBorderSequence[ioSequenceCounter].coord.second + ioD;
                         cB = nCellsSqrt - 1;
                         break;
                 }
@@ -245,28 +242,27 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 targetCell = lB * nCellsSqrt + cB;
 
                 if (lB < 0 || cB < 0) {
-                    blockBorderNegative = true;
+                    ioBlockBorderNegative = true;
                 } else if (lB >= nCellsSqrt || cB >= nCellsSqrt)
-                    blockBorderPositive = true;
-                if (distCounter == nCellsSqrt || (blockBorderNegative && blockBorderPositive)) {
-                    distCounter = 0;
-                    sequenceCounter += 1;
-                    blockBorderNegative = false;
-                    blockBorderPositive = false;
-                    borderTickTack = 0;
+                    ioBlockBorderPositive = true;
+                if (ioDistCounter == nCellsSqrt || (ioBlockBorderNegative && ioBlockBorderPositive)) {
+                    ioDistCounter = 0;
+                    ioSequenceCounter += 1;
+                    ioBlockBorderNegative = false;
+                    ioBlockBorderPositive = false;
+                    ioBorderTickTack = 0;
                 }
             } else {
                 lB = lA + ij[0];
                 cB = cA + ij[1];
 
-                //find the idx for the target cell
-                targetCell = lB * nCellsSqrt + cB;
-
                 isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-
-                //prevents put a non IO noce in an IO cell
+                //prevents put a non IO node in an IO cell
                 if (isTargetCellIO)
                     continue;
+
+                //find the idx for the target cell
+                targetCell = lB * nCellsSqrt + cB;
             }
             const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
             // Check if the target cell is nor allowed, go to next
@@ -291,7 +287,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 n2c[b].first = targetCell;
                 n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
                 ++swaps;
-                setBorder = false;
+                ioSetBorder = false;
 #ifdef MAKE_METRICS
                 if (histogram.find(unicTry) != histogram.end()) {
                     histogram[unicTry]++;
@@ -300,10 +296,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 heatEnd[targetCell] = unicTry;
                 heatBegin[cellA]++;
-                if (orDest.find(cellA) == orDest.end()) {
-                    orDest[cellA] = vector<long>();
+                if (originDestin.find(cellA) == originDestin.end()) {
+                    originDestin[cellA] = vector<long>();
                 }
-                orDest[cellA].push_back(targetCell);
+                originDestin[cellA].push_back(targetCell);
 #endif
 #ifdef PRINT
                 fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
@@ -368,6 +364,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         ioTries,
         tries,
         triesP,
+        0,
         swaps,
         alg_type,
         tc,
@@ -377,7 +374,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         histogramFull,
         heatEnd,
         heatBegin,
-        orDest
+        originDestin
     );
     return report;
 }

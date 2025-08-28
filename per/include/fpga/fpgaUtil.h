@@ -30,6 +30,7 @@ struct FpgaReportData {
     long ioTries = 0;
     long tries = 0;
     long triesP = 0;
+    long triesPerNode = 0;
     long swaps = 0;
     std::string edgesAlgorithm;
     long totalCost = 0;
@@ -45,10 +46,10 @@ struct FpgaReportData {
 
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long size, long nNodes,
                    long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
-                   long tries, long triesP, long swaps, std::string edges_algorithm, long totalCost, long lPCost,
-                   const std::vector<std::vector<long> > &c2n, const std::vector<std::pair<long, long> > &n2c,
-                   std::vector<std::map<long, long> > hist, std::vector<long> heatEnd, std::vector<long> heatBegin,
-                   std::map<long, std::vector<long> >);
+                   long tries, long triesP, long triesPerNode, long swaps, std::string edges_algorithm,
+                   long totalCost, long lPCost, const std::vector<std::vector<long> > &c2n,
+                   const std::vector<std::pair<long, long> > &n2c, std::vector<std::map<long, long> > hist,
+                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> >);
 
     [[nodiscard]] std::string to_json() const;
 

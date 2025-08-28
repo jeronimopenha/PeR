@@ -168,7 +168,7 @@ vector<vector<long> > FPGAGraph::generateIoOffsets() {
     return result;
 }
 
-vector<BorderInfo> FPGAGraph::getBordersSequence(long l, long c) {
+vector<BorderInfo> FPGAGraph::getIoBordersSequence(long l, long c) {
     const long nRows = nCellsSqrt;
     const long nCols = nCellsSqrt;
 
