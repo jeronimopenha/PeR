@@ -62,7 +62,7 @@ void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std
 
 std::vector<std::vector<long> > fpgaGetAdjCellsDist(long nCellsSqrt);
 
-long fpgaCalcGraphTotalDistance(const std::vector<long> &n2c, const std::vector<std::pair<long, long> > &edges,
+long fpgaCalcGraphTotalDistance(const std::vector<std::pair<long, long>> &n2c, const std::vector<std::pair<long, long> > &edges,
                                 long nCellsSqrt);
 
 long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
@@ -77,9 +77,16 @@ void fpgaWriteReports(const std::string &basePath,
                       const std::string &fileName,
                       const FpgaReportData &data);
 
-void fpgaWriteVprData(const std::string &basePath,
+void fpgaWriteVpr5Data(const std::string &basePath,
                       const std::string &reportPath,
                       const std::string &algPath,
+                      const std::string &fileName,
+                      const FpgaReportData &data,
+                      FPGAGraph g);
+
+void fpgaWriteVpr9Data(const std::string &basePath,
+                      const std::string &_reportPath,
+                      const std::string &_algPath,
                       const std::string &fileName,
                       const FpgaReportData &data,
                       FPGAGraph g);

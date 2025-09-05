@@ -275,12 +275,12 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
 }
 
 
-long fpgaCalcGraphTotalDistance(const vector<long> &n2c, const vector<pair<long, long> > &edges,
+long fpgaCalcGraphTotalDistance(const vector<pair<long, long>> &n2c, const vector<pair<long, long> > &edges,
                                 const long nCellsSqrt) {
     long totalDist = -static_cast<long>(edges.size());
 
     for (const auto &[fst, snd]: edges) {
-        const long tempDist = getManhattanDist(n2c[fst], n2c[snd], nCellsSqrt);
+        const long tempDist = getManhattanDist(n2c[fst].first, n2c[snd].first, nCellsSqrt);
 
         // Acc the total distance
         totalDist += tempDist;
@@ -351,13 +351,66 @@ void fpgaWriteReports(const std::string &basePath,
 #endif
 }
 
-//fixme
-void fpgaWriteVprData(const string &basePath,
-                      const string &reportPath,
-                      const string &algPath,
-                      const string &fileName,
-                      const FpgaReportData &data,
-                      FPGAGraph g) {
+void fpgaWriteVpr9Data(const string &basePath,
+                       const string &_reportPath,
+                       const string &_algPath,
+                       const string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g) {
+    string placePath = basePath + _reportPath + _algPath + "/place/";
+    string placeFile = placePath + fileName + ".place";
+
+    string netBasePath = _reportPath + _algPath + "/blif/";
+    string blifPath = basePath + netBasePath;
+    string blifFile = blifPath + fileName + ".blif";
+
+    createDir(placePath);
+    //createDir(blifPath);
+
+    const long k = 6;
+
+    ofstream file = ofstream(placeFile);
+    if (file.is_open()) {
+        //Netlist_File: ctrl_k.net Netlist_ID: SHA256:
+        file << "Netlist_File: " << fileName.substr(0, fileName.size() - 2) << ".net Netlist_ID: SHA256:" << endl;
+
+        file << "Array size: " << g.nCellsSqrt << " x " << g.nCellsSqrt << " logic blocks " << endl << endl;
+        file << "#block name\tx\ty\tsubblk\tlayer\tblock number" << endl;
+        file << "#----------\t--\t--\t------\t------------" << endl;
+
+        long counter = 0;
+        for (long node = 0; node < g.nNodes; node++) {
+            const long cell = data.n2c[node].first;
+            const long subblock = data.n2c[node].second;
+            const long place = data.c2n[cell][subblock];
+            if (place > -1) {
+                long l = cell / g.nCellsSqrt;
+                long c = cell % g.nCellsSqrt;
+                if (g.nSuccV[node] == 0)
+                    //for (long pre = 0; pre < g.nNodes; pre++) {
+                    //    if (g.predecessors[node][pre]) {
+                    file << "out:" << node << "\t" << c << "\t" << l << "\t" << subblock << "\t" << 0 << "\t#" <<
+                            counter << endl;
+                    //    }
+                    //}
+                else
+                    file << node << "\t" << c << "\t" << l << "\t" << subblock << "\t" << 0 << "\t#" <<
+                            counter << endl;
+            }
+            counter++;
+        }
+
+        file.close();
+    } else
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+}
+
+void fpgaWriteVpr5Data(const string &basePath,
+                       const string &reportPath,
+                       const string &algPath,
+                       const string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g) {
     string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
@@ -366,7 +419,7 @@ void fpgaWriteVprData(const string &basePath,
     string blifFile = blifPath + fileName + ".blif";
 
     createDir(placePath);
-    createDir(blifPath);
+    //createDir(blifPath);
 
     long k = 6;
 

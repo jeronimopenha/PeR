@@ -95,6 +95,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     long distVectorCounter = 0;
 
+//YOTO - Begin ****************************8
+
     for (auto [a,b]: ed) {
 #ifdef MAKE_METRICS
         edCounter++;
@@ -333,7 +335,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     // commented to take the cost of the longest path
     //#ifdef FPGA_TOTAL_COST
     //fixme
-    const long tc = -1; //fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
     //#elifdef FPGA_LONG_PATH_COST
 
     //fixme

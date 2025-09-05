@@ -23,7 +23,7 @@
 //*******************************
 
 //Save only the best one
-//#define BEST_ONLY
+#define BEST_ONLY
 
 //Choose the algorithm to be run
 #define FPGA_YOTO_DF
@@ -47,11 +47,15 @@
 #endif
 #endif
 
+//VPR version
+//#define VPR_V5
+#define VPR_V9
+
 // Tests Quantity
-#define RUN_1
+//#define RUN_1
 //#define RUN_10
 //#define RUN_100
-//#define RUN_1000
+#define RUN_1000
 
 // Benchmarks
 #define TEST
@@ -61,8 +65,8 @@
 //###############################
 
 //debugging defines
-#define DEBUG
-#define PRINT
+//#define DEBUG
+//#define PRINT
 //*******************************
 
 //Generate report or not
@@ -74,8 +78,8 @@
 #define MAKE_METRICS
 
 //Choose a type of total cost
-//#define FPGA_TOTAL_COST
-#define FPGA_LONG_PATH_COST
+#define FPGA_TOTAL_COST
+//#define FPGA_LONG_PATH_COST
 
 #endif
 //*******************************
