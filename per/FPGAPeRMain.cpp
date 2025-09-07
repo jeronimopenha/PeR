@@ -5,7 +5,6 @@
 #include "fpga/fpgaYott.h"
 #include "fpga/fpgaSa.h"
 
-
 #include <omp.h>
 
 using namespace std;

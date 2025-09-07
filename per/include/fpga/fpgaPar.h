@@ -9,7 +9,7 @@
 //PER FPGA PARAMETERS
 
 //Choose the I/O qty of ports per cell
-#define IO_NUMBER  3
+#define IO_NUMBER  13
 
 //Choose if Cache will be used
 //#define CACHE

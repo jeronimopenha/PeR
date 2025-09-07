@@ -31,6 +31,7 @@ void Graph::updateG() {
 
 void Graph::readEdgesNodes() {
     unordered_set<long> nodes;
+    unordered_set<long> declaredNodes;
 
     ifstream dotFile(dotPath);
     string line;
@@ -41,6 +42,7 @@ void Graph::readEdgesNodes() {
         return;
     }
 
+    gEdges.clear();
     while (getline(dotFile, line)) {
         // Look for lines that define edges
 
@@ -69,23 +71,42 @@ void Graph::readEdgesNodes() {
             nodes.insert(fromN);
             nodes.insert(toN);
             gEdges.emplace_back(fromN, toN);
+        } else if (line.find(';') != string::npos && line.find("->") == string::npos) {
+            istringstream iss(line);
+            string maybeNodeStr;
+            iss >> maybeNodeStr;
+            maybeNodeStr.erase(remove(maybeNodeStr.begin(), maybeNodeStr.end(), ';'), maybeNodeStr.end());
+            maybeNodeStr.erase(remove(maybeNodeStr.begin(), maybeNodeStr.end(), '\"'), maybeNodeStr.end());
+
+            if (!maybeNodeStr.empty()) {
+                declaredNodes.insert(stol(maybeNodeStr));
+            }
         }
     }
     dotFile.close();
+
+    for (const long &node: declaredNodes) {
+        if (nodes.find(node) == nodes.end()) {
+            disconnectedNodes.push_back(node);
+        }
+    }
+
+    nodes.insert(disconnectedNodes.begin(), disconnectedNodes.end());
+
     nEdges = static_cast<int>(gEdges.size());
     nNodes = static_cast<int>(nodes.size());
 
-    //input and output nodes
-    for (long i = 0; i < nNodes; i++)
-        gNodes.push_back(i);
+    gNodes.clear();
+    gNodes.resize(nNodes);
+    iota(gNodes.begin(), gNodes.end(), 0);
 }
 
 void Graph::readAdjList() {
     //optimization
-    if (adjList.size() != nNodes)
-        adjList.resize(nNodes);
+    if (succList.size() != nNodes)
+        succList.resize(nNodes);
     else
-        for (auto &v: adjList)
+        for (auto &v: succList)
             v.clear();
 
     if (predList.size() != nNodes)
@@ -94,7 +115,7 @@ void Graph::readAdjList() {
         for (auto &v: predList)
             v.clear();
     for (auto [fst, snd]: gEdges) {
-        adjList[fst].push_back(snd);
+        succList[fst].push_back(snd);
         predList[snd].push_back(fst);
     }
 }
@@ -111,20 +132,20 @@ void Graph::readSuccPred() {
         nSuccV.resize(nNodes);
     if (nPredV.size() != nNodes)
         nPredV.resize(nNodes);
+    if (successors.size() != nNodes)
+        successors.resize(nNodes, vector(nNodes, false));
+    if (predecessors.size() != nNodes)
+        predecessors.resize(nNodes, vector<bool>(nNodes, false));
 
     fill(nSuccV.begin(), nSuccV.end(), 0);
     fill(nPredV.begin(), nPredV.end(), 0);
 
-    if (successors.size() != nNodes)
-        successors.resize(nNodes, vector(nNodes, false));
     for (auto &row: successors) {
         if (row.size() != nNodes)
             row.resize(nNodes);
         fill(row.begin(), row.end(), false);
     }
 
-    if (predecessors.size() != nNodes)
-        predecessors.resize(nNodes, vector<bool>(nNodes, false));
     for (auto &row: predecessors) {
         if (row.size() != nNodes)
             row.resize(nNodes);
@@ -147,17 +168,18 @@ void Graph::readTypeOfNodes() {
     //input and output nodes
     outputNodes.clear();
     inputNodes.clear();
-    otherNodes.clear();
-    for (long i = 0; i < nNodes; i++) {
-        if (nSuccV[i] == 0) {
-            outputNodes.push_back(i);
+    innerNodes.clear();
+
+    for (long node = 0; node < nNodes; node++) {
+        if (nSuccV[node] == 0) {
+            outputNodes.push_back(node);
             continue;
         }
-        if (nPredV[i] == 0) {
-            inputNodes.push_back(i);
+        if (nPredV[node] == 0) {
+            inputNodes.push_back(node);
             continue;
         }
-        otherNodes.push_back(i);
+        innerNodes.push_back(node);
     }
 }
 
@@ -169,21 +191,15 @@ void Graph::readAsapAlap() {
         slack.resize(nNodes);
     }
 
-    vector<long> pendingPred;
-    vector<long> pendingSucc;
-    if (pendingPred.size() != nNodes) {
-        pendingPred.resize(nNodes);
-        pendingSucc.resize(nNodes);
-    }
+    vector<long> pendingPred(nNodes, 0);
+    vector<long> pendingSucc(nNodes, 0);
 
     fill(asap.begin(), asap.end(), 1);
-    fill(pendingPred.begin(), pendingPred.end(), 0);
-    fill(pendingSucc.begin(), pendingSucc.end(), 0);
 
-    for (long u = 0; u < nNodes; ++u) {
-        for (const long v: adjList[u]) {
-            pendingPred[v]++;
-            pendingSucc[u]++;
+    for (long from_n = 0; from_n < nNodes; ++from_n) {
+        for (const long to_n: succList[from_n]) {
+            pendingPred[to_n]++;
+            pendingSucc[from_n]++;
         }
     }
 
@@ -198,7 +214,7 @@ void Graph::readAsapAlap() {
         const long node = q.front();
         q.pop();
 
-        for (const long succ: adjList[node]) {
+        for (const long succ: succList[node]) {
             asap[succ] = max(asap[succ], asap[node] + 1);
             pendingPred[succ]--;
             if (pendingPred[succ] == 0) {
@@ -236,22 +252,22 @@ void Graph::readAsapAlap() {
 }
 
 vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalPriority) {
-     vector<pair<long, long> > edges;
-    edges.clear();
+    vector<pair<long, long> > edges;
 
-     vector<long> visited;
+    vector<long> visited;
     if (visited.size() != nNodes) {
         visited.resize(nNodes);
     }
     fill(visited.begin(), visited.end(), false);
 
-     stack<pair<long, long> > s;
+    stack<pair<long, long> > s;
     while (!s.empty()) {
         s.pop();
     }
 
     //sort outputs by slack
     vector<long> outputList = outputNodes;
+    outputList.insert(outputList.end(), disconnectedNodes.begin(), disconnectedNodes.end());
     randomVector(outputList);
     sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
         const long slack_a = slack[a];
@@ -431,7 +447,7 @@ vector<pair<long, long> > Graph::getEdgesZigzag(
             }
         }
     }
-    edges = clearEdges(edges);
+    edges = clearZigZagEdges(edges);
 
     if (edgeTypes) {
         vector<tuple<long, long, string> > cleaned;
@@ -447,7 +463,7 @@ vector<pair<long, long> > Graph::getEdgesZigzag(
     return edges; //clearEdges(edges);
 }
 
-vector<pair<long, long> > Graph::clearEdges(const vector<pair<long, long> > &edges) const {
+vector<pair<long, long> > Graph::clearZigZagEdges(const vector<pair<long, long> > &edges) const {
     vector placedNodes(nNodes, false); // Set to track placed nodes
     vector<pair<long, long> > new_edges; // Vector to store filtered edges
 
@@ -476,6 +492,8 @@ void Graph::dfs(const long idx, const vector<vector<long> > &adj, vector<bool> &
 
 void Graph::readGraphDataStr() {
     unordered_set<string> nodesStr;
+    unordered_set<string> declaredNodesStr;
+    unordered_set<string> declaredButDisconnectedStr;
 
     ifstream dotFile(dotPath);
     string line;
@@ -486,13 +504,13 @@ void Graph::readGraphDataStr() {
         return;
     }
 
+    gEdgesStr.clear();
     //1 - Read edges and get a list of nodes
     while (getline(dotFile, line)) {
         // Look for lines that define edges
-
         if (line.find("->") != string::npos) {
-            string toNode;
             string fromNode;
+            string toNode;
 
             istringstream iss(line);
             string word;
@@ -511,10 +529,28 @@ void Graph::readGraphDataStr() {
             nodesStr.insert(fromNode);
             nodesStr.insert(toNode);
             gEdgesStr.emplace_back(fromNode, toNode);
-            nEdges += 1;
+        } else if (line.find(';') != string::npos && line.find("->") == string::npos) {
+            istringstream iss(line);
+            string maybeNodeStr;
+            iss >> maybeNodeStr;
+            maybeNodeStr.erase(remove(maybeNodeStr.begin(), maybeNodeStr.end(), ';'), maybeNodeStr.end());
+            maybeNodeStr.erase(remove(maybeNodeStr.begin(), maybeNodeStr.end(), '\"'), maybeNodeStr.end());
+
+            if (!maybeNodeStr.empty()) {
+                declaredNodesStr.insert(maybeNodeStr);
+            }
         }
     }
     dotFile.close();
+
+    for (const auto &node: declaredNodesStr) {
+        if (nodesStr.find(node) == nodesStr.end()) {
+            declaredButDisconnectedStr.insert(node);
+        }
+    }
+
+    nodesStr.insert(declaredButDisconnectedStr.begin(), declaredButDisconnectedStr.end());
+
     nEdges = static_cast<long>(gEdges.size());
     nNodes = static_cast<long>(nodesStr.size());
 
@@ -527,6 +563,8 @@ void Graph::readGraphDataStr() {
         counter++;
     }
 
+    gEdges.clear();
+
     //create the int edges
     for (const auto &[fst, snd]: gEdgesStr) {
         const long fromN = nodesToIdx[fst];
@@ -534,8 +572,15 @@ void Graph::readGraphDataStr() {
         gEdges.emplace_back(fromN, toN);
     }
 
-    for (long i = 0; i < nNodes; i++)
-        gNodes.push_back(i);
+    gNodes.clear();
+    gNodes.resize(nNodes);
+    iota(gNodes.begin(), gNodes.end(), 0);
+
+    disconnectedNodes.clear();
+    for (const string &nodeStr: declaredButDisconnectedStr) {
+        const long nodeIdx = nodesToIdx[nodeStr];
+        disconnectedNodes.emplace_back(nodeIdx);
+    }
 }
 
 
@@ -566,4 +611,28 @@ void Graph::isolateMultiInputOutputs() {
     gEdges.insert(gEdges.end(), newEdges.begin(), newEdges.end());
 
     updateG(); // atualiza estruturas internas
+}
+
+void Graph::saveToDot(const string &filename) {
+    ofstream file(filename);
+    if (!file) {
+        cerr << "Error!" << endl;
+        return;
+    }
+
+    // write the dot header
+    file << "digraph G {" << endl;
+
+    // write the edges
+    for (const auto &[fst, snd]: gEdges)
+        file << "    " << fst << " -> " << snd << ";" << endl;
+
+    for (const long node: disconnectedNodes)
+        file << "    " << node << ";" << endl;
+
+    // write the dot footer
+    file << "}" << endl;
+
+    file.close();
+    cout << "File " << filename << " saved!" << endl;
 }

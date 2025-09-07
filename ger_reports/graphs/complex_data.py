@@ -23,9 +23,9 @@ def get_directed_graph_parameters(gph: Graph):
         inp = len(list(gph.g.predecessors(node)))
         outp = len(list(gph.g.successors(node)))
         if inp > g_in:
-            g_in += inp
+            g_in = inp
         if outp > g_out:
-            g_out += outp
+            g_out = outp
         if inp == 0 or outp == 0:
             io += 1
 

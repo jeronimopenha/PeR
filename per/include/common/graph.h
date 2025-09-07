@@ -28,7 +28,7 @@ public:
     std::vector<long> gNodes;
 
     //adjacency list
-    std::vector<std::vector<long> > adjList;
+    std::vector<std::vector<long> > succList;
     std::vector<std::vector<long> > predList;
 
     std::vector<long> nSuccV;
@@ -36,7 +36,8 @@ public:
 
     std::vector<long> inputNodes;
     std::vector<long> outputNodes;
-    std::vector<long> otherNodes;
+    std::vector<long> disconnectedNodes;
+    std::vector<long> innerNodes;
 
     std::vector<long> asap;
     std::vector<long> alap;
@@ -67,11 +68,12 @@ void readTypeOfNodes();
         std::vector<std::pair<long, long> > &convergence,
         std::vector<std::tuple<long, long, std::string> > *edgeTypes = nullptr);
 
-    std::vector<std::pair<long, long> > clearEdges(const std::vector<std::pair<long, long> > &edges) const;
+    std::vector<std::pair<long, long> > clearZigZagEdges(const std::vector<std::pair<long, long> > &edges) const;
 
     void dfs(long idx, const std::vector<std::vector<long> > &adj, std::vector<bool> &visited,
              std::vector<long> &topo_order);
 
+    void saveToDot( const std::string &filename);
 
 };
 #endif

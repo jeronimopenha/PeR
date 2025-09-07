@@ -22,18 +22,33 @@ def blif_to_dot(base_path, blif_path, blif_file: str):
         lines = lines_tmp
 
         blif_outputs = []
+        blif_inputs = []
+
+        max_parts = 0
+        n_names = 0
 
         for line in lines:
             if "outputs" in line:
                 blif_outputs.extend(line.split()[1:])
+            if "inputs" in line:
+                blif_inputs.extend(line.split()[1:])
             if line.startswith('.names'):
+                n_names+=1
                 parts = line.split()[1:]
+                for part in parts:
+                    if part in blif_inputs:
+                        blif_inputs.remove(part)
+                len_parts = len(parts)
+                if len_parts > max_parts:
+                    max_parts = len_parts
                 output = parts[-1]
                 inputs = parts[:-1]
                 for input_node in inputs:
                     dot.write(f'    "{input_node}" -> "{output}";\n')
         for output in blif_outputs:
             dot.write(f'    "{output}" -> "out:{output}";\n')
+        for inp in blif_inputs:
+            dot.write(f'    "{inp}";\n')
 
         dot.write('}\n')
 

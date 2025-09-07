@@ -32,9 +32,6 @@ std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
 std::string funcKey(const std::string &a, const std::string &b);
 
 
-void saveToDot(const std::vector<std::pair<long, long> > &edges, const std::string &filename);
-
-
 long getManhattanDist(long cell1, long cell2, long n_cells_sqrt);
 
 

@@ -16,6 +16,7 @@ FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName) : Graph(dotPa
 
 void FPGAGraph::readNeighbors() {
     //neighbors vector
+    neighbors.clear();
     neighbors.resize(nNodes);
     for (size_t i = 0; i < successors.size(); ++i) {
         for (size_t j = 0; j < successors[i].size(); ++j) {
@@ -26,7 +27,7 @@ void FPGAGraph::readNeighbors() {
 }
 
 void FPGAGraph::calcMatrix() {
-    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size());
+    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size() + disconnectedNodes.size());
     const long nBaseNodes = nNodes - totalInOut;
     long nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     long nBorderCells = nCellsBaseSqrt * 4;

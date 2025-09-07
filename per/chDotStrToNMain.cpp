@@ -6,7 +6,7 @@ using namespace std;
 int main() {
     const std::string rootPath = verifyPath(getProjectRoot());
     std::cout << rootPath << std::endl;
-    const std::string benchPath = "benchmarks/fpga/eval/EPFL/";
+    const std::string benchPath = "benchmarks/fpga/bench_test/";
     const std::string benchExt = ".dot";
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
@@ -17,7 +17,7 @@ int main() {
 
         auto g = Graph(fst, snd.substr(0, snd.size() - 4), true);
 
-        saveToDot(g.gEdges, g.dotPath);
+        g.saveToDot(g.dotPath);
     }
     return 0;
 }
