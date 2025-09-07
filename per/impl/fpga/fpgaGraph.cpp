@@ -27,7 +27,7 @@ void FPGAGraph::readNeighbors() {
 }
 
 void FPGAGraph::calcMatrix() {
-    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size() + disconnectedNodes.size());
+    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size());// + disconnectedNodes.size());
     const long nBaseNodes = nNodes - totalInOut;
     long nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     long nBorderCells = nCellsBaseSqrt * 4;

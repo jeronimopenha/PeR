@@ -91,7 +91,7 @@ void Graph::readEdgesNodes() {
         }
     }
 
-    nodes.insert(disconnectedNodes.begin(), disconnectedNodes.end());
+    //nodes.insert(disconnectedNodes.begin(), disconnectedNodes.end());
 
     nEdges = static_cast<int>(gEdges.size());
     nNodes = static_cast<int>(nodes.size());

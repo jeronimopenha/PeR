@@ -54,8 +54,8 @@
 // Tests Quantity
 //#define RUN_1
 //#define RUN_10
-#define RUN_100
-//#define RUN_1000
+//#define RUN_100
+#define RUN_1000
 
 // Benchmarks
 #define TEST

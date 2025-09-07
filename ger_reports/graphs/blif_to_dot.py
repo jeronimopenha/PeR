@@ -47,8 +47,8 @@ def blif_to_dot(base_path, blif_path, blif_file: str):
                     dot.write(f'    "{input_node}" -> "{output}";\n')
         for output in blif_outputs:
             dot.write(f'    "{output}" -> "out:{output}";\n')
-        for inp in blif_inputs:
-            dot.write(f'    "{inp}";\n')
+        #for inp in blif_inputs:
+        #    dot.write(f'    "{inp}";\n')
 
         dot.write('}\n')
 

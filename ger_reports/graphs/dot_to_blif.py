@@ -22,16 +22,19 @@ def parse_dot_fast(dot_path):
 def dot_to_blif(base_path, dot_path, dot_file: str, model_name="circuit"):
     # Lê o grafo do .dot
     G = parse_dot_fast(dot_path)  # nx.drawing.nx_pydot.read_dot(dot_path)
-    G = nx.DiGraph(G)  # garante que é um dígrafo
+    #G = nx.DiGraph(G)  # garante que é um dígrafo
 
     # Identifica entradas e saídas
-    entradas = [n for n in G.nodes if G.in_degree(n) == 0]
-    saidas = [n for n in G.nodes if G.out_degree(n) == 0 and G.in_degree(n) == 1]
+
+    #for n in G.nodes:
+    #    print(list(G.successors(n)))
+    entradas = [n for n in G.nodes if len(list(G.predecessors(n))) == 0]
+    saidas = [n for n in G.nodes if  len(list(G.successors(n))) == 0 and len(list(G.predecessors(n))) == 1 ]
     intermediarios = [n for n in G.nodes if n not in entradas and n not in saidas]
 
     with open(f"{base_path}{dot_file}.blif", 'w') as f:
         f.write(f".model {model_name}\n")
-        f.write(".inputs " + " ".join(entradas) + "\n")
+        f.write(".inputs " + " ".join(sorted(entradas)) + "\n")
         f.write(".outputs " + " ".join(saidas) + "\n\n")
 
         # Gera LUTs (como .names com tabela genérica)
@@ -51,7 +54,7 @@ def dot_to_blif(base_path, dot_path, dot_file: str, model_name="circuit"):
 
 if __name__ == "__main__":
     root_path = get_project_root()
-    base_path = f"{root_path}/benchmarks/fpga/bench_test_old/"
+    base_path = f"{root_path}/benchmarks/fpga/bench_test/"
     files = get_files_list_by_extension(base_path, ".dot")
     for file in files:
         dot_to_blif(base_path, file[0], file[1][:-5])
