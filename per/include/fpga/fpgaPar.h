@@ -9,7 +9,7 @@
 //PER FPGA PARAMETERS
 
 //Choose the I/O qty of ports per cell
-#define IO_NUMBER  13
+#define IO_NUMBER  12
 
 //Choose if Cache will be used
 //#define CACHE
@@ -54,8 +54,8 @@
 // Tests Quantity
 //#define RUN_1
 //#define RUN_10
-//#define RUN_100
-#define RUN_1000
+#define RUN_100
+//#define RUN_1000
 
 // Benchmarks
 #define TEST
