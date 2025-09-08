@@ -11,7 +11,7 @@ FpgaReportData::FpgaReportData() = default;
 FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer, long size,
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
-                               const long triesP, const long swaps, const long triesPerNode, string edges_algorithm,
+                               const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
                                const long totalCost, const long lPCost, const vector<vector<long> > &c2n,
                                const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
                                vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
@@ -572,7 +572,7 @@ RGB valueToRGB(const float normValue) {
 
 
 void writeHeatmap(const std::vector<long> &heatData,
-                  const vector<long> &c2n,
+                  const vector<vector<long>> &c2n,
                   const long nCellsSqrt,
                   const std::string &basePath,
                   const std::string &reportPath,

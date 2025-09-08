@@ -49,7 +49,7 @@ struct FpgaReportData {
                    long tries, long triesP, long triesPerNode, long swaps, std::string edges_algorithm,
                    long totalCost, long lPCost, const std::vector<std::vector<long> > &c2n,
                    const std::vector<std::pair<long, long> > &n2c, std::vector<std::map<long, long> > hist,
-                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> >);
+                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> >orDest);
 
     [[nodiscard]] std::string to_json() const;
 
@@ -98,7 +98,7 @@ bool fpgaIsIOCell(long l, long c, long nCellsSqrt);
 RGB valueToRGB(float normValue);
 
 void writeHeatmap(const std::vector<long> &heatData,
-                  const std::vector<long> &c2n,
+                  const std::vector<std::vector<long>> &c2n,
                   long nCellsSqrt,
                   const std::string &basePath,
                   const std::string &reportPath,

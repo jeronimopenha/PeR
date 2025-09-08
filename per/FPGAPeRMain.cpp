@@ -102,7 +102,7 @@ int main() {
             //save reports for the 10 better placements
             fpgaWriteReports(rootPath, reportPath, algPath, fileName, reports[i]);
 
-#if !defined(CACHE)
+#if !defined(USE_CACHE)
             //generate reports and files for vpr
 #ifdef VPR_V5
             fpgaWriteVpr5Data(rootPath, reportPath, algPath, fileName, reports[i], g);

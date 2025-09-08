@@ -29,7 +29,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     string alg_type;
 
-#ifdef CACHE
+#ifdef USE_CACHE
     auto cacheC2N = Cache();
     auto cacheN2C = Cache();
 #endif
@@ -86,7 +86,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     bool ioBlockBorderPositive = false;
     int ioBorderTickTack = 0;
 
-#ifdef PRINT
+#ifdef PRINT_DOT
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
@@ -95,7 +95,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     long distVectorCounter = 0;
 
-//YOTO - Begin ****************************8
+    //YOTO - Begin ****************************8
 
     for (auto [a,b]: ed) {
 #ifdef MAKE_METRICS
@@ -106,6 +106,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         }
 
         long unicTry = 0;
+#endif
+
+#ifdef PRINT_IMG
+        writeHeatmap(heatData, c2n, nCellsSqrt, basePath, reportPath, algPath, fileName, suffix);
 #endif
 
         long targetNode = -1;
@@ -124,7 +128,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 unicTry++;
                 const long ioCell = inOutCells.back();
                 inOutCells.pop_back();
-#ifdef CACHE
+#ifdef USE_CACHE
                 cacheMisses += cacheC2N.readCache(ioCell, c2n);
 #endif
                 if (static_cast<long>(c2n[ioCell].size()) < IO_NUMBER) {
@@ -144,7 +148,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
-#ifdef PRINT
+#ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
             if (nextEdge)
@@ -157,13 +161,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
         //the variable lastIdxIOCellUsed is for optimize future looks
-#ifdef CACHE
+#ifdef USE_CACHE
         cacheMisses += cacheN2C.readCache(a, n2c);
 #endif
         const long cellA = n2c[a].first;
 
         //Now, if B is placed, go to next edge
-#ifdef CACHE
+#ifdef USE_CACHE
         cacheMisses += cacheN2C.readCache(b, n2c);
 #endif
         if (n2c[b].first != -1)
@@ -278,7 +282,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
 
             // Place the node if `placement[targetCell]` is unoccupied
-#ifdef CACHE
+#ifdef USE_CACHE
             cacheMisses += cacheC2N.readCache(targetCell, c2n);
 #endif
             if (placeFlag) {
@@ -303,7 +307,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 originDestin[cellA].push_back(targetCell);
 #endif
-#ifdef PRINT
+#ifdef PRINT_DOT
                 fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
                 long _max = 2 * dist * (dist + 1);
@@ -323,7 +327,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     histogramFull.push_back(histogram);
 #endif
 
-#ifdef PRINT
+#ifdef PRINT_DOT
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
@@ -349,6 +353,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     if (swaps != nNodes) {
         cout << "Erro ao processar o arquivo " << g.dotName << "Nem todo os nós foram posicionados" << endl;
     }
+    const long triesPerNode = tries / nNodes;
     //FIXME reports
     auto report = FpgaReportData(
         _time,
@@ -366,7 +371,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         ioTries,
         tries,
         triesP,
-        0,
+        triesPerNode,
         swaps,
         alg_type,
         tc,
