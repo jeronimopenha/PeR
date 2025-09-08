@@ -23,9 +23,9 @@ def get_directed_graph_parameters(gph: Graph):
         inp = len(list(gph.g.predecessors(node)))
         outp = len(list(gph.g.successors(node)))
         if inp > g_in:
-            g_in += inp
+            g_in = inp
         if outp > g_out:
-            g_out += outp
+            g_out = outp
         if inp == 0 or outp == 0:
             io += 1
 
@@ -72,9 +72,9 @@ def get_directed_graph_parameters(gph: Graph):
 if __name__ == "__main__":
 
     root_path = verify_path(get_project_root())
-    base_path_origin = root_path + "benchmarks/fpga/eval/EPFL/"
+    base_path_origin = root_path + "benchmarks/fpga/eval/MINIST_bllif/"
     base_path_destiny = root_path + "reports/fpga/"
-    file_name = "complex_parameters"
+    file_name = "complex_parameters_minist"
 
     files = get_files_list_by_extension(base_path_origin, ".dot")
     parameters = {"dot_name": []}

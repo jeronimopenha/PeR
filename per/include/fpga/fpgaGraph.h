@@ -40,7 +40,7 @@ public:
 
     std::vector<std::vector<long> > generateIoOffsets();
 
-    std::vector<BorderInfo> getBordersSequence(long l, long c);
+    std::vector<BorderInfo> getIoBordersSequence(long l, long c);
 
     std::vector<std::pair<long, long> > getEdgesDepthFirstPriority();
 };

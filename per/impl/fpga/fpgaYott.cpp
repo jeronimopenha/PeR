@@ -5,6 +5,7 @@
 using namespace std;
 
 FpgaReportData fpgaYott(FPGAGraph &g) {
+    /*
     const long nCells = g.nCells;
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
@@ -201,6 +202,7 @@ FpgaReportData fpgaYott(FPGAGraph &g) {
     const long tries = (clbTries + ioTries);
     long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
     const long triesP = tries + cachePenalties;
+    */
 
     /*auto report = FpgaReportData(
         _time,

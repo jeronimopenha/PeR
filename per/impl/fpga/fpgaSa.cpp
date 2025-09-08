@@ -4,7 +4,7 @@
 using namespace std;
 
 FpgaReportData fpgaSa(FPGAGraph &g) {
-    const string alg_type = "SA";
+    /*const string alg_type = "SA";
     long cacheMisses = 0;
     long tries = 0;
     long swaps = 0;
@@ -143,6 +143,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 #elifdef FPGA_LP_COST
     tc = calcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #endif
+*/
 
     /*auto report = FpgaReportData(
         _time,

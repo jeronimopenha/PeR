@@ -5,7 +5,6 @@
 #include "fpga/fpgaYott.h"
 #include "fpga/fpgaSa.h"
 
-
 #include <omp.h>
 
 using namespace std;
@@ -103,9 +102,14 @@ int main() {
             //save reports for the 10 better placements
             fpgaWriteReports(rootPath, reportPath, algPath, fileName, reports[i]);
 
-#if !defined(CACHE)
+#if !defined(USE_CACHE)
             //generate reports and files for vpr
-            fpgaWriteVprData(rootPath, reportPath, algPath, fileName, reports[i], g);
+#ifdef VPR_V5
+            fpgaWriteVpr5Data(rootPath, reportPath, algPath, fileName, reports[i], g);
+#elifdef VPR_V9
+            fpgaWriteVpr9Data(rootPath, reportPath, algPath, fileName, reports[i], g);
+#endif
+
             /*
         * std::string folderPath = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/";
         std::string command = "python3 script.py \"" + folderPath + "\"";

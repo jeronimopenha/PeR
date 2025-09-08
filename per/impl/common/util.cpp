@@ -36,27 +36,6 @@ string funcKey(const string &a, const string &b) {
     return a + " " + b;
 }
 
-void saveToDot(const vector<pair<long, long> > &edges, const string &filename) {
-    ofstream file(filename);
-    if (!file) {
-        cerr << "Error!" << endl;
-        return;
-    }
-
-    // write the dot header
-    file << "digraph G {" << endl;
-
-    // write the edges
-    for (const auto &[fst, snd]: edges)
-        file << "    " << fst << " -> " << snd << ";" << endl;
-
-    // write the dot footer
-    file << "}" << endl;
-
-    file.close();
-    cout << "File " << filename << " saved!" << endl;
-}
-
 
 long getManhattanDist(const long cell1, const long cell2, const long n_cells_sqrt) {
     const long cell1_x = cell1 % n_cells_sqrt;
@@ -89,14 +68,13 @@ long getCellIndex(const long x, const long y, const long nCellsSqrt) {
 }
 
 int randomInt(const int min, const int max) {
-    static std::mt19937 gen(std::random_device{}());
+    std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> distrib(min, max);
     return distrib(gen);
 }
 
 float randomFloat(const float min, const float max) {
-    static std::mt19937 gen(std::random_device{}());
+    std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<float> distrib(min, max);
     return distrib(gen);
 }
-

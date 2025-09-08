@@ -11,10 +11,10 @@ FpgaReportData::FpgaReportData() = default;
 FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer, long size,
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
-                               const long triesP, const long swaps, string edges_algorithm, const long totalCost,
-                               const long lPCost, const vector<long> &c2n, const vector<long> &n2c,
-                               vector<map<long, long> > hist, vector<long> heatEnd, vector<long> heatBegin,
-                               map<long, vector<long> > orDest)
+                               const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
+                               const long totalCost, const long lPCost, const vector<vector<long> > &c2n,
+                               const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
+                               vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
       dotName(std::move(dotName)),
       dotPath(std::move(dotPath)),
@@ -30,6 +30,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       ioTries(ioTries),
       tries(tries),
       triesP(triesP),
+      triesPerNode(triesPerNode),
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
       totalCost(totalCost),
@@ -54,6 +55,7 @@ string FpgaReportData::to_json() const {
             << "  \"border\": " << size << ",\n"
             << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"nIOs\": " << nIOs << ",\n"
+            << "  \"nIOpCell\": " << nIOpCell << ",\n"
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
             << "  \"w\": " << w << ",\n"
             << "  \"wCost\": " << wCost << ",\n"
@@ -62,6 +64,7 @@ string FpgaReportData::to_json() const {
             << "  \"ioTries\": " << ioTries << ",\n"
             << "  \"tries\": " << tries << ",\n"
             << "  \"triesP\": " << triesP << ",\n"
+            << "  \"triesPerNode\": " << triesPerNode << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
             << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
             << "  \"totalCost\": " << totalCost << ",\n"
@@ -147,70 +150,81 @@ string FpgaReportData::metrics_to_json() const {
     return oss.str();
 }
 
-void fpgaSavePlacedDot(vector<long> &n2c, const vector<pair<long, long> > &ed, const long nCellsSqrt,
-                       const string &filename) {
-    ofstream file(filename);
-    if (!file) {
-        cerr << "Error!" << endl;
-        return;
-    }
-
-    vector<long> cells(nCellsSqrt * nCellsSqrt, -1);
-
-    for (long i = 0; i < static_cast<long>(n2c.size()); i++) {
-        if (n2c[i] > -1)
-            cells[n2c[i]] = i;
-    }
+void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
+                       const long nCellsSqrt, const string &filename) {
+    string fileString = "";
 
     // write the dot header
-    file << "digraph layout{" << endl;
-    file << "rankdir=TB; \n" << endl;
-    file << "splines=ortho; \n" << endl;
-    file << "node [style=filled shape=square fixedsize=true width=0.6];" << endl;
+    fileString += "digraph layout{\n";
+    fileString += "rankdir=TB; \n\n";
+    fileString += "splines=ortho; \n\n";
+    fileString += "node [style=filled shape=square fixedsize=true width=0.6];\n";
 
-    for (long i = 0; i < cells.size(); i++) {
-        if (cells[i] == -1) {
-            file << i << "[label=\"\", fontsize=8, fillcolor=\"#ffffff\"];" << endl;
-        } else {
-            file << i << "[label=\"" << cells[i] << "\", fontsize=8, fillcolor=\"#a9ccde\"];" << endl;
+    for (long i = 0; i < c2n.size(); i++) {
+        string label = "[label = \"";
+        bool flag = !c2n[i].empty();
+
+        for (long j = 0; j < c2n[i].size(); j++) {
+            if (c2n[i][j] == -1) {
+                break;
+            }
+            flag = true;
+            if (j > 0)
+                label += ",\n";
+            label += std::to_string(c2n[i][j]);
         }
+        fileString += to_string(i) + label + "\", fontsize=8, fillcolor=";
+
+        if (flag)
+            fileString += "\"#a9ccde\"];";
+        else
+            fileString += "\"#ffffff\"];";
+
+        fileString += "\n";
     }
-    file << "edge [constraint=false, style=vis];" << endl;
+    fileString += "edge [constraint=false, style=vis];\n";
     //normal edges
     for (auto &[fst,snd]: ed) {
-        if (n2c[fst] != -1 && n2c[snd] != -1)
-            file << n2c[fst] << " -> " << n2c[snd] << ";" << endl;
+        if (n2c[fst].first != -1 && n2c[snd].first != -1)
+            fileString += to_string(n2c[fst].first) + " -> " + to_string(n2c[snd].first) + ";\n";
     }
 
 
-    file << "edge [constraint=true, style=invis];" << endl;
+    fileString += "edge [constraint=true, style=invis];\n";
     //structural edges
     for (long j = 0; j < nCellsSqrt; j++) {
         for (long i = 0; i < nCellsSqrt; i++) {
             long c = j + i * nCellsSqrt;
             if (i == nCellsSqrt - 1) {
-                file << c << ";" << endl;
+                fileString += to_string(c) + ";\n";
             } else {
-                file << c << " -> ";
+                fileString += to_string(c) + " -> ";
             }
         }
     }
 
     for (long i = 0; i < nCellsSqrt; i++) {
-        file << "rank = same { ";
+        fileString += "rank = same { ";
         for (long j = 0; j < nCellsSqrt; j++) {
             long c = i * nCellsSqrt + j;
             if (j == nCellsSqrt - 1) {
-                file << c << ";";
+                fileString += to_string(c) + ";";
             } else {
-                file << c << " -> ";
+                fileString += to_string(c) + " -> ";
             }
         }
-        file << "};" << endl;
+        fileString += "};\n";
     }
 
     // write the dot footer
-    file << "}" << endl;
+    fileString += "}\n";
+
+    ofstream file(filename);
+    if (!file) {
+        cerr << "Error!" << endl;
+        return;
+    }
+    file << fileString;
     file.close();
 }
 
@@ -261,12 +275,12 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
 }
 
 
-long fpgaCalcGraphTotalDistance(const vector<long> &n2c, const vector<pair<long, long> > &edges,
+long fpgaCalcGraphTotalDistance(const vector<pair<long, long>> &n2c, const vector<pair<long, long> > &edges,
                                 const long nCellsSqrt) {
     long totalDist = -static_cast<long>(edges.size());
 
     for (const auto &[fst, snd]: edges) {
-        const long tempDist = getManhattanDist(n2c[fst], n2c[snd], nCellsSqrt);
+        const long tempDist = getManhattanDist(n2c[fst].first, n2c[snd].first, nCellsSqrt);
 
         // Acc the total distance
         totalDist += tempDist;
@@ -337,25 +351,79 @@ void fpgaWriteReports(const std::string &basePath,
 #endif
 }
 
-void fpgaWriteVprData(const string &basePath,
-                      const string &reportPath,
-                      const string &algPath,
-                      const string &fileName,
-                      const FpgaReportData &data,
-                      FPGAGraph g) {
+void fpgaWriteVpr9Data(const string &basePath,
+                       const string &_reportPath,
+                       const string &_algPath,
+                       const string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g) {
+    string placePath = basePath + _reportPath + _algPath + "/place/";
+    string placeFile = placePath + fileName + ".place";
+
+    string netBasePath = _reportPath + _algPath + "/blif/";
+    string blifPath = basePath + netBasePath;
+    string blifFile = blifPath + fileName + ".blif";
+
+    createDir(placePath);
+    //createDir(blifPath);
+
+    const long k = 6;
+
+    ofstream file = ofstream(placeFile);
+    if (file.is_open()) {
+        //Netlist_File: ctrl_k.net Netlist_ID: SHA256:
+        file << "Netlist_File: " << fileName.substr(0, fileName.size() - 2) << ".net Netlist_ID: SHA256:" << endl;
+
+        file << "Array size: " << g.nCellsSqrt << " x " << g.nCellsSqrt << " logic blocks " << endl << endl;
+        file << "#block name\tx\ty\tsubblk\tlayer\tblock number" << endl;
+        file << "#----------\t--\t--\t------\t------------" << endl;
+
+        long counter = 0;
+        for (long node = 0; node < g.nNodes; node++) {
+            const long cell = data.n2c[node].first;
+            const long subblock = data.n2c[node].second;
+            const long place = data.c2n[cell][subblock];
+            if (place > -1) {
+                long l = cell / g.nCellsSqrt;
+                long c = cell % g.nCellsSqrt;
+                if (g.nSuccV[node] == 0)
+                    //for (long pre = 0; pre < g.nNodes; pre++) {
+                    //    if (g.predecessors[node][pre]) {
+                    file << "out:" << node << "\t" << c << "\t" << l << "\t" << subblock << "\t" << 0 << "\t#" <<
+                            counter << endl;
+                    //    }
+                    //}
+                else
+                    file << node << "\t" << c << "\t" << l << "\t" << subblock << "\t" << 0 << "\t#" <<
+                            counter << endl;
+            }
+            counter++;
+        }
+
+        file.close();
+    } else
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+}
+
+void fpgaWriteVpr5Data(const string &basePath,
+                       const string &reportPath,
+                       const string &algPath,
+                       const string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g) {
     string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
-    string netBasePath = reportPath + algPath + "/net/";
-    string netPath = basePath + netBasePath;
-    string netFile = netPath + fileName + ".net";
+    string netBasePath = reportPath + algPath + "/blif/";
+    string blifPath = basePath + netBasePath;
+    string blifFile = blifPath + fileName + ".blif";
 
     createDir(placePath);
-    createDir(netPath);
+    //createDir(blifPath);
 
-    long k = 3;
+    long k = 6;
 
-    if (fileName.find("_k3") != string::npos)
+    /*if (fileName.find("_k3") != string::npos)
         k = 3;
 
     else if (fileName.find("_k4") != string::npos)
@@ -365,10 +433,10 @@ void fpgaWriteVprData(const string &basePath,
         k = 5;
 
     else if (fileName.find("_k6") != string::npos)
-        k = 6;
+        k = 6;*/
 
 
-    ofstream file(netFile);
+    ofstream file(blifFile);
     if (file.is_open()) {
         for (long node = 0; node < g.nNodes; node++) {
             const long inDegree = g.nPredV[node];
@@ -411,7 +479,9 @@ void fpgaWriteVprData(const string &basePath,
     } else {
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
     }
-    file = ofstream(placeFile);
+
+    //fixme
+    /*file = ofstream(placeFile);
     if (file.is_open()) {
         file << "Netlist file: " + netBasePath << fileName << ".net Architecture file: arch/k" << k <<
                 "-n1.xml" << endl;
@@ -442,7 +512,7 @@ void fpgaWriteVprData(const string &basePath,
 
         file.close();
     } else
-        cerr << "Error opening file for writing: " << fileName << ".json" << endl;
+        cerr << "Error opening file for writing: " << fileName << ".json" << endl;*/
 }
 
 bool fpgaIsInvalidCell(const long l, const long c, const long nCellsSqrt) {
@@ -502,7 +572,7 @@ RGB valueToRGB(const float normValue) {
 
 
 void writeHeatmap(const std::vector<long> &heatData,
-                  const vector<long> &c2n,
+                  const vector<vector<long>> &c2n,
                   const long nCellsSqrt,
                   const std::string &basePath,
                   const std::string &reportPath,
@@ -679,7 +749,8 @@ void writeHist(const std::map<long, long> &hist,
         const long xStart = padding + i * barWidth;
         const long xEnd = std::min(xStart + barWidth - 1, padding + width);
 
-        for (long y = imageHeight - padding - labelHeight - 1; y >= imageHeight - padding - labelHeight - barHeight; --
+        for (long y = imageHeight - padding - labelHeight - 1; y >= imageHeight - padding - labelHeight - barHeight;
+             --
              y) {
             for (long x = xStart; x <= xEnd; ++x) {
                 long idx = (y * imageWidth + x) * 3;
@@ -760,7 +831,8 @@ void writeBoxplot(const std::map<long, long> &hist,
 
     // Escala horizontal (de minNonOut a maxNonOut)
     auto scale = [&](long v) -> int {
-        return padding + static_cast<int>((float) (v - minNonOut) / (maxNonOut - minNonOut) * (width - 2 * padding));
+        return padding + static_cast<int>((float) (v - minNonOut) / (maxNonOut - minNonOut) * (
+                                              width - 2 * padding));
     };
 
     int boxY1 = height / 2 - 30;

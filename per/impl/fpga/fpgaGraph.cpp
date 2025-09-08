@@ -2,9 +2,11 @@
 #include <algorithm>
 #include <list>
 
+#include "fpga/fpgaPar.h"
+
 using namespace std;
 
-FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPath, dotName) {
+FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName) : Graph(dotPath, dotName) {
     readNeighbors();
     calcMatrix();
     //clbNodes = otherNodes;
@@ -14,6 +16,7 @@ FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName): Graph(dotPat
 
 void FPGAGraph::readNeighbors() {
     //neighbors vector
+    neighbors.clear();
     neighbors.resize(nNodes);
     for (size_t i = 0; i < successors.size(); ++i) {
         for (size_t j = 0; j < successors[i].size(); ++j) {
@@ -24,11 +27,11 @@ void FPGAGraph::readNeighbors() {
 }
 
 void FPGAGraph::calcMatrix() {
-    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size());
+    const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size());// + disconnectedNodes.size());
     const long nBaseNodes = nNodes - totalInOut;
     long nCellsBaseSqrt = ceil(sqrt(nBaseNodes));
     long nBorderCells = nCellsBaseSqrt * 4;
-    while (totalInOut > nBorderCells) {
+    while (totalInOut > nBorderCells * IO_NUMBER) {
         nCellsBaseSqrt += 1;
         nBorderCells = nCellsBaseSqrt * 4;
     }
@@ -43,19 +46,23 @@ vector<long> FPGAGraph::getInOutPos() const {
 
     // Append positions in the first range
     for (long i = 1; i < nCellsSqrt - 1; ++i)
-        possibleInOut.push_back(i);
+        for (long j = 0; j < IO_NUMBER; j++)
+            possibleInOut.push_back(i);
 
     // Append positions in the second range
     for (long i = 1; i < nCellsSqrt - 1; ++i)
-        possibleInOut.push_back(i + nCells - nCellsSqrt);
+        for (long j = 0; j < IO_NUMBER; j++)
+            possibleInOut.push_back(i + nCells - nCellsSqrt);
 
     // Append positions in the third range
     for (long i = nCellsSqrt; i < nCells - nCellsSqrt; i += nCellsSqrt)
-        possibleInOut.push_back(i);
+        for (long j = 0; j < IO_NUMBER; j++)
+            possibleInOut.push_back(i);
 
     // Append positions in the fourth range
     for (long i = nCellsSqrt * 2 - 1; i < nCells - 1; i += nCellsSqrt)
-        possibleInOut.push_back(i);
+        for (long j = 0; j < IO_NUMBER; j++)
+            possibleInOut.push_back(i);
 
     return possibleInOut;
 }
@@ -162,7 +169,7 @@ vector<vector<long> > FPGAGraph::generateIoOffsets() {
     return result;
 }
 
-vector<BorderInfo> FPGAGraph::getBordersSequence(long l, long c) {
+vector<BorderInfo> FPGAGraph::getIoBordersSequence(long l, long c) {
     const long nRows = nCellsSqrt;
     const long nCols = nCellsSqrt;
 

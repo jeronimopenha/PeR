@@ -168,7 +168,7 @@ void QCAGraph::computeLevels() {
     while (!q.empty()) {
         const long fst = q.front();
         q.pop();
-        for (long snd: adjList[fst]) {
+        for (long snd: succList[fst]) {
             level[snd] = max(level[snd], level[fst] + 1);
             if (--inDegree[snd] == 0)
                 q.push(snd);
