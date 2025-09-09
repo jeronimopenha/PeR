@@ -30,11 +30,7 @@ int main() {
         //fixme The costs functions are not working well
 #ifdef REPORT
         auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
-#ifdef FPGA_TOTAL_COST
-                return a.totalCost < b.totalCost;
-#elifdef FPGA_LONG_PATH_COST
-            return a.lPCost < b.lPCost;
-#endif
+            return a.totalCost < b.totalCost;
         };
 #endif
 
@@ -55,7 +51,7 @@ int main() {
 #if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
             report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
-                report = fpgaYott(g);
+            report = fpgaYott(g);
 #elifdef FPGA_SA
             report = fpgaSa(g);
 #endif
@@ -66,12 +62,7 @@ int main() {
             {
 #ifdef REPORT
 
-                //fixme the total costs are not working well
-#ifdef FPGA_TOTAL_COST
-                    if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
-#elifdef FPGA_LONG_PATH_COST
-                if (reports.size() < 10 || report.lPCost < reports.back().lPCost) {
-#endif
+                if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
                     // look for the right insertion position
                     auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
                     reports.insert(pos, report);
@@ -91,8 +82,8 @@ int main() {
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
 #else
-        const int limit = min(10, static_cast<int>(reports.size()));
-        for (int i = 0; i < limit; i++) {
+            const int limit = min(10, static_cast<int>(reports.size()));
+            for (int i = 0; i < limit; i++) {
 #endif
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;

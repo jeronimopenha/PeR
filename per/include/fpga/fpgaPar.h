@@ -60,7 +60,7 @@
 #define N_DIST_VECTORS 4
 
 //Use search strategy or not
-#define STRATEGY_SEARCH
+//#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH
@@ -102,8 +102,9 @@
 #define MAKE_METRICS
 
 //Choose a type of total cost
-#define FPGA_TOTAL_COST
+//#define FPGA_TOTAL_COST
 //#define FPGA_LONG_PATH_COST
+#define FPGA_DISTANCE_SLACK_COST
 
 //Save only the best one placement
 #define BEST_ONLY
@@ -121,7 +122,10 @@
 //Execution parameters Begin
 
 // Tests Quantity
-#define RUN_1
+//#define RUN_1
+//#define RUN_6
+//#define RUN_60
+#define RUN_600
 //#define RUN_10
 //#define RUN_100
 //#define RUN_1000
@@ -133,9 +137,9 @@
 
 //Debugging *************************************
 //debugging defines
-#define DEBUG
+//#define DEBUG
 //#define PRINT_DOT
-#define PRINT_IMG
+//#define PRINT_IMG
 //*******************************
 
 //Execution parameters END
@@ -184,9 +188,19 @@ inline std::string algPath = [] {
 #ifdef LIMIT_STRATEGY
     path += "_limit_" + std::to_string(LIMIT_DIST);
 #endif
+
 #ifdef SCAN_STRATEGY
-    path += "_scan_";
+    path += "_scan";
 #endif
+
+#ifdef FPGA_TOTAL_COST
+    path += "_TC";
+#elifdef FPGA_LONG_PATH_COST
+    path += "_LPC";
+#elifdef FPGA_DISTANCE_SLACK_COST
+    path += "_DSC";
+#endif
+
 #endif
 
 #ifdef USE_CACHE

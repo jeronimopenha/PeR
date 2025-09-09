@@ -12,7 +12,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
-                               const long totalCost, const long lPCost, const vector<vector<long> > &c2n,
+                               const long totalCost, const vector<vector<long> > &c2n,
                                const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
                                vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
@@ -34,7 +34,6 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
       totalCost(totalCost),
-      lPCost(lPCost),
       c2n(c2n),
       n2c(n2c),
       hist(std::move(hist)),
@@ -72,8 +71,7 @@ string FpgaReportData::to_json() const {
             << "  \"triesPerNode\": " << triesPerNode << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
             << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
-            << "  \"totalCost\": " << totalCost << ",\n"
-            << "  \"lPCost\": " << lPCost << "\n";
+            << "  \"totalCost\": " << totalCost << ",\n";
     /*<< "  \"placement\": [";
 
 // Serialize vector<int> placement

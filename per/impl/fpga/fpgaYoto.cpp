@@ -109,6 +109,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     auto start = chrono::high_resolution_clock::now();
 
     long distVectorCounter = 0;
+    long distSlackCost = 0;
 
     //YOTO - Begin ****************************8
 
@@ -312,15 +313,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     scannedCells[quadCounter].pop_back();
 
 #ifdef PRINT_IMG
-                    //writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
+            //writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
 #endif
                 } else {
-                    quadCounter++;
-                    if (quadCounter == 16) {
-                        quadCounter = 0;
-                    }
-                    continue;
+                quadCounter++;
+                if (quadCounter == 16) {
+                    quadCounter = 0;
                 }
+                continue;
+            }
             }
 #endif
             else {
@@ -360,6 +361,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
                 ++swaps;
                 ioSetBorder = false;
+                distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt)-1 - g.slack[b];
 #ifdef MAKE_METRICS
                 if (histogram.find(unicTry) != histogram.end()) {
                     histogram[unicTry]++;
@@ -411,16 +413,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     chrono::duration<double, milli> duration = end - start;
     auto _time = duration.count();
 
-    //long tc = 0;
-    // commented to take the cost of the longest path
-    //#ifdef FPGA_TOTAL_COST
-    //fixme
-    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-    //#elifdef FPGA_LONG_PATH_COST
 
+#ifdef FPGA_TOTAL_COST
+    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+#elifdef FPGA_LONG_PATH_COST
     //fixme
-    const long tlpc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-    //#endif
+    const long tc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+#elifdef FPGA_DISTANCE_SLACK_COST
+    const long tc = distSlackCost;
+#endif
 
     const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
     const long tries = (clbTries + ioTries);
@@ -464,7 +465,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         swaps,
         alg_type,
         tc,
-        tlpc,
         c2n,
         n2c,
         histogramFull,
