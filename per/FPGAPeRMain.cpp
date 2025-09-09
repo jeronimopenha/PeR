@@ -13,7 +13,6 @@ using namespace std;
 int main() {
     const string rootPath = verifyPath(getProjectRoot());
 
-
     cout << rootPath << endl;
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
@@ -40,7 +39,7 @@ int main() {
 #endif
 
 #ifndef DEBUG
-
+        //openmp Parallelization for release execution
         int nThreads = max(1, omp_get_num_procs());
         omp_set_num_threads(nThreads);
 

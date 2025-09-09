@@ -9,6 +9,7 @@
 //PER FPGA  Paramenters File
 
 //#################################################################################################
+//fixme
 //CACHE definitions BEGIN
 
 //The code needs to simulate a cache or not
@@ -40,10 +41,10 @@
 //Needs at least one
 
 //Greedy algorithm that traverses the source and destination graphs once without priority
-//#define FPGA_YOTO_DF
+#define FPGA_YOTO_DF
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
-#define FPGA_YOTO_DF_PRIO
+//#define FPGA_YOTO_DF_PRIO
 
 //Greedy algorithm that traverses the source and destination graphs twice with annotations on the edges
 //#define FPGA_YOTT
@@ -53,7 +54,7 @@
 //***********************************************
 
 //GREEDY algorithms parameters BRGIN ************
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO)
 
 //Number of random search sequences for placement
 #define N_DIST_VECTORS 4
@@ -66,15 +67,19 @@
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
 //At least one strategy is needed
-#define SPIRAL_STRATEGY
+//#define SPIRAL_STRATEGY
+#define SCAN_STRATEGY
 //#define CURTAIN_STRATEGY
+//#define LIMIT_STRATEGY
 
+#ifdef LIMIT_STRATEGY
 //Set the maximum search distance before using the chosen strategy
 #define LIMIT_DIST 4
 //#define LIMIT_DIST 5
 //#define LIMIT_DIST  6
 //#define LIMIT_DIST 7
 //#define LIMIT_DIST 8
+#endif
 
 #endif
 //STRATEGY SEARCH parameters END ****************
@@ -88,36 +93,6 @@
 //#################################################################################################
 //Rrports parameters BEGIN
 
-//Save only the best one placement
-#define BEST_ONLY
-
-//TODO Stopped here
-//Rrports parameters BEND
-//#################################################################################################
-
-//VPR version
-//#define VPR_V5
-#define VPR_V9
-
-// Tests Quantity
-#define RUN_1
-//#define RUN_10
-//#define RUN_100
-//#define RUN_1000
-
-// Benchmarks
-#define TEST
-//#define TRETS
-//#define EPFL
-
-//###############################
-
-//debugging defines
-#define DEBUG
-//#define PRINT_DOT
-#define PRINT_IMG
-//*******************************
-
 //Generate report or not
 
 #define REPORT
@@ -130,11 +105,44 @@
 #define FPGA_TOTAL_COST
 //#define FPGA_LONG_PATH_COST
 
+//Save only the best one placement
+#define BEST_ONLY
+
+//VPR version
+//fixme
+//#define VPR_V5
+#define VPR_V9
+
 #endif
+//Reports parameters END
+//#################################################################################################
+
+//#################################################################################################
+//Execution parameters Begin
+
+// Tests Quantity
+#define RUN_1
+//#define RUN_10
+//#define RUN_100
+//#define RUN_1000
+
+// Benchmarks
+#define TEST
+//#define TRETS
+//#define EPFL
+
+//Debugging *************************************
+//debugging defines
+#define DEBUG
+//#define PRINT_DOT
+#define PRINT_IMG
 //*******************************
 
-//Some standard variables
+//Execution parameters END
+//#################################################################################################
 
+
+//Some standard variables
 
 inline std::string benchPath = [] {
 #ifdef TEST
@@ -172,9 +180,12 @@ inline std::string algPath = [] {
     path += "/sa";
 #endif
 
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
-#ifndef STRATEGY_SEARCH
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO)
+#ifdef LIMIT_STRATEGY
     path += "_limit_" + std::to_string(LIMIT_DIST);
+#endif
+#ifdef SCAN_STRATEGY
+    path += "_scan_";
 #endif
 #endif
 
@@ -193,6 +204,12 @@ inline std::string algPath = [] {
     path += "_x100";
 #elif defined(RUN_1000)
     path += "_x1000";
+#elif defined(RUN_6)
+    path += "_x6";
+#elif defined(RUN_60)
+    path += "_x60";
+#elif defined(RUN_600)
+    path += "_x600";
 #endif
 
 #ifdef BEST_ONLY
@@ -208,9 +225,6 @@ inline std::string algPath = [] {
     return path;
 }();
 
-inline constexpr auto reportPath = "reports/fpga";
-inline constexpr auto benchExt = ".dot";
-
 //Execution quantity parameter
 #ifdef RUN_1
 inline constexpr int nExec = 1;
@@ -220,6 +234,15 @@ inline constexpr int nExec = 10;
 inline constexpr int nExec = 100;
 #elifdef RUN_1000
 inline constexpr int nExec = 1000;
+#elifdef RUN_6
+inline constexpr int nExec = 6;
+#elifdef RUN_60
+inline constexpr int nExec = 60;
+#elifdef RUN_600
+inline constexpr int nExec = 600;
 #endif
+
+inline constexpr auto reportPath = "reports/fpga";
+inline constexpr auto benchExt = ".dot";
 
 #endif //FPGA_PAR_H
