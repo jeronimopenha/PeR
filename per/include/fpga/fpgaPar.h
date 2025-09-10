@@ -37,7 +37,7 @@
 //Algorithms parameters BEGIN
 
 //Choose the I/O qty of ports per cell to the architecture
-#define IO_NUMBER  12
+#define IO_NUMBER  7
 //TODO CLB N LUT number per cell too
 
 //Wich algorithm will be run ********************
@@ -90,13 +90,13 @@
 //STRATEGY SEARCH parameters END ****************
 
 #endif
-//GREEDY algorithms parameters EN **************
+//GREEDY algorithms parameters END **************
 
 //Algorithms parameters END
 //#################################################################################################
 
 //#################################################################################################
-//Rrports parameters BEGIN
+//Reports parameters BEGIN
 
 //Generate report or not
 
@@ -142,7 +142,7 @@
 
 //Debugging *************************************
 //debugging defines
-#define DEBUG
+//#define DEBUG
 //#define PRINT_DOT
 //#define PRINT_IMG
 //*******************************

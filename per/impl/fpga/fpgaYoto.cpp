@@ -37,6 +37,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 
+    //fixme metrics variables
 #ifdef USE_CACHE
     long cacheMisses = 0;
     auto cacheC2N = Cache();
@@ -47,7 +48,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //fixme cache variable
 
 
-    //fixme metrics variables
     std::vector hist(nCells, 0L);
     vector heatEnd(nCells, 0L);
     vector heatBegin(nCells, 0L);
@@ -133,7 +133,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         edCounter++;
         const bool snapTaken = edCounter + 1 == nextSnapshotAt;
 
-
         if (snapTaken) {
 #ifdef MAKE_METRICS
             histogramFull.push_back(histogram);
@@ -141,6 +140,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             nextSnapshotAt += snapshotInterval;
             snapId++;
         }
+
+#ifdef DEBUG
+        bool placed = false;
+#endif
 
         long unicTry = 0;
 
@@ -344,6 +347,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             } else if (scanned) {
                 if (!scannedCells[quadCounter].empty()) {
                     targetCell = scannedCells[quadCounter].back();
+                    lB = targetCell / nCellsSqrt;
+                    cB = targetCell % nCellsSqrt;
                     scannedCells[quadCounter].pop_back();
                 } else {
                     quadCounter++;
@@ -415,8 +420,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 if (runYoto) {
 #endif
                     //Basic Spiral strategy
-                    //lB = lA + ij[0];
-                    //cB = cA + ij[1];
+                    lB = lA + ij[0];
+                    cB = cA + ij[1];
 
                     isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
                     //prevents put a non IO node in an IO cell
@@ -490,14 +495,26 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef SCAN_STRATEGY
                     && !scanned
 #endif
+#ifdef LIMIT_STRATEGY
+                    && !limitStrategyTrigger
+#endif
                 ) {
                     cout << "Error while placing: dist=" << dist << " max tries:" << _max;
                     cout << ". Total tries" << unicTry;
                     //exit(1);
                 }
+#ifdef DEBUG
+                placed = true;
+#endif
                 break;
             }
         }
+#ifdef DEBUG
+        if (!placed) {
+            writeMap(c2n, {n2c[a].first, -1}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
+            int asfd = 1;
+        }
+#endif
     }
 
 #ifdef MAKE_METRICS
