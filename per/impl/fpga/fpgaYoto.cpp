@@ -82,6 +82,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //filling the metrics variables
 #ifdef MAKE_METRICS
     map<long, long> histogram;
+#endif
     long maxEd = static_cast<long>(ed.size());
     long edCounter = -1;
     //fixme Transform 10 in totalSnapshots PARAMETER!!!
@@ -89,7 +90,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long snapshotInterval = maxEd / totalSnapshots;
     long nextSnapshotAt = snapshotInterval;
     int snapId = 0;
-#endif
 
     //IO placement control
     vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
@@ -117,19 +117,32 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     bool scanned = false;
 #endif
 
+#ifdef LIMIT_STRATEGY
+    //fixme transform 16 in parameter
+    vector<long> limitQuadrants(16, 0l);
+
+    for (long l = 1; l < nCellsSqrt - 1; l++) {
+        for (long c = 1; c < nCellsSqrt - 1; c++) {
+            const long quadrant = getQuadrant(l, c, nCells, nCellsSqrt); // quad_x * 4 + quad_y;
+            limitQuadrants[quadrant]++;
+        }
+    }
+#endif
+
     for (auto [a,b]: ed) {
-#ifdef MAKE_METRICS
         edCounter++;
         const bool snapTaken = edCounter + 1 == nextSnapshotAt;
 
+
         if (snapTaken) {
+#ifdef MAKE_METRICS
             histogramFull.push_back(histogram);
+#endif
             nextSnapshotAt += snapshotInterval;
             snapId++;
         }
 
         long unicTry = 0;
-#endif
 
 #ifdef PRINT_IMG
         if (snapTaken)
@@ -209,12 +222,35 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
         bool isTargetCellIO = true;
 
+#ifdef LIMIT_STRATEGY
+        long limitAcc = 1;
+        bool abortLimitStrategy = false;
+#endif
+
 #ifdef SCAN_STRATEGY
         long quadCounter = getQuadrant(lA, cA, nCells, nCellsSqrt);
 #endif
 
+        //fixme This part is only for YOTO spiral strategy. This should be on that part only
         //Then I will look for a cell next to A's cell
         for (const auto &ij: distCells[distVectorCounter]) {
+            long lB = lA + ij[0];
+            long cB = cA + ij[1];
+
+            long targetCell;
+
+#ifdef LIMIT_STRATEGY
+            bool limitStrategyTrigger = false;
+            targetCell = lB * nCellsSqrt + cB;
+            const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+            //fixme transform 7 in a parameter
+            if (lmsDist > static_cast<long>(LIMIT_DIST) && !fpgaIsInvalidCell(lB, cB, nCellsSqrt) && snapId < 80 *
+                totalSnapshots /
+                100) {
+                limitStrategyTrigger = true;
+            }
+#endif
+
             unicTry++;
 
             const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
@@ -225,9 +261,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 clbTries++;
             }
 
-            long targetCell = -1;
-            long lB;
-            long cB;
+            targetCell = -1;
             long dist;
 
             if (IsBIoNode) {
@@ -291,8 +325,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
             }
 #ifdef SCAN_STRATEGY
-            //fixme Transform 90 in a parameter!!!
-            else if (snapId >= 9 && !scanned) {
+            //fixme Transform 9 in a parameter!!!
+            else if (snapId >= 80 * totalSnapshots / 100 && !scanned) {
                 scanned = true;
                 clbTries += static_cast<long>(nNodes - g.innerNodes.size());
                 unicTry += static_cast<long>(nNodes - g.innerNodes.size());
@@ -311,31 +345,89 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 if (!scannedCells[quadCounter].empty()) {
                     targetCell = scannedCells[quadCounter].back();
                     scannedCells[quadCounter].pop_back();
-
-#ifdef PRINT_IMG
-            //writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-#endif
                 } else {
-                quadCounter++;
-                if (quadCounter == 16) {
-                    quadCounter = 0;
+                    quadCounter++;
+                    if (quadCounter == 16) {
+                        quadCounter = 0;
+                    }
+                    continue;
                 }
-                continue;
-            }
             }
 #endif
+
             else {
-                //Basic Spiral strategy
-                lB = lA + ij[0];
-                cB = cA + ij[1];
+#ifdef LIMIT_STRATEGY
+                long maxValue;
+                pair<long, int> maxQuadrant;
+                bool runYoto = true;
 
-                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                //prevents put a non IO node in an IO cell
-                if (isTargetCellIO)
-                    continue;
+                if (limitStrategyTrigger && !abortLimitStrategy) {
+                    const long quadrantA = getQuadrant(lA, cA, nCellsSqrt, nCellsSqrt);
+                    std::vector<pair<long, int> > adjacentQuadrants = getAdjacentQuadrants(quadrantA);
+                    maxQuadrant = adjacentQuadrants.front();
+                    maxValue = limitQuadrants[maxQuadrant.first];
+                    for (int i = 1; i < adjacentQuadrants.size(); i++) {
+                        const pair<long, int> quadrantTmp = adjacentQuadrants[i];
+                        const long valueTmp = limitQuadrants[quadrantTmp.first];
+                        if (valueTmp > maxValue) {
+                            maxValue = valueTmp;
+                            maxQuadrant = quadrantTmp;
+                        }
+                    }
+                    if (maxValue > 0) {
+                        while (true) {
+                            switch (maxQuadrant.second) {
+                                case 0: // top
+                                    lB = lA - limitAcc;
+                                    cB = cA;
+                                    break;
+                                case 1: // bottom
+                                    lB = lA + limitAcc;
+                                    cB = cA;
+                                    break;
+                                case 2: // left
+                                    lB = lA;
+                                    cB = cA - limitAcc;
+                                    break;
+                                case 3: // right
+                                    lB = lA;
+                                    cB = cA + limitAcc;
+                                    break;
+                            }
+                            isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                            const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
+                            // Check if the target cell is nor allowed, go to next
+                            if (isInvalidCell || isTargetCellIO) {
+                                abortLimitStrategy = true;
+                                break;
+                            }
+                            targetCell = lB * nCellsSqrt + cB;
+                            if (c2n[targetCell].empty()) {
+                                runYoto = false;
+                                break;
+                            }
+                            limitAcc++;
+                            unicTry++;
+                            clbTries++;
+                        }
+                    }
+                }
+                if (runYoto) {
+#endif
+                    //Basic Spiral strategy
+                    //lB = lA + ij[0];
+                    //cB = cA + ij[1];
 
-                //find the idx for the target cell
-                targetCell = lB * nCellsSqrt + cB;
+                    isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                    //prevents put a non IO node in an IO cell
+                    if (isTargetCellIO)
+                        continue;
+
+                    //find the idx for the target cell
+                    targetCell = lB * nCellsSqrt + cB;
+#ifdef LIMIT_STRATEGY
+                }
+#endif
             }
             const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
             // Check if the target cell is nor allowed, go to next
@@ -361,7 +453,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
                 ++swaps;
                 ioSetBorder = false;
-                distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt)-1 - g.slack[b];
+                distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt) - 1 - g.slack[b];
+#ifdef LIMIT_STRATEGY
+                if (!isTargetCellIO) {
+                    const long quadrant = getQuadrant(lB, cB, nCellsSqrt, nCellsSqrt);
+                    limitQuadrants[quadrant]--;
+                }
+#endif
 #ifdef MAKE_METRICS
                 if (histogram.find(unicTry) != histogram.end()) {
                     histogram[unicTry]++;
@@ -379,8 +477,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 #ifdef PRINT_IMG
+                /*if (limitStrategyTrigger && !abortLimitStrategy)
+                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");*/
                 if (snapTaken)
-                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/tmp/placed.jpg");
+                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
+                //fixme transform 9 in a parameter
+                /*if (snapId >= 90 * 50 / 100)
+                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");*/
 #endif
                 long _max = 2 * dist * (dist + 1);
                 if ((unicTry > _max) && !IsBIoNode
@@ -421,6 +524,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long tc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
 #elifdef FPGA_DISTANCE_SLACK_COST
     const long tc = distSlackCost;
+#else
+    const long tc = 0;
 #endif
 
     const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
@@ -464,6 +569,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         triesPerNode,
         swaps,
         alg_type,
+        costStrategyName,
         tc,
         c2n,
         n2c,

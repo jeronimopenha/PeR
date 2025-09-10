@@ -33,6 +33,7 @@ struct FpgaReportData {
     long triesPerNode = 0;
     long swaps = 0;
     std::string edgesAlgorithm;
+    std::string costStrategy;
     long totalCost = 0;
     std::vector<std::vector<long> > c2n;
     std::vector<std::pair<long, long> > n2c;
@@ -46,7 +47,7 @@ struct FpgaReportData {
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long size, long nNodes,
                    long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
                    long tries, long triesP, long triesPerNode, long swaps, std::string edges_algorithm,
-                   long totalCost, const std::vector<std::vector<long> > &c2n,
+                   const std::string &costStrategy, long totalCost, const std::vector<std::vector<long> > &c2n,
                    const std::vector<std::pair<long, long> > &n2c, std::vector<std::map<long, long> > hist,
                    std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> > orDest);
 
@@ -96,6 +97,8 @@ bool fpgaIsInvalidCell(long l, long c, long nCellsSqrt);
 bool fpgaIsIOCell(long l, long c, long nCellsSqrt);
 
 long getQuadrant(long l, long c, long nCells, long nCellsSqrt);
+
+std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
 
 RGB valueToRGB(float normValue);
 

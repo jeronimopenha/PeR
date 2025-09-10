@@ -12,7 +12,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
-                               const long totalCost, const vector<vector<long> > &c2n,
+                               const std::string &costStrategy, const long totalCost, const vector<vector<long> > &c2n,
                                const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
                                vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
@@ -33,6 +33,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       triesPerNode(triesPerNode),
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
+      costStrategy(costStrategy),
       totalCost(totalCost),
       c2n(c2n),
       n2c(n2c),
@@ -71,6 +72,7 @@ string FpgaReportData::to_json() const {
             << "  \"triesPerNode\": " << triesPerNode << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
             << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
+            << "  \"costStrategy\": \"" << costStrategy << "\",\n"
             << "  \"totalCost\": " << totalCost << ",\n";
     /*<< "  \"placement\": [";
 
@@ -535,17 +537,41 @@ bool fpgaIsIOCell(const long l, const long c, const long nCellsSqrt) {
 }
 
 //fixme Need to work with bits, not integers
+//fixme transform 16 in parameter
 long getQuadrant(const long l, const long c, const long nCells, const long nCellsSqrt) {
     constexpr long nQuadrants = 16;
 
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
 
-    const long quadSize = nCellsSqrt / nQuadrantsSqrt;
+    const long quadSize = (nCellsSqrt + nQuadrantsSqrt - 1) / nQuadrantsSqrt;
 
     const long quad_c = c / quadSize;
     const long quad_l = l / quadSize;
 
     return quad_l * 4 + quad_c;
+}
+
+vector<pair<long, int> > getAdjacentQuadrants(const long q) {
+    std::vector<pair<long, int> > adj;
+
+    constexpr long nQuadrants = 16;
+    const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
+
+
+    const long l = q / nQuadrantsSqrt;
+    const long c = q % nQuadrantsSqrt;
+
+    //fixme transform the direction number in an enum
+    // top
+    if (l > 0) adj.push_back({(l - 1) * nQuadrantsSqrt + c, 0});
+    // bottom
+    if (l < nQuadrantsSqrt - 1) adj.push_back({(l + 1) * nQuadrantsSqrt + c, 1});
+    // left
+    if (c > 0) adj.push_back({l * nQuadrantsSqrt + (c - 1), 2});
+    // right
+    if (c < nQuadrantsSqrt - 1) adj.push_back({l * nQuadrantsSqrt + (c + 1), 3});
+
+    return adj;
 }
 
 

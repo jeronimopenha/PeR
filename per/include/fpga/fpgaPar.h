@@ -8,6 +8,9 @@
 
 //PER FPGA  Paramenters File
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 //#################################################################################################
 //fixme
 //CACHE definitions BEGIN
@@ -60,7 +63,7 @@
 #define N_DIST_VECTORS 4
 
 //Use search strategy or not
-//#define STRATEGY_SEARCH
+#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH
@@ -70,11 +73,13 @@
 //#define SPIRAL_STRATEGY
 #define SCAN_STRATEGY
 //#define CURTAIN_STRATEGY
-//#define LIMIT_STRATEGY
+#define LIMIT_STRATEGY
 
 #ifdef LIMIT_STRATEGY
 //Set the maximum search distance before using the chosen strategy
-#define LIMIT_DIST 4
+#define LIMIT_DIST 2
+//#define LIMIT_DIST 3
+//#define LIMIT_DIST 4
 //#define LIMIT_DIST 5
 //#define LIMIT_DIST  6
 //#define LIMIT_DIST 7
@@ -103,11 +108,11 @@
 
 //Choose a type of total cost
 //#define FPGA_TOTAL_COST
-//#define FPGA_LONG_PATH_COST
 #define FPGA_DISTANCE_SLACK_COST
 
+
 //Save only the best one placement
-#define BEST_ONLY
+//#define BEST_ONLY
 
 //VPR version
 //fixme
@@ -123,9 +128,9 @@
 
 // Tests Quantity
 //#define RUN_1
-//#define RUN_6
+#define RUN_6
 //#define RUN_60
-#define RUN_600
+//#define RUN_600
 //#define RUN_10
 //#define RUN_100
 //#define RUN_1000
@@ -137,7 +142,7 @@
 
 //Debugging *************************************
 //debugging defines
-//#define DEBUG
+#define DEBUG
 //#define PRINT_DOT
 //#define PRINT_IMG
 //*******************************
@@ -254,6 +259,16 @@ inline constexpr int nExec = 6;
 inline constexpr int nExec = 60;
 #elifdef RUN_600
 inline constexpr int nExec = 600;
+#endif
+
+#ifdef FPGA_TOTAL_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_TOTAL_COST);
+#elifdef FPGA_LONG_PATH_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_LONG_PATH_COST);
+#elifdef FPGA_DISTANCE_SLACK_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_DISTANCE_SLACK_COST);
+#else
+inline const std::string costStrategyName;
 #endif
 
 inline constexpr auto reportPath = "reports/fpga";
