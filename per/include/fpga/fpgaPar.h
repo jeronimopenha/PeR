@@ -37,7 +37,7 @@
 //Algorithms parameters BEGIN
 
 //Choose the I/O qty of ports per cell to the architecture
-#define IO_NUMBER  7
+#define IO_NUMBER  8
 //TODO CLB N LUT number per cell too
 
 //Wich algorithm will be run ********************
@@ -103,16 +103,18 @@
 #define REPORT
 #ifdef REPORT
 
+#define REPORT_PREFIX "_09_11_"
+
 //Choose write Make metrics reports
 #define MAKE_METRICS
 
 //Choose a type of total cost
-//#define FPGA_TOTAL_COST
-#define FPGA_DISTANCE_SLACK_COST
+#define FPGA_TOTAL_COST
+//#define FPGA_DISTANCE_SLACK_COST
 
 
 //Save only the best one placement
-//#define BEST_ONLY
+#define BEST_ONLY
 
 //VPR version
 //fixme
@@ -168,25 +170,30 @@ inline std::string benchPath = [] {
 inline std::string algPath = [] {
     std::string path;
 #ifdef TEST
-    path = "/TEST";
+    path = "/TEST/";
 #elifdef TRETS
-    path = "/TRETS";
+    path = "/TRETS/";
 #elif defined(EPFL)
-    path = "/EPFL";
+    path = "/EPFL/";
 #endif
 
+#ifdef REPORT_PREFIX
+    path += REPORT_PREFIX;
+#endif
+
+
 #ifdef FPGA_YOTO_DF
-    path += "/yoto_df";
+    path += "yoto_df";
 #elif defined(FPGA_YOTO_DF_PRIO)
-    path += "/yoto_df_prio";
+    path += "yoto_df_prio";
 #elif defined(FPGA_YOTO_ZZ)
-    path += "/yoto_zz";
+    path += "yoto_zz";
 #elif defined(FPGA_YOTT)
-    path += "/yott";
+    path += "yott";
 #elif defined(FPGA_YOTT_IO)
-    path += "/yott_io";
+    path += "yott_io";
 #elif defined(FPGA_SA)
-    path += "/sa";
+    path += "sa";
 #endif
 
 #if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO)
