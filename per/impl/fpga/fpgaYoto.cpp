@@ -482,8 +482,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 #ifdef PRINT_IMG
-                /*if (limitStrategyTrigger && !abortLimitStrategy)
-                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");*/
+                //if (limitStrategyTrigger && !abortLimitStrategy)
+                    //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
                 if (snapTaken)
                     writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
                 //fixme transform 9 in a parameter

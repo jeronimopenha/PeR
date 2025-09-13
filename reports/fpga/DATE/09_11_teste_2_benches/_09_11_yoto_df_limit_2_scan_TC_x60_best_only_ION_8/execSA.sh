@@ -7,10 +7,10 @@ VPR_BIN="/home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vpr/v
 ARCH_XML="/home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vtr_flow/arch/lut6_8.xml"
 
 # Algoritmos de placement a executar para cada .place
-ALGORITHMS=( "bounding_box" "criticality_timing" )
+ALGORITHMS=( "_r_" )
 
 # Paralelismo (pode sobrescrever: N_THREADS=8 ./exec_place_parallel.sh)
-N_THREADS="${N_THREADS:-16}"
+N_THREADS="${N_THREADS:-5}"
 # ========================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -56,7 +56,6 @@ run_one() {
       --route \
       --verify_file_digests off \
       --place_file "$place_path" \
-      --place_algorithm "$algo" \
       --disp off
   ) >"$out_path" 2>&1
 

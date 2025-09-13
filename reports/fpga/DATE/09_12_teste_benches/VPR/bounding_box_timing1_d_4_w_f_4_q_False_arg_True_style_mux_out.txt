@@ -1,0 +1,1309 @@
+VPR FPGA Placement and Routing.
+Version: 9.0.0-dev+v8.0.0-13883-g4cf678a52
+Revision: v8.0.0-13883-g4cf678a52
+Compiled: 2025-09-07T11:47:51
+Compiler: GNU 13.3.0 on Linux-6.8.0-60-generic x86_64
+Build Info: release IPO VTR_ASSERT_LEVEL=2
+
+University of Toronto
+verilogtorouting.org
+vtr-users@googlegroups.com
+This is free open source code under MIT license.
+
+Warning 1: To use RLPlace for WLdriven placements, the reward function should be basic or nonPenalizing_basic.
+you can specify the reward function using --place_reward_fun.
+Setting the placement reward function to "basic"
+VPR was run with the following command-line:
+/home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/build/vpr/vpr /home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vtr_flow/arch/lut6_8.xml /home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vpr/DATE/09_12_teste_benches/VPR/d_4_w_f_4_q_False_arg_True_style_mux.blif --pack --place --route --place_algorithm bounding_box
+
+Using up to 1 parallel worker(s)
+
+Architecture file: /home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vtr_flow/arch/lut6_8.xml
+Circuit name: d_4_w_f_4_q_False_arg_True_style_mux
+
+# Loading Architecture Description
+# Loading Architecture Description took 0.00 seconds (max_rss 18.5 MiB, delta_rss +2.3 MiB)
+
+Timing analysis: ON
+Circuit netlist file: d_4_w_f_4_q_False_arg_True_style_mux.net
+Circuit placement file: d_4_w_f_4_q_False_arg_True_style_mux.place
+Circuit routing file: d_4_w_f_4_q_False_arg_True_style_mux.route
+Circuit SDC file: d_4_w_f_4_q_False_arg_True_style_mux.sdc
+Vpr floorplanning constraints file: not specified
+
+Packer: ENABLED
+Placer: ENABLED
+Analytical Placer: DISABLED
+Router: ENABLED
+Analysis: SKIP IF PRIOR FAIL
+
+VPR was run with the following options:
+
+NetlistOpts.absorb_buffer_luts            : true
+NetlistOpts.sweep_dangling_primary_ios    : true
+NetlistOpts.sweep_dangling_nets           : true
+NetlistOpts.sweep_dangling_blocks         : true
+NetlistOpts.sweep_constant_primary_outputs: false
+NetlistOpts.netlist_verbosity             : 1
+NetlistOpts.const_gen_inference           : COMB_SEQ
+
+PackerOpts.allow_unrelated_clustering: auto
+PackerOpts.timing_gain_weight: 0.750000
+PackerOpts.connection_gain_weight: 0.900000
+PackerOpts.cluster_seed_type: BLEND2
+PackerOpts.connection_driven: true
+PackerOpts.timing_driven: true
+PackerOpts.target_external_pin_util: auto
+
+PlacerOpts.place_freq: PLACE_ONCE
+PlacerOpts.place_algorithm: BOUNDING_BOX_PLACE
+PlacerOpts.pad_loc_type: FREE
+PlacerOpts.constraints_file: No constraints file given
+PlacerOpts.place_chan_width: 100
+PlacerOpts.rlim_escape_fraction: 0.000000
+PlacerOpts.move_stats_file: 
+PlacerOpts.placement_saves_per_temperature: 0
+PlacerOpts.effort_scaling: CIRCUIT
+PlacerOpts.place_delta_delay_matrix_calculation_method: ASTAR_ROUTE
+PlaceOpts.seed: 1
+AnnealSched.type: AUTO_SCHED
+AnnealSched.inner_num: 0.500000
+
+RouterOpts.route_type: DETAILED
+RouterOpts.flat_routing: false
+RouterOpts.choke_points: on
+RouterOpts.router_algorithm: TIMING_DRIVEN
+RouterOpts.base_cost_type: DELAY_NORMALIZED_LENGTH
+RouterOpts.fixed_channel_width: NO_FIXED_CHANNEL_WIDTH
+RouterOpts.check_route: FULL
+RouterOpts.acc_fac: 1.000000
+RouterOpts.bb_factor: 3
+RouterOpts.bend_cost: 0.000000
+RouterOpts.first_iter_pres_fac: 0.000000
+RouterOpts.initial_pres_fac: 0.500000
+RouterOpts.pres_fac_mult: 1.300000
+RouterOpts.max_pres_fac: 1000.000000
+RouterOpts.max_router_iterations: 50
+RouterOpts.min_incremental_reroute_fanout: 16
+RouterOpts.initial_acc_cost_chan_congestion_threshold: 0.500000
+RouterOpts.initial_acc_cost_chan_congestion_weight: 0.500000
+RouterOpts.do_check_rr_graph: true
+RouterOpts.verify_binary_search: false
+RouterOpts.min_channel_width_hint: 0
+RouterOpts.read_rr_edge_metadata: false
+RouterOpts.exit_after_first_routing_iteration: false
+RouterOpts.astar_fac: 1.200000
+RouterOpts.astar_offset: 0.000000
+RouterOpts.router_profiler_astar_fac: 1.200000
+RouterOpts.enable_parallel_connection_router: false
+RouterOpts.post_target_prune_fac: 1.200000
+RouterOpts.post_target_prune_offset: 0
+RouterOpts.multi_queue_num_threads: 1
+RouterOpts.multi_queue_num_queues: 2
+RouterOpts.multi_queue_direct_draining: false
+RouterOpts.criticality_exp: 1.000000
+RouterOpts.max_criticality: 0.990000
+RouterOpts.init_wirelength_abort_threshold: 0.850000
+RouterOpts.incr_reroute_delay_ripup: AUTO
+RouterOpts.save_routing_per_iteration: false
+RouterOpts.congested_routing_iteration_threshold_frac: 1.000000
+RouterOpts.high_fanout_threshold: 64
+RouterOpts.router_debug_net: -2
+RouterOpts.router_debug_sink_rr: -2
+RouterOpts.router_debug_iteration: -2
+RouterOpts.max_convergence_count: 1
+RouterOpts.reconvergence_cpd_threshold: 0.990000
+RouterOpts.update_lower_bound_delays: true
+RouterOpts.first_iteration_timing_report_file: 
+RouterOpts.route_bb_update: DYNAMIC
+RouterOpts.lookahead_type: MAP
+RouterOpts.initial_timing: LOOKAHEAD
+RouterOpts.router_heap: FOUR_ARY_HEAP
+RouterOpts.routing_failure_predictor = SAFE
+RouterOpts.routing_budgets_algorithm = DISABLE
+
+AnalysisOpts.gen_post_synthesis_netlist: false
+AnalysisOpts.gen_post_implementation_merged_netlist: false
+AnalysisOpts.gen_post_implementation_sdc: false
+AnalysisOpts.timing_report_npaths: 100
+AnalysisOpts.timing_report_skew: false
+AnalysisOpts.echo_dot_timing_graph_node: -1
+AnalysisOpts.timing_report_detail: NETLIST
+AnalysisOpts.post_synth_netlist_unconn_input_handling: UNCONNECTED
+AnalysisOpts.post_synth_netlist_unconn_output_handling: UNCONNECTED
+AnalysisOpts.post_synth_netlist_module_parameters: on
+
+# Building complex block graph
+Warning 2: io[0].clock[0] unconnected pin in architecture.
+Warning 3: clb[0].clk[0] unconnected pin in architecture.
+# Building complex block graph took 0.00 seconds (max_rss 18.6 MiB, delta_rss +0.1 MiB)
+Circuit file: /home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vpr/DATE/09_12_teste_benches/VPR/d_4_w_f_4_q_False_arg_True_style_mux.blif
+# Load circuit
+# Load circuit took 0.08 seconds (max_rss 27.6 MiB, delta_rss +8.9 MiB)
+# Clean circuit
+Absorbed 4 LUT buffers
+Inferred    0 additional primitive pins as constant generators since they have no combinationally connected inputs
+Inferred    0 additional primitive pins as constant generators due to constant inputs
+Swept input(s)      : 0
+Swept output(s)     : 0 (0 dangling, 0 constant)
+Swept net(s)        : 0
+Swept block(s)      : 0
+Constant Pins Marked: 0
+# Clean circuit took 0.00 seconds (max_rss 27.6 MiB, delta_rss +0.0 MiB)
+# Compress circuit
+# Compress circuit took 0.02 seconds (max_rss 27.8 MiB, delta_rss +0.1 MiB)
+# Verify circuit
+# Verify circuit took 0.00 seconds (max_rss 27.8 MiB, delta_rss +0.0 MiB)
+Circuit Statistics:
+  Blocks: 6309
+    .input :    1884
+    .names :    4421
+        2-LUT:     383
+        3-LUT:    1263
+        4-LUT:    1163
+        5-LUT:     667
+        6-LUT:     945
+    .output:       4
+  Nets  : 6305
+    Avg Fanout:     2.9
+    Max Fanout:    20.0
+    Min Fanout:     1.0
+  Netlist Clocks: 0
+# Build Timing Graph
+  Timing Graph Nodes: 24521
+  Timing Graph Edges: 36428
+  Timing Graph Levels: 54
+# Build Timing Graph took 0.08 seconds (max_rss 31.1 MiB, delta_rss +3.4 MiB)
+Netlist contains 0 clocks
+# Load Timing Constraints
+
+SDC file 'd_4_w_f_4_q_False_arg_True_style_mux.sdc' not found
+Setting default timing constraints:
+   * constrain all primay inputs and primary outputs on a virtual external clock 'virtual_io_clock'
+   * optimize virtual clock to run as fast as possible
+Timing constraints created 1 clocks
+  Constrained Clock 'virtual_io_clock' (Virtual Clock)
+
+# Load Timing Constraints took 0.00 seconds (max_rss 31.1 MiB, delta_rss +0.0 MiB)
+# Packing
+## Prepacker
+## Prepacker took 0.01 seconds (max_rss 31.8 MiB, delta_rss +0.1 MiB)
+## Initializing Pre-Cluster Timing
+Using inter-cluster delay: 1.33777e-09
+## Initializing Pre-Cluster Timing took 0.05 seconds (max_rss 33.6 MiB, delta_rss +1.9 MiB)
+Begin packing '/home/jeronimocosta/Documentos/GIT/vtr_dev/vtr-verilog-to-routing/vpr/DATE/09_12_teste_benches/VPR/d_4_w_f_4_q_False_arg_True_style_mux.blif'.
+
+After removing unused inputs...
+	total blocks: 6309, total nets: 6305, total inputs: 1884, total outputs: 4
+Packing with pin utilization targets: io:1,1 clb:0.8,0.6
+Packing with high fanout thresholds: io:128 clb:32
+Starting Clustering - Clustering Progress: 
+-------------------   --------------------------   ---------
+Molecules processed   Number of clusters created   FPGA size
+-------------------   --------------------------   ---------
+   252/6309      3%                          252    18 x 18    
+   504/6309      7%                          504    25 x 25    
+   756/6309     11%                          756    30 x 30    
+  1008/6309     15%                         1008    34 x 34    
+  1260/6309     19%                         1260    38 x 38    
+  1512/6309     23%                         1512    41 x 41    
+  1764/6309     27%                         1764    44 x 44    
+  2016/6309     31%                         2016    47 x 47    
+  2268/6309     35%                         2268    50 x 50    
+  2520/6309     39%                         2520    53 x 53    
+  2772/6309     43%                         2772    55 x 55    
+  3024/6309     47%                         3024    57 x 57    
+  3276/6309     51%                         3276    60 x 60    
+  3528/6309     55%                         3528    62 x 62    
+  3780/6309     59%                         3780    64 x 64    
+  4032/6309     63%                         4032    66 x 66    
+  4284/6309     67%                         4284    68 x 68    
+  4536/6309     71%                         4536    69 x 69    
+  4788/6309     75%                         4788    69 x 69    
+  5040/6309     79%                         5040    69 x 69    
+  5292/6309     83%                         5292    69 x 69    
+  5544/6309     87%                         5544    69 x 69    
+  5796/6309     91%                         5796    69 x 69    
+  6048/6309     95%                         6048    69 x 69    
+  6300/6309     99%                         6300    69 x 69    
+  6309/6309    100%                         6309    69 x 69    
+FPGA sized to 69 x 69 (auto)
+Device Utilization: 0.98 (target 1.00)
+	Block Utilization: 0.88 Type: io
+	Block Utilization: 0.98 Type: clb
+
+Start the iterative improvement process
+the iterative improvement process is done
+Final Clustering Statistics: 
+----------   --------   ------------------------------------   --------------------------
+Block Type   # Blocks   Avg. # of input clocks and pins used   Avg. # of output pins used
+----------   --------   ------------------------------------   --------------------------
+     EMPTY          0                                      0                            0   
+        io       1888                             0.00211864                     0.997881   
+       clb       4421                                4.11943                            1   
+Absorbed logical nets 0 out of 6305 nets, 6305 nets not absorbed.
+
+Netlist conversion complete.
+
+Incr Slack updates 1 in 0.000942142 sec
+Full Max Req/Worst Slack updates 1 in 5.445e-06 sec
+Incr Max Req/Worst Slack updates 0 in 0 sec
+Incr Criticality updates 0 in 0 sec
+Full Criticality updates 1 in 0.00252728 sec
+# Packing took 1.53 seconds (max_rss 51.4 MiB, delta_rss +19.8 MiB)
+# Load packing
+Begin loading packed FPGA netlist file.
+Netlist generated from file 'd_4_w_f_4_q_False_arg_True_style_mux.net'.
+Detected 0 constant generators (to see names run with higher pack verbosity)
+Finished loading packed FPGA netlist file (took 0.521882 seconds).
+Warning 4: Treated 0 constant nets as global which will not be routed (to see net names increase packer verbosity).
+Completed clustering consistency check successfully.
+Cluster level netlist and block usage statistics
+Netlist num_nets: 6305
+Netlist num_blocks: 6309
+Netlist EMPTY blocks: 0.
+Netlist io blocks: 1888.
+Netlist clb blocks: 4421.
+Netlist inputs pins: 1884
+Netlist output pins: 4
+
+Pb types usage...
+  io       : 1888
+   inpad   : 1884
+   outpad  : 4
+  clb      : 4421
+   lut6    : 4421
+    lut    : 4421
+
+# Load packing took 0.64 seconds (max_rss 98.4 MiB, delta_rss +47.0 MiB)
+# Create Device
+## Build Device Grid
+FPGA sized to 69 x 69: 4761 grid tiles (auto)
+## Build Device Grid took 0.04 seconds (max_rss 98.4 MiB, delta_rss +0.0 MiB)
+## Build routing resource graph
+## Build routing resource graph took 5.83 seconds (max_rss 203.7 MiB, delta_rss +105.3 MiB)
+  RR Graph Nodes: 322688
+  RR Graph Edges: 2390107
+# Create Device took 6.26 seconds (max_rss 203.7 MiB, delta_rss +105.3 MiB)
+
+Resource usage...
+	Netlist
+		1888	blocks of type: io
+	Architecture
+		2144	blocks of type: io
+	Netlist
+		4421	blocks of type: clb
+	Architecture
+		4489	blocks of type: clb
+
+Device Utilization: 0.98 (target 1.00)
+	Physical Tile io:
+	Block Utilization: 0.88 Logical Block: io
+	Physical Tile clb:
+	Block Utilization: 0.98 Logical Block: clb
+
+FPGA size limited by block type(s): clb
+
+
+# Compressed grid construction
+# Compressed grid construction took 0.00 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+
+Bounding box mode is Cube
+
+# Placement
+## Initial Placement
+Initial placement iteration 0 has finished successfully
+## Initial Placement took 0.08 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+Using simple RL 'Softmax agent' for choosing move and block types
+
+Completed placement consistency check successfully.
+Initial placement cost: 1 bb_cost: 4770.66 td_cost: nan
+Initial placement BB estimate of wirelength: 477066
+Placement contains 0 placement macros involving 0 blocks (average macro size -nan)
+
+Moves per temperature: 58271
+
+---- ------ ------- ------- ---------- ---------- ------- ---------- -------- ------- ------- ------ -------- --------- ------
+Tnum   Time       T Av Cost Av BB Cost Av TD Cost     CPD       sTNS     sWNS Ac Rate Std Dev  R lim Crit Exp Tot Moves  Alpha
+      (sec)                                          (ns)       (ns)     (ns)                                                 
+---- ------ ------- ------- ---------- ---------- ------- ---------- -------- ------- ------- ------ -------- --------- ------
+   1    0.5 5.9e-04   1.146    4753.96 nan            nan        nan      nan   0.911  0.0238   68.0     0.00     58271  1.000
+   2    0.7 5.3e-04   1.000    4803.88 nan            nan        nan      nan   0.920  0.0032   68.0     0.00    116542  0.900
+   3    0.4 4.7e-04   0.996    4773.89 nan            nan        nan      nan   0.910  0.0036   68.0     0.00    174813  0.900
+   4    0.4 4.3e-04   0.997    4750.83 nan            nan        nan      nan   0.899  0.0039   68.0     0.00    233084  0.900
+   5    0.4 3.8e-04   0.996    4722.66 nan            nan        nan      nan   0.893  0.0034   68.0     0.00    291355  0.900
+   6    0.4 3.5e-04   0.998    4690.22 nan            nan        nan      nan   0.878  0.0038   68.0     0.00    349626  0.900
+   7    0.4 3.1e-04   0.995    4660.92 nan            nan        nan      nan   0.864  0.0048   68.0     0.00    407897  0.900
+   8    0.4 2.8e-04   0.997    4642.53 nan            nan        nan      nan   0.848  0.0026   68.0     0.00    466168  0.900
+   9    0.6 2.5e-04   0.995    4593.77 nan            nan        nan      nan   0.831  0.0036   68.0     0.00    524439  0.900
+  10    0.5 2.3e-04   0.985    4543.05 nan            nan        nan      nan   0.817  0.0055   68.0     0.00    582710  0.900
+  11    0.5 2.0e-04   0.985    4446.27 nan            nan        nan      nan   0.791  0.0051   68.0     0.00    640981  0.900
+  12    0.5 1.9e-04   0.992    4430.40 nan            nan        nan      nan   0.777  0.0042   68.0     0.00    699252  0.950
+  13    0.4 1.8e-04   0.994    4396.04 nan            nan        nan      nan   0.767  0.0058   68.0     0.00    757523  0.950
+  14    0.5 1.8e-04   0.994    4371.34 nan            nan        nan      nan   0.756  0.0033   68.0     0.00    815794  0.950
+  15    0.5 1.7e-04   0.994    4320.81 nan            nan        nan      nan   0.742  0.0042   68.0     0.00    874065  0.950
+  16    0.4 1.6e-04   0.984    4249.12 nan            nan        nan      nan   0.723  0.0088   68.0     0.00    932336  0.950
+  17    0.5 1.5e-04   0.991    4200.82 nan            nan        nan      nan   0.713  0.0043   68.0     0.00    990607  0.950
+  18    0.5 1.4e-04   0.985    4141.87 nan            nan        nan      nan   0.699  0.0056   68.0     0.00   1048878  0.950
+  19    0.5 1.4e-04   0.985    4056.62 nan            nan        nan      nan   0.680  0.0045   68.0     0.00   1107149  0.950
+  20    0.5 1.3e-04   0.982    3973.78 nan            nan        nan      nan   0.661  0.0072   68.0     0.00   1165420  0.950
+  21    0.5 1.2e-04   0.979    3912.46 nan            nan        nan      nan   0.654  0.0089   68.0     0.00   1223691  0.950
+  22    0.5 1.2e-04   0.967    3734.97 nan            nan        nan      nan   0.627  0.0143   68.0     0.00   1281962  0.950
+  23    0.5 1.1e-04   0.972    3595.79 nan            nan        nan      nan   0.605  0.0138   68.0     0.00   1340233  0.950
+  24    0.5 1.0e-04   0.974    3432.14 nan            nan        nan      nan   0.590  0.0125   68.0     0.00   1398504  0.950
+  25    0.5 1.0e-04   0.966    3263.24 nan            nan        nan      nan   0.568  0.0159   68.0     0.00   1456775  0.950
+  26    0.5 9.5e-05   0.978    3132.13 nan            nan        nan      nan   0.546  0.0105   68.0     0.00   1515046  0.950
+  27    0.5 9.0e-05   0.975    3022.13 nan            nan        nan      nan   0.537  0.0100   68.0     0.00   1573317  0.950
+  28    0.5 8.5e-05   0.977    2907.38 nan            nan        nan      nan   0.515  0.0109   68.0     0.00   1631588  0.950
+  29    0.5 8.1e-05   0.980    2812.10 nan            nan        nan      nan   0.502  0.0078   68.0     0.00   1689859  0.950
+  30    0.4 7.7e-05   0.973    2712.60 nan            nan        nan      nan   0.486  0.0106   68.0     0.00   1748130  0.950
+  31    0.4 7.3e-05   0.975    2602.57 nan            nan        nan      nan   0.474  0.0108   68.0     0.00   1806401  0.950
+  32    0.5 7.0e-05   0.973    2505.45 nan            nan        nan      nan   0.456  0.0109   68.0     0.00   1864672  0.950
+  33    0.4 6.6e-05   0.984    2426.19 nan            nan        nan      nan   0.439  0.0073   68.0     0.00   1922943  0.950
+  34    0.5 6.3e-05   0.979    2363.35 nan            nan        nan      nan   0.433  0.0103   68.0     0.00   1981214  0.950
+  35    0.5 6.0e-05   0.983    2288.95 nan            nan        nan      nan   0.419  0.0065   67.5     0.00   2039485  0.950
+  36    0.4 5.7e-05   0.984    2244.31 nan            nan        nan      nan   0.409  0.0064   66.1     0.00   2097756  0.950
+  37    0.4 5.4e-05   0.985    2194.06 nan            nan        nan      nan   0.397  0.0056   64.0     0.00   2156027  0.950
+  38    0.4 5.1e-05   0.987    2145.31 nan            nan        nan      nan   0.390  0.0080   61.2     0.00   2214298  0.950
+  39    0.4 4.9e-05   0.987    2096.70 nan            nan        nan      nan   0.379  0.0055   58.2     0.00   2272569  0.950
+  40    0.4 4.6e-05   0.989    2057.59 nan            nan        nan      nan   0.366  0.0045   54.6     0.00   2330840  0.950
+  41    0.6 4.4e-05   0.991    2027.38 nan            nan        nan      nan   0.357  0.0040   50.6     0.00   2389111  0.950
+  42    0.4 4.2e-05   0.991    2005.39 nan            nan        nan      nan   0.347  0.0055   46.4     0.00   2447382  0.950
+  43    0.4 4.0e-05   0.989    1969.69 nan            nan        nan      nan   0.337  0.0041   42.0     0.00   2505653  0.950
+  44    0.4 3.8e-05   0.995    1949.12 nan            nan        nan      nan   0.327  0.0023   37.7     0.00   2563924  0.950
+  45    0.4 3.6e-05   0.989    1921.63 nan            nan        nan      nan   0.318  0.0034   33.5     0.00   2622195  0.950
+  46    0.5 3.4e-05   0.991    1896.97 nan            nan        nan      nan   0.306  0.0050   29.4     0.00   2680466  0.950
+  47    0.5 3.2e-05   0.992    1873.12 nan            nan        nan      nan   0.293  0.0042   25.4     0.00   2738737  0.950
+  48    0.5 3.1e-05   0.994    1848.60 nan            nan        nan      nan   0.277  0.0031   21.7     0.00   2797008  0.950
+  49    0.4 2.9e-05   0.994    1830.81 nan            nan        nan      nan   0.269  0.0025   18.2     0.00   2855279  0.950
+  50    0.4 2.8e-05   0.993    1808.23 nan            nan        nan      nan   0.257  0.0030   15.1     0.00   2913550  0.950
+  51    0.4 2.6e-05   0.996    1795.08 nan            nan        nan      nan   0.250  0.0019   12.3     0.00   2971821  0.950
+  52    0.4 2.5e-05   0.981    1756.57 nan            nan        nan      nan   0.405  0.0076   10.0     0.00   3030092  0.950
+  53    0.4 2.4e-05   0.993    1726.62 nan            nan        nan      nan   0.379  0.0034    9.6     0.00   3088363  0.950
+  54    0.4 2.2e-05   0.994    1706.89 nan            nan        nan      nan   0.366  0.0024    9.0     0.00   3146634  0.950
+  55    0.4 2.1e-05   0.995    1689.69 nan            nan        nan      nan   0.350  0.0018    8.4     0.00   3204905  0.950
+  56    0.4 2.0e-05   0.995    1677.14 nan            nan        nan      nan   0.341  0.0030    7.6     0.00   3263176  0.950
+  57    0.4 1.9e-05   0.997    1664.73 nan            nan        nan      nan   0.329  0.0016    6.8     0.00   3321447  0.950
+  58    0.4 1.8e-05   0.997    1657.84 nan            nan        nan      nan   0.321  0.0024    6.1     0.00   3379718  0.950
+  59    0.4 1.7e-05   0.997    1644.99 nan            nan        nan      nan   0.313  0.0013    5.4     0.00   3437989  0.950
+  60    0.4 1.7e-05   0.996    1635.82 nan            nan        nan      nan   0.314  0.0021    4.7     0.00   3496260  0.950
+  61    0.4 1.6e-05   0.997    1625.02 nan            nan        nan      nan   0.299  0.0014    4.1     0.00   3554531  0.950
+  62    0.4 1.5e-05   0.997    1618.10 nan            nan        nan      nan   0.302  0.0014    3.5     0.00   3612802  0.950
+  63    0.4 1.4e-05   0.998    1609.73 nan            nan        nan      nan   0.297  0.0015    3.0     0.00   3671073  0.950
+  64    0.4 1.3e-05   0.995    1598.47 nan            nan        nan      nan   0.375  0.0022    2.6     0.00   3729344  0.950
+  65    0.4 1.3e-05   0.998    1591.02 nan            nan        nan      nan   0.361  0.0009    2.4     0.00   3787615  0.950
+  66    0.4 1.2e-05   0.997    1584.71 nan            nan        nan      nan   0.345  0.0014    2.2     0.00   3845886  0.950
+  67    0.4 1.2e-05   0.998    1576.74 nan            nan        nan      nan   0.330  0.0009    2.0     0.00   3904157  0.950
+  68    0.4 1.1e-05   0.996    1567.40 nan            nan        nan      nan   0.458  0.0014    1.8     0.00   3962428  0.950
+  69    0.4 1.0e-05   0.999    1562.87 nan            nan        nan      nan   0.443  0.0007    1.8     0.00   4020699  0.950
+  70    0.4 9.9e-06   0.998    1558.00 nan            nan        nan      nan   0.425  0.0011    1.8     0.00   4078970  0.950
+  71    0.4 9.4e-06   0.998    1552.70 nan            nan        nan      nan   0.411  0.0009    1.8     0.00   4137241  0.950
+  72    0.4 8.9e-06   0.998    1547.61 nan            nan        nan      nan   0.403  0.0008    1.8     0.00   4195512  0.950
+  73    0.4 8.5e-06   0.998    1542.79 nan            nan        nan      nan   0.376  0.0009    1.7     0.00   4253783  0.950
+  74    0.4 8.1e-06   0.998    1538.35 nan            nan        nan      nan   0.363  0.0006    1.6     0.00   4312054  0.950
+  75    0.4 7.7e-06   0.999    1535.47 nan            nan        nan      nan   0.352  0.0006    1.5     0.00   4370325  0.950
+  76    0.4 7.3e-06   0.999    1531.69 nan            nan        nan      nan   0.337  0.0006    1.3     0.00   4428596  0.950
+  77    0.4 6.9e-06   0.998    1528.30 nan            nan        nan      nan   0.321  0.0008    1.2     0.00   4486867  0.950
+  78    0.4 6.6e-06   0.999    1524.70 nan            nan        nan      nan   0.310  0.0007    1.1     0.00   4545138  0.950
+  79    0.4 6.2e-06   0.998    1520.50 nan            nan        nan      nan   0.292  0.0006    1.0     0.00   4603409  0.950
+  80    0.4 5.9e-06   0.998    1516.64 nan            nan        nan      nan   0.276  0.0007    1.0     0.00   4661680  0.950
+  81    0.4 5.6e-06   0.999    1513.65 nan            nan        nan      nan   0.264  0.0005    1.0     0.00   4719951  0.950
+  82    0.4 5.4e-06   0.999    1510.32 nan            nan        nan      nan   0.248  0.0006    1.0     0.00   4778222  0.950
+  83    0.5 5.1e-06   0.999    1507.42 nan            nan        nan      nan   0.235  0.0006    1.0     0.00   4836493  0.950
+  84    0.4 4.8e-06   0.999    1504.63 nan            nan        nan      nan   0.225  0.0005    1.0     0.00   4894764  0.950
+  85    0.4 4.6e-06   0.999    1502.42 nan            nan        nan      nan   0.214  0.0005    1.0     0.00   4953035  0.950
+  86    0.4 4.4e-06   0.999    1499.90 nan            nan        nan      nan   0.203  0.0003    1.0     0.00   5011306  0.950
+  87    0.4 4.1e-06   0.999    1498.13 nan            nan        nan      nan   0.192  0.0003    1.0     0.00   5069577  0.950
+  88    0.4 3.9e-06   1.000    1496.56 nan            nan        nan      nan   0.184  0.0003    1.0     0.00   5127848  0.950
+  89    0.4 3.7e-06   0.999    1494.67 nan            nan        nan      nan   0.174  0.0003    1.0     0.00   5186119  0.950
+  90    0.4 3.5e-06   0.999    1492.96 nan            nan        nan      nan   0.166  0.0003    1.0     0.00   5244390  0.950
+  91    0.4 3.4e-06   0.999    1491.43 nan            nan        nan      nan   0.159  0.0004    1.0     0.00   5302661  0.950
+  92    0.4 3.2e-06   1.000    1489.91 nan            nan        nan      nan   0.151  0.0002    1.0     0.00   5360932  0.950
+  93    0.4 3.0e-06   0.999    1488.44 nan            nan        nan      nan   0.143  0.0003    1.0     0.00   5419203  0.950
+  94    0.4 2.4e-06   0.999    1486.12 nan            nan        nan      nan   0.120  0.0005    1.0     0.00   5477474  0.800
+  95    0.4 1.9e-06   0.999    1483.98 nan            nan        nan      nan   0.107  0.0003    1.0     0.00   5535745  0.800
+  96    0.4 1.6e-06   0.999    1482.39 nan            nan        nan      nan   0.096  0.0002    1.0     0.00   5594016  0.800
+  97    0.4 1.2e-06   1.000    1481.21 nan            nan        nan      nan   0.086  0.0002    1.0     0.00   5652287  0.800
+  98    0.4 1.0e-06   1.000    1480.47 nan            nan        nan      nan   0.078  0.0001    1.0     0.00   5710558  0.800
+  99    0.4 8.0e-07   1.000    1479.98 nan            nan        nan      nan   0.075  0.0001    1.0     0.00   5768829  0.800
+ 100    0.4 0.0e+00   1.000    1479.58 nan            nan        nan      nan   0.040  0.0001    1.0     0.00   5827100  0.800
+## Placement Quench took 0.41 seconds (max_rss 203.7 MiB)
+
+Completed placement consistency check successfully.
+
+Swaps called: 5833409
+
+Aborted Move Reasons:
+  No moves aborted
+
+BB estimate of min-dist (placement) wire length: 147943
+Placement cost: 0.999754, bb_cost: 1479.43, td_cost: nan, 
+
+Placement resource usage:
+  io  implemented as io : 1888
+  clb implemented as clb: 4421
+
+Placement number of temperatures: 100
+Placement total # of swap attempts: 5833409
+	Swaps accepted: 2482438 (42.6 %)
+	Swaps rejected: 3310747 (56.8 %)
+	Swaps aborted:   40224 ( 0.7 %)
+
+
+Placement perturbation distribution by block and move type: 
+------------------ ----------------- ---------------- ---------------- --------------- ------------ 
+    Block Type         Move Type       (%) of Total      Accepted(%)     Rejected(%)    Aborted(%)
+------------------ ----------------- ---------------- ---------------- --------------- ------------ 
+io                 Uniform                9.08             38.30           61.70          0.00         
+                   Median                 9.38             44.19           50.49          5.32         
+                   Centroid               9.27             46.18           53.78          0.04         
+
+clb                Uniform                20.54            26.93           73.07          0.00         
+                   Median                 26.44            55.47           44.14          0.40         
+                   Centroid               25.28            41.33           58.34          0.32         
+
+
+Placement Quench timing analysis took 0 seconds (0 STA, 0 slack) (0 full updates: 0 setup, 0 hold, 0 combined).
+Placement Total  timing analysis took 0 seconds (0 STA, 0 slack) (0 full updates: 0 setup, 0 hold, 0 combined).
+update_td_costs: connections 2.8026e-45 nets 0 sum_nets 3.11268e+10 total 3.49988e-41
+# Placement took 44.48 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+
+# Routing
+Initializing minimum channel width search based on maximum CLB pins
+
+Attempting to route at 24 channels (binary search bounds: [-1, -1])
+## Build routing resource graph
+## Build routing resource graph took 1.08 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 141808
+  RR Graph Edges: 616790
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 0.39 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.01 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 0.41 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   85 (  0.5%) |*
+[      0.5:      0.6) 1758 (  9.7%) |************
+[      0.6:      0.7) 6533 ( 35.9%) |*********************************************
+[      0.7:      0.8) 6608 ( 36.3%) |**********************************************
+[      0.8:      0.9) 2830 ( 15.5%) |********************
+[      0.9:        1)  402 (  2.2%) |***
+## Initializing router criticalities took 0.13 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.5     0.0    0 7458632    6305   18216   21797 (15.371%)  306668 (140.2%)   28.463     -112.5    -28.463      0.000      0.000      N/A
+Wire length usage ratio 1.40231 exceeds limit of 0.85, fail routing.
+Routing failed.
+
+Failed routing attempt
+Total number of overused nodes: 21797
+Total number of overused nodes is larger than the logging limit (20).
+Displaying the first 20 entries.
+Routing Failure Diagnostics: Printing Overused Nodes Information
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+   No.  NodeId  Occupancy  Capacity  RR Node    Direction    Side     PTC   Block    Xlow    Ylow   Xhigh   Yhigh
+                                        type                          NUM    Name                                 
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+     0   84695          2         1    CHANX      DEC_DIR     N/A       7      io       1       0       3       0
+     1   84696          2         1    CHANX      INC_DIR     N/A       8      io       1       0       4       0
+     2   84702          2         1    CHANX      INC_DIR     N/A      14      io       1       0       3       0
+     3   84703          3         1    CHANX      DEC_DIR     N/A      15      io       1       0       3       0
+     4   84709          2         1    CHANX      DEC_DIR     N/A      21      io       1       0       2       0
+     5   84711          3         1    CHANX      DEC_DIR     N/A      23      io       1       0       3       0
+     6   84712          3         1    CHANX      INC_DIR     N/A       2      io       2       0       5       0
+     7   84714          2         1    CHANX      INC_DIR     N/A      10      io       2       0       5       0
+     8   84720          3         1    CHANX      INC_DIR     N/A      12      io       3       0       6       0
+     9   84722          3         1    CHANX      INC_DIR     N/A      20      io       3       0       6       0
+    10   84725          2         1    CHANX      DEC_DIR     N/A       7      io       4       0       7       0
+    11   84726          3         1    CHANX      INC_DIR     N/A      14      io       4       0       7       0
+    12   84728          4         1    CHANX      INC_DIR     N/A      22      io       4       0       7       0
+    13   84729          2         1    CHANX      DEC_DIR     N/A      23      io       4       0       7       0
+    14   84730          2         1    CHANX      INC_DIR     N/A       0      io       5       0       8       0
+    15   84732          5         1    CHANX      INC_DIR     N/A       8      io       5       0       8       0
+    16   84734          4         1    CHANX      INC_DIR     N/A      16      io       5       0       8       0
+    17   84736          5         1    CHANX      INC_DIR     N/A       2      io       6       0       9       0
+    18   84738          3         1    CHANX      INC_DIR     N/A      10      io       6       0       9       0
+    19   84739          4         1    CHANX      DEC_DIR     N/A      11      io       6       0       9       0
+
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)    4 (  0.0%) |
+[      0.5:      0.6)  573 (  3.1%) |***
+[      0.6:      0.7) 4002 ( 22.0%) |**********************
+[      0.7:      0.8) 8272 ( 45.4%) |**********************************************
+[      0.8:      0.9) 4719 ( 25.9%) |**************************
+[      0.9:        1)  646 (  3.5%) |****
+Router Stats: total_nets_routed: 6305 total_connections_routed: 18216 total_heap_pushes: 7458632 total_heap_pops: 1571598 
+Serial Connection Router is being destroyed. Time spent on path search: 2.220 seconds.
+
+Attempting to route at 48 channels (binary search bounds: [24, -1])
+## Build routing resource graph
+## Build routing resource graph took 2.32 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 198928
+  RR Graph Edges: 1182392
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 0.78 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 0.80 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   86 (  0.5%) |*
+[      0.5:      0.6) 1756 (  9.6%) |************
+[      0.6:      0.7) 6410 ( 35.2%) |*********************************************
+[      0.7:      0.8) 6504 ( 35.7%) |**********************************************
+[      0.8:      0.9) 3027 ( 16.6%) |*********************
+[      0.9:        1)  433 (  2.4%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 203.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.7     0.0    0 8013180    6305   18216   18130 ( 9.114%)  306419 (70.1%)   27.477     -108.9    -27.477      0.000      0.000      N/A
+   2    3.0     0.5    0 9031548    5908   17641   14395 ( 7.236%)  306390 (70.1%)   27.474     -108.9    -27.474      0.000      0.000      N/A
+   3    3.4     0.6    0 1.0e+07    5600   17114   14282 ( 7.179%)  308906 (70.6%)   27.557     -109.1    -27.557      0.000      0.000      N/A
+   4    3.8     0.8    0 1.1e+07    5384   16764   12625 ( 6.347%)  309038 (70.7%)   27.585     -109.3    -27.585      0.000      0.000      N/A
+   5    4.2     1.1    0 1.3e+07    5092   16252   10258 ( 5.157%)  309798 (70.8%)   27.708     -109.7    -27.708      0.000      0.000      N/A
+   6    5.0     1.4    0 1.4e+07    4699   15453    8344 ( 4.194%)  309281 (70.7%)   27.716     -109.8    -27.716      0.000      0.000      N/A
+   7    5.5     1.9    0 1.5e+07    4369   14767    6832 ( 3.434%)  310856 (71.1%)   27.716     -109.8    -27.716      0.000      0.000      N/A
+   8    5.9     2.4    0 1.6e+07    3957   13849    5338 ( 2.683%)  314032 (71.8%)   27.705     -109.9    -27.705      0.000      0.000      N/A
+   9    6.9     3.1    0 1.6e+07    3477   12721    4136 ( 2.079%)  317564 (72.6%)   27.712     -110.0    -27.712      0.000      0.000      N/A
+  10    7.2     4.1    0 1.7e+07    3027   11468    3245 ( 1.631%)  320561 (73.3%)   27.699     -109.9    -27.699      0.000      0.000       46
+  11    7.6     5.3    0 1.6e+07    2555   10142    2514 ( 1.264%)  324109 (74.1%)   27.581     -109.4    -27.581      0.000      0.000       44
+  12    7.8     6.9    0 1.6e+07    2251    9084    2040 ( 1.025%)  327092 (74.8%)   27.574     -109.4    -27.574      0.000      0.000       43
+  13    7.9     9.0    0 1.5e+07    1963    8133    1677 ( 0.843%)  329919 (75.4%)   27.572     -109.4    -27.572      0.000      0.000       43
+  14    8.3    11.6    0 1.5e+07    1730    7274    1443 ( 0.725%)  332433 (76.0%)   27.574     -109.4    -27.574      0.000      0.000       44
+  15    8.3    15.1    0 1.5e+07    1560    6667    1218 ( 0.612%)  335080 (76.6%)   27.572     -109.4    -27.572      0.000      0.000       47
+  16    8.8    19.7    0 1.4e+07    1433    6202    1107 ( 0.556%)  336616 (77.0%)   27.572     -109.4    -27.572      0.000      0.000       48
+  17    8.9    25.6    0 1.4e+07    1396    5983    1095 ( 0.550%)  338570 (77.4%)   27.572     -109.4    -27.572      0.000      0.000       52
+  18    9.5    33.3    0 1.5e+07    1383    6004    1057 ( 0.531%)  340461 (77.8%)   27.572     -109.4    -27.572      0.000      0.000       57
+  19    9.7    43.3    0 1.5e+07    1392    6099    1035 ( 0.520%)  341390 (78.1%)   27.572     -109.4    -27.572      0.000      0.000       66
+  20   10.3    56.2    0 1.5e+07    1386    6056     986 ( 0.496%)  342557 (78.3%)   27.572     -109.4    -27.572      0.000      0.000       72
+  21   11.2    73.1    0 1.6e+07    1387    6014     936 ( 0.471%)  343327 (78.5%)   27.983     -111.0    -27.983      0.000      0.000       88
+  22   11.2    95.0    0 1.5e+07    1342    5820     904 ( 0.454%)  344454 (78.8%)   27.838     -110.5    -27.838      0.000      0.000       95
+  23   11.2   123.5    0 1.6e+07    1490    6315     932 ( 0.469%)  345502 (79.0%)   29.790     -118.2    -29.790      0.000      0.000      115
+  24   10.5   160.6    0 1.5e+07    1228    5385     932 ( 0.469%)  346447 (79.2%)   28.576     -113.3    -28.576      0.000      0.000      127
+  25   10.4   208.8    0 1.5e+07    1386    6054     920 ( 0.462%)  346858 (79.3%)   29.157     -115.8    -29.157      0.000      0.000      165
+Routing aborted, the predicted iteration for a successful route (165.0) is too high.
+Routing failed.
+
+Failed routing attempt
+Total number of overused nodes: 920
+Total number of overused nodes is larger than the logging limit (20).
+Displaying the first 20 entries.
+Routing Failure Diagnostics: Printing Overused Nodes Information
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+   No.  NodeId  Occupancy  Capacity  RR Node    Direction    Side     PTC   Block    Xlow    Ylow   Xhigh   Yhigh
+                                        type                          NUM    Name                                 
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+     0   85889          2         1    CHANX      DEC_DIR     N/A       1     clb      28       1      31       1
+     1   88563          2         1    CHANX      DEC_DIR     N/A      47     clb      40       4      43       4
+     2   88611          2         1    CHANX      DEC_DIR     N/A      47     clb      44       4      47       4
+     3   89546          2         1    CHANX      INC_DIR     N/A      40     clb      52       5      55       5
+     4   90081          2         1    CHANX      DEC_DIR     N/A      17     clb      27       6      30       6
+     5   90207          2         1    CHANX      DEC_DIR     N/A      45     clb      37       6      40       6
+     6   91078          2         1    CHANX      INC_DIR     N/A      28     clb      40       7      43       7
+     7   91718          2         1    CHANX      INC_DIR     N/A      44     clb      23       8      26       8
+     8   91845          2         1    CHANX      DEC_DIR     N/A      19     clb      34       8      37       8
+     9   91893          2         1    CHANX      DEC_DIR     N/A      19     clb      38       8      41       8
+    10   91960          2         1    CHANX      INC_DIR     N/A       6     clb      44       8      47       8
+    11   92041          2         1    CHANX      DEC_DIR     N/A      35     clb      50       8      53       8
+    12   92089          2         1    CHANX      DEC_DIR     N/A      35     clb      54       8      57       8
+    13   92603          2         1    CHANX      DEC_DIR     N/A      31     clb      27       9      30       9
+    14   92622          2         1    CHANX      INC_DIR     N/A      10     clb      29       9      32       9
+    15   92628          2         1    CHANX      INC_DIR     N/A      34     clb      29       9      32       9
+    16   92735          2         1    CHANX      DEC_DIR     N/A      29     clb      38       9      41       9
+    17   92760          2         1    CHANX      INC_DIR     N/A      32     clb      40       9      43       9
+    18   93319          2         1    CHANX      DEC_DIR     N/A      13     clb      17      10      20      10
+    19   93478          2         1    CHANX      INC_DIR     N/A      30     clb      30      10      33      10
+
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   20 (  0.1%) |
+[      0.5:      0.6)  652 (  3.6%) |****
+[      0.6:      0.7) 3893 ( 21.4%) |************************
+[      0.7:      0.8) 7527 ( 41.3%) |**********************************************
+[      0.8:      0.9) 4759 ( 26.1%) |*****************************
+[      0.9:        1) 1365 (  7.5%) |********
+Router Stats: total_nets_routed: 71700 total_connections_routed: 255477 total_heap_pushes: 355487538 total_heap_pops: 121878373 
+Serial Connection Router is being destroyed. Time spent on path search: 180.982 seconds.
+
+Attempting to route at 96 channels (binary search bounds: [48, -1])
+## Build routing resource graph
+## Build routing resource graph took 5.35 seconds (max_rss 235.7 MiB, delta_rss +31.9 MiB)
+  RR Graph Nodes: 313168
+  RR Graph Edges: 2287064
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 1.63 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 1.66 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)  122 (  0.7%) |*
+[      0.5:      0.6) 2056 ( 11.3%) |**************
+[      0.6:      0.7) 6695 ( 36.8%) |**********************************************
+[      0.7:      0.8) 6309 ( 34.6%) |*******************************************
+[      0.8:      0.9) 2645 ( 14.5%) |******************
+[      0.9:        1)  389 (  2.1%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.6     0.0    0 7308847    6305   18216   11656 ( 3.722%)  293838 (33.6%)   26.247     -103.5    -26.247      0.000      0.000      N/A
+   2    2.3     0.5    0 7300657    4981   16060    6766 ( 2.161%)  297037 (34.0%)   26.213     -103.5    -26.213      0.000      0.000      N/A
+   3    2.3     0.6    0 7179701    4106   14274    5376 ( 1.717%)  298856 (34.2%)   26.373     -104.0    -26.373      0.000      0.000      N/A
+   4    2.4     0.8    0 6837341    3560   12887    4088 ( 1.305%)  299158 (34.2%)   26.350     -103.9    -26.350      0.000      0.000      N/A
+   5    2.1     1.1    0 6254722    2976   11468    2714 ( 0.867%)  300427 (34.3%)   26.360     -104.0    -26.360      0.000      0.000      N/A
+   6    1.8     1.4    0 5230514    2304    9547    1606 ( 0.513%)  302062 (34.5%)   26.244     -103.5    -26.244      0.000      0.000      N/A
+   7    1.6     1.9    0 3930779    1623    7139     816 ( 0.261%)  303311 (34.7%)   26.378     -104.1    -26.378      0.000      0.000      N/A
+   8    0.9     2.4    0 2621821    1011    4958     304 ( 0.097%)  304004 (34.8%)   26.376     -104.1    -26.376      0.000      0.000      N/A
+   9    0.5     3.1    0 1385690     498    2683      86 ( 0.027%)  304857 (34.9%)   26.376     -104.1    -26.376      0.000      0.000      N/A
+  10    0.3     4.1    0  601439     245    1282      18 ( 0.006%)  304898 (34.9%)   26.376     -104.1    -26.376      0.000      0.000       15
+  11    0.2     5.3    0  255372     144     656       5 ( 0.002%)  304955 (34.9%)   26.245     -103.7    -26.245      0.000      0.000       13
+  12    0.2     6.9    0  224602     143     622       0 ( 0.000%)  304974 (34.9%)   26.376     -104.1    -26.376      0.000      0.000       13
+Restoring best routing
+Critical path: 26.3758 ns
+Successfully routed after 12 routing iterations.
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)    6 (  0.0%) |
+[      0.5:      0.6)  586 (  3.2%) |***
+[      0.6:      0.7) 4315 ( 23.7%) |************************
+[      0.7:      0.8) 8407 ( 46.2%) |**********************************************
+[      0.8:      0.9) 4309 ( 23.7%) |************************
+[      0.9:        1)  593 (  3.3%) |***
+Router Stats: total_nets_routed: 27896 total_connections_routed: 99792 total_heap_pushes: 49131485 total_heap_pops: 8114536 
+Serial Connection Router is being destroyed. Time spent on path search: 14.377 seconds.
+
+Attempting to route at 72 channels (binary search bounds: [48, 96])
+## Build routing resource graph
+## Build routing resource graph took 3.74 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 256048
+  RR Graph Edges: 1747994
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 1.23 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 1.25 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)  103 (  0.6%) |*
+[      0.5:      0.6) 1800 (  9.9%) |*************
+[      0.6:      0.7) 6410 ( 35.2%) |*********************************************
+[      0.7:      0.8) 6533 ( 35.9%) |**********************************************
+[      0.8:      0.9) 2930 ( 16.1%) |*********************
+[      0.9:        1)  440 (  2.4%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.6     0.0    0 7643408    6305   18216   14853 ( 5.801%)  305252 (46.5%)   26.726     -105.6    -26.726      0.000      0.000      N/A
+   2    2.7     0.5    0 8220612    5478   16930    9648 ( 3.768%)  308116 (47.0%)   26.868     -106.2    -26.868      0.000      0.000      N/A
+   3    2.9     0.6    0 8625433    4900   15800    8629 ( 3.370%)  309450 (47.2%)   27.129     -107.1    -27.129      0.000      0.000      N/A
+   4    2.9     0.8    0 8757202    4492   14969    6911 ( 2.699%)  307857 (46.9%)   27.131     -107.1    -27.131      0.000      0.000      N/A
+   5    2.9     1.1    0 8547226    4018   14045    4997 ( 1.952%)  310177 (47.3%)   26.876     -106.2    -26.876      0.000      0.000      N/A
+   6    2.6     1.4    0 7930549    3408   12566    3599 ( 1.406%)  311882 (47.5%)   27.006     -106.6    -27.006      0.000      0.000      N/A
+   7    2.3     1.9    0 6893095    2780   10991    2354 ( 0.919%)  311930 (47.5%)   26.878     -106.1    -26.878      0.000      0.000      N/A
+   8    2.1     2.4    0 5799915    2189    9221    1474 ( 0.576%)  314528 (47.9%)   26.749     -105.6    -26.749      0.000      0.000      N/A
+   9    1.4     3.1    0 4146741    1410    6640     702 ( 0.274%)  315665 (48.1%)   26.741     -105.6    -26.741      0.000      0.000      N/A
+  10    0.9     4.1    0 2652232     778    4119     289 ( 0.113%)  316727 (48.3%)   26.738     -105.6    -26.738      0.000      0.000       23
+  11    0.5     5.3    0 1314695     357    2137      89 ( 0.035%)  317718 (48.4%)   26.738     -105.6    -26.738      0.000      0.000       19
+  12    0.3     6.9    0  484409     122     791      13 ( 0.005%)  317913 (48.5%)   26.738     -105.6    -26.738      0.000      0.000       18
+  13    0.1     9.0    0   90423      33     164       0 ( 0.000%)  318043 (48.5%)   26.738     -105.6    -26.738      0.000      0.000       15
+Restoring best routing
+Critical path: 26.7382 ns
+Successfully routed after 13 routing iterations.
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)    2 (  0.0%) |
+[      0.5:      0.6)  392 (  2.2%) |**
+[      0.6:      0.7) 3255 ( 17.9%) |******************
+[      0.7:      0.8) 8371 ( 46.0%) |**********************************************
+[      0.8:      0.9) 5177 ( 28.4%) |****************************
+[      0.9:        1) 1019 (  5.6%) |******
+Router Stats: total_nets_routed: 36270 total_connections_routed: 126589 total_heap_pushes: 71105940 total_heap_pops: 12457631 
+Serial Connection Router is being destroyed. Time spent on path search: 20.899 seconds.
+
+Attempting to route at 60 channels (binary search bounds: [48, 72])
+## Build routing resource graph
+## Build routing resource graph took 3.21 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 227488
+  RR Graph Edges: 1456281
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 0.95 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 0.97 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)  142 (  0.8%) |*
+[      0.5:      0.6) 2271 ( 12.5%) |****************
+[      0.6:      0.7) 6683 ( 36.7%) |**********************************************
+[      0.7:      0.8) 6092 ( 33.4%) |******************************************
+[      0.8:      0.9) 2624 ( 14.4%) |******************
+[      0.9:        1)  404 (  2.2%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.6     0.0    0 7920088    6305   18216   15208 ( 6.685%)  293809 (53.7%)   26.732     -105.6    -26.732      0.000      0.000      N/A
+   2    2.6     0.5    0 8302601    5622   17170   11167 ( 4.909%)  295637 (54.1%)   26.736     -105.7    -26.736      0.000      0.000      N/A
+   3    3.0     0.6    0 9271621    5111   16254   10426 ( 4.583%)  299998 (54.9%)   26.732     -105.7    -26.732      0.000      0.000      N/A
+   4    3.2     0.8    0 9824579    4757   15588    8848 ( 3.889%)  300392 (54.9%)   26.663     -105.4    -26.663      0.000      0.000      N/A
+   5    3.2     1.1    0 1.0e+07    4408   14901    6855 ( 3.013%)  303347 (55.5%)   26.582     -105.1    -26.582      0.000      0.000      N/A
+   6    3.3     1.4    0 1.0e+07    3904   13767    5397 ( 2.372%)  304723 (55.7%)   26.571     -104.9    -26.571      0.000      0.000      N/A
+   7    3.1     1.9    0 9621715    3428   12632    3905 ( 1.717%)  306479 (56.1%)   26.457     -104.5    -26.457      0.000      0.000      N/A
+   8    2.8     2.4    0 8671604    2729   10810    2570 ( 1.130%)  309404 (56.6%)   26.609     -105.1    -26.609      0.000      0.000      N/A
+   9    2.5     3.1    0 7320220    2140    8975    1537 ( 0.676%)  311253 (56.9%)   26.589     -105.0    -26.589      0.000      0.000      N/A
+  10    1.9     4.1    0 5757302    1467    6794     830 ( 0.365%)  314426 (57.5%)   26.577     -104.9    -26.577      0.000      0.000       29
+  11    1.4     5.3    0 4191074     936    4771     349 ( 0.153%)  315941 (57.8%)   26.579     -104.9    -26.579      0.000      0.000       25
+  12    0.9     6.9    0 2483719     502    2721     129 ( 0.057%)  317128 (58.0%)   26.579     -104.9    -26.579      0.000      0.000       22
+  13    0.6     9.0    0 1393486     284    1546      28 ( 0.012%)  317674 (58.1%)   26.579     -104.9    -26.579      0.000      0.000       20
+  14    0.3    11.6    0  663961     180     899       6 ( 0.003%)  317881 (58.1%)   26.579     -104.9    -26.579      0.000      0.000       18
+  15    0.2    15.1    0  372459     156     779       0 ( 0.000%)  317957 (58.2%)   26.579     -104.9    -26.579      0.000      0.000       16
+Restoring best routing
+Critical path: 26.5794 ns
+Successfully routed after 15 routing iterations.
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)    6 (  0.0%) |
+[      0.5:      0.6)  529 (  2.9%) |***
+[      0.6:      0.7) 3939 ( 21.6%) |**********************
+[      0.7:      0.8) 8417 ( 46.2%) |**********************************************
+[      0.8:      0.9) 4656 ( 25.6%) |*************************
+[      0.9:        1)  669 (  3.7%) |****
+Router Stats: total_nets_routed: 41929 total_connections_routed: 145823 total_heap_pushes: 95929118 total_heap_pops: 16517568 
+Serial Connection Router is being destroyed. Time spent on path search: 27.576 seconds.
+
+Attempting to route at 54 channels (binary search bounds: [48, 60])
+## Build routing resource graph
+## Build routing resource graph took 2.68 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 213208
+  RR Graph Edges: 1317258
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 0.84 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 0.86 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   85 (  0.5%) |*
+[      0.5:      0.6) 1794 (  9.8%) |*************
+[      0.6:      0.7) 6574 ( 36.1%) |**********************************************
+[      0.7:      0.8) 6534 ( 35.9%) |**********************************************
+[      0.8:      0.9) 2815 ( 15.5%) |********************
+[      0.9:        1)  414 (  2.3%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.1     0.0    0 6627896    6305   18216   16180 ( 7.589%)  295667 (60.1%)   27.165     -107.9    -27.165      0.000      0.000      N/A
+   2    2.2     0.5    0 7145317    5667   17238   12723 ( 5.967%)  295580 (60.1%)   27.333     -108.6    -27.333      0.000      0.000      N/A
+   3    2.2     0.6    0 8339886    5324   16623   12013 ( 5.634%)  299536 (60.9%)   27.201     -108.1    -27.201      0.000      0.000      N/A
+   4    2.9     0.8    0 9179129    4963   16017   10205 ( 4.786%)  300112 (61.0%)   27.056     -107.5    -27.056      0.000      0.000      N/A
+   5    3.0     1.1    0 1.0e+07    4623   15378    8153 ( 3.824%)  302613 (61.5%)   27.103     -107.7    -27.103      0.000      0.000      N/A
+   6    3.3     1.4    0 1.1e+07    4109   14295    6277 ( 2.944%)  304720 (61.9%)   27.246     -108.2    -27.246      0.000      0.000      N/A
+   7    3.5     1.9    0 1.1e+07    3661   13225    4764 ( 2.234%)  305574 (62.1%)   27.246     -108.2    -27.246      0.000      0.000      N/A
+   8    3.5     2.4    0 1.1e+07    3101   11747    3322 ( 1.558%)  309045 (62.8%)   27.382     -108.8    -27.382      0.000      0.000      N/A
+   9    3.5     3.1    0 1.0e+07    2556   10172    2252 ( 1.056%)  312810 (63.6%)   27.386     -108.8    -27.386      0.000      0.000      N/A
+  10    3.2     4.1    0 9280817    1991    8544    1532 ( 0.719%)  315884 (64.2%)   27.247     -108.3    -27.247      0.000      0.000       33
+  11    3.2     5.3    0 8604423    1498    6906     940 ( 0.441%)  319139 (64.9%)   27.247     -108.3    -27.247      0.000      0.000       31
+  12    2.8     6.9    0 7157211    1054    5100     566 ( 0.265%)  320595 (65.2%)   27.247     -108.3    -27.247      0.000      0.000       29
+  13    2.5     9.0    0 6021561     716    3651     342 ( 0.160%)  321864 (65.4%)   27.247     -108.3    -27.247      0.000      0.000       27
+  14    2.3    11.6    0 5051786     515    2740     213 ( 0.100%)  323824 (65.8%)   27.247     -108.3    -27.247      0.000      0.000       26
+  15    2.0    15.1    0 3998222     394    2084     136 ( 0.064%)  324345 (65.9%)   27.247     -108.3    -27.247      0.000      0.000       26
+  16    1.8    19.7    0 3297648     306    1693      91 ( 0.043%)  325438 (66.1%)   27.247     -108.3    -27.247      0.000      0.000       26
+  17    1.2    25.6    0 2338870     246    1345      55 ( 0.026%)  326018 (66.3%)   27.247     -108.3    -27.247      0.000      0.000       25
+  18    1.2    33.3    0 2104420     219    1167      44 ( 0.021%)  326166 (66.3%)   27.247     -108.3    -27.247      0.000      0.000       26
+  19    1.1    43.3    0 2000216     197    1072      35 ( 0.016%)  326324 (66.3%)   27.247     -108.3    -27.247      0.000      0.000       26
+  20    0.9    56.2    0 1592124     186     955      22 ( 0.010%)  326707 (66.4%)   27.247     -108.3    -27.247      0.000      0.000       27
+  21    0.6    73.1    0 1154892     171     869      20 ( 0.009%)  326895 (66.4%)   27.247     -108.3    -27.247      0.000      0.000       27
+  22    0.6    95.0    0 1033438     160     814      13 ( 0.006%)  327059 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       28
+  23    0.6   123.5    0  999674     160     813       9 ( 0.004%)  327071 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       29
+  24    0.6   160.6    0  951752     158     806      11 ( 0.005%)  327055 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       29
+  25    0.5   208.8    0  860233     152     755      11 ( 0.005%)  327199 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       30
+  26    0.5   271.4    0  857394     161     792       8 ( 0.004%)  327259 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       31
+  27    0.5   352.8    0  988496     173     832       7 ( 0.003%)  327260 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       32
+  28    0.5   458.7    0  891909     174     819       7 ( 0.003%)  327268 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       33
+  29    0.5   596.3    0  956572     172     825       7 ( 0.003%)  327169 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       35
+  30    0.5   775.1    0  891265     173     820       7 ( 0.003%)  327149 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       36
+  31    0.5  1000.0    0  823053     161     791       8 ( 0.004%)  327133 (66.5%)   27.247     -108.3    -27.247      0.000      0.000       38
+  32    0.5  1000.0    0  891907     163     801       7 ( 0.003%)  327225 (66.5%)   27.349     -108.7    -27.349      0.000      0.000       40
+  33    0.4  1000.0    0  698654     157     747       7 ( 0.003%)  327353 (66.5%)   27.349     -108.7    -27.349      0.000      0.000       43
+  34    0.4  1000.0    0  654784     156     738       5 ( 0.002%)  327345 (66.5%)   27.349     -108.7    -27.349      0.000      0.000       45
+  35    0.4  1000.0    0  712462     153     741       4 ( 0.002%)  327377 (66.5%)   28.000     -111.3    -28.000      0.000      0.000       48
+  36    0.2  1000.0    0  311799      95     442       2 ( 0.001%)  327465 (66.6%)   27.862     -110.7    -27.862      0.000      0.000       48
+  37    0.3  1000.0    0  511035     119     564       3 ( 0.001%)  327437 (66.5%)   27.862     -110.7    -27.862      0.000      0.000       47
+  38    0.2  1000.0    0  390237     119     549       2 ( 0.001%)  327457 (66.5%)   27.862     -110.7    -27.862      0.000      0.000       47
+  39    0.2  1000.0    0  391055     119     554       1 ( 0.000%)  327489 (66.6%)   27.862     -110.7    -27.862      0.000      0.000       47
+  40    0.2  1000.0    0  365572     116     537       1 ( 0.000%)  327441 (66.5%)   27.862     -110.7    -27.862      0.000      0.000       45
+  41    0.2  1000.0    0  338032     117     541       1 ( 0.000%)  327429 (66.5%)   27.862     -110.7    -27.862      0.000      0.000       44
+  42    0.2  1000.0    0  329914     116     536       0 ( 0.000%)  327425 (66.5%)   27.862     -110.7    -27.862      0.000      0.000       43
+Restoring best routing
+Critical path: 27.8618 ns
+Successfully routed after 42 routing iterations.
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   24 (  0.1%) |
+[      0.5:      0.6)  785 (  4.3%) |****
+[      0.6:      0.7) 5065 ( 27.8%) |*****************************
+[      0.7:      0.8) 8149 ( 44.7%) |**********************************************
+[      0.8:      0.9) 3732 ( 20.5%) |*********************
+[      0.9:        1)  461 (  2.5%) |***
+Router Stats: total_nets_routed: 50876 total_connections_routed: 183854 total_heap_pushes: 151402468 total_heap_pops: 32386992 
+Serial Connection Router is being destroyed. Time spent on path search: 50.272 seconds.
+
+Attempting to route at 52 channels (binary search bounds: [48, 54])
+## Build routing resource graph
+## Build routing resource graph took 2.51 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 208448
+  RR Graph Edges: 1267881
+## Computing router lookahead map
+### Computing wire lookahead
+### Computing wire lookahead took 0.76 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+### Computing src/opin lookahead
+### Computing src/opin lookahead took 0.02 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Computing router lookahead map took 0.78 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+## Initializing router criticalities
+Initial Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)  134 (  0.7%) |*
+[      0.5:      0.6) 2127 ( 11.7%) |***************
+[      0.6:      0.7) 6625 ( 36.4%) |**********************************************
+[      0.7:      0.8) 6164 ( 33.8%) |*******************************************
+[      0.8:      0.9) 2724 ( 15.0%) |*******************
+[      0.9:        1)  442 (  2.4%) |***
+## Initializing router criticalities took 0.08 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+Iter   Time    pres  BBs    Heap  Re-Rtd  Re-Rtd Overused RR Nodes      Wirelength      CPD       sTNS       sWNS       hTNS       hWNS Est Succ
+      (sec)     fac Updt    push    Nets   Conns                                       (ns)       (ns)       (ns)       (ns)       (ns)     Iter
+---- ------ ------- ---- ------- ------- ------- ----------------- --------------- -------- ---------- ---------- ---------- ---------- --------
+   1    2.0     0.0    0 6273663    6305   18216   16664 ( 7.994%)  298276 (63.0%)   27.156     -107.7    -27.156      0.000      0.000      N/A
+   2    2.2     0.5    0 6812266    5767   17458   13446 ( 6.451%)  298050 (62.9%)   27.423     -108.7    -27.423      0.000      0.000      N/A
+   3    2.5     0.6    0 8068779    5400   16812   12540 ( 6.016%)  301142 (63.6%)   27.175     -107.7    -27.175      0.000      0.000      N/A
+   4    2.9     0.8    0 9252453    5119   16345   11186 ( 5.366%)  303572 (64.1%)   26.764     -106.2    -26.764      0.000      0.000      N/A
+   5    3.2     1.1    0 1.0e+07    4780   15705    8943 ( 4.290%)  306173 (64.6%)   26.692     -105.8    -26.692      0.000      0.000      N/A
+   6    3.6     1.4    0 1.1e+07    4348   14819    7156 ( 3.433%)  307515 (64.9%)   26.878     -106.5    -26.878      0.000      0.000      N/A
+   7    3.9     1.9    0 1.2e+07    3934   13901    5503 ( 2.640%)  309771 (65.4%)   27.012     -107.1    -27.012      0.000      0.000      N/A
+   8    4.3     2.4    0 1.3e+07    3423   12680    4128 ( 1.980%)  313175 (66.1%)   27.012     -107.0    -27.012      0.000      0.000      N/A
+   9    4.3     3.1    0 1.2e+07    2853   11074    3021 ( 1.449%)  315902 (66.7%)   26.878     -106.5    -26.878      0.000      0.000      N/A
+  10    4.7     4.1    0 1.2e+07    2414    9889    2113 ( 1.014%)  319376 (67.4%)   26.897     -106.6    -26.897      0.000      0.000       39
+  11    4.4     5.3    0 1.1e+07    1937    8382    1458 ( 0.699%)  321820 (67.9%)   26.897     -106.6    -26.897      0.000      0.000       35
+  12    4.1     6.9    0 9926313    1484    6717     936 ( 0.449%)  324823 (68.6%)   26.897     -106.6    -26.897      0.000      0.000       34
+  13    3.4     9.0    0 9187219    1114    5170     645 ( 0.309%)  327334 (69.1%)   26.897     -106.6    -26.897      0.000      0.000       32
+  14    2.3    11.6    0 7674947     824    4060     434 ( 0.208%)  328986 (69.4%)   26.897     -106.6    -26.897      0.000      0.000       31
+  15    2.0    15.1    0 6620482     634    3281     296 ( 0.142%)  330290 (69.7%)   26.897     -106.6    -26.897      0.000      0.000       30
+  16    2.0    19.7    0 6060795     532    2693     238 ( 0.114%)  331109 (69.9%)   26.897     -106.6    -26.897      0.000      0.000       30
+  17    2.0    25.6    0 5956515     493    2408     226 ( 0.108%)  331991 (70.1%)   26.897     -106.6    -26.897      0.000      0.000       30
+  18    2.1    33.3    0 5558800     472    2335     193 ( 0.093%)  333125 (70.3%)   26.897     -106.6    -26.897      0.000      0.000       32
+  19    1.7    43.3    0 4753185     408    2050     163 ( 0.078%)  333310 (70.3%)   26.897     -106.6    -26.897      0.000      0.000       34
+  20    1.9    56.2    0 4701923     390    1940     132 ( 0.063%)  334224 (70.5%)   26.897     -106.6    -26.897      0.000      0.000       36
+  21    1.5    73.1    0 4282204     392    1924     129 ( 0.062%)  334738 (70.6%)   26.897     -106.6    -26.897      0.000      0.000       38
+  22    1.8    95.0    0 4477565     416    2004     127 ( 0.061%)  335244 (70.8%)   26.897     -106.6    -26.897      0.000      0.000       40
+  23    1.7   123.5    0 4584713     415    2048     117 ( 0.056%)  335452 (70.8%)   26.897     -106.6    -26.897      0.000      0.000       45
+  24    1.6   160.6    0 4283229     396    1944     111 ( 0.053%)  335626 (70.8%)   27.493     -109.0    -27.493      0.000      0.000       48
+  25    1.7   208.8    0 4104180     288    1532     115 ( 0.055%)  336432 (71.0%)   26.897     -106.6    -26.897      0.000      0.000       55
+  26    1.8   271.4    0 4649425     493    2335     105 ( 0.050%)  337077 (71.1%)   26.897     -106.6    -26.897      0.000      0.000       58
+  27    2.2   352.8    0 4149747     440    2120      97 ( 0.047%)  337343 (71.2%)   27.953     -110.7    -27.953      0.000      0.000       68
+  28    2.2   458.7    0 3555549     280    1456      86 ( 0.041%)  337827 (71.3%)   26.897     -106.6    -26.897      0.000      0.000       71
+  29    2.3   596.3    0 3821048     434    2036      78 ( 0.037%)  337951 (71.3%)   26.897     -106.6    -26.897      0.000      0.000       80
+  30    2.7   775.1    0 4320077     471    2173      91 ( 0.044%)  338139 (71.4%)   27.214     -107.8    -27.214      0.000      0.000       80
+  31    2.4  1000.0    0 3973616     396    1890      86 ( 0.041%)  338222 (71.4%)   27.078     -107.3    -27.078      0.000      0.000       90
+  32    2.1  1000.0    0 3673568     397    1906      66 ( 0.032%)  338052 (71.3%)   27.213     -107.8    -27.213      0.000      0.000       94
+  33    2.0  1000.0    0 3206257     342    1638      72 ( 0.035%)  338375 (71.4%)   28.189     -111.7    -28.189      0.000      0.000       97
+  34    1.9  1000.0    0 3040420     233    1210      62 ( 0.030%)  338733 (71.5%)   29.472     -116.3    -29.472      0.000      0.000       99
+  35    1.7  1000.0    0 2553927     208    1000      50 ( 0.024%)  339106 (71.6%)   27.118     -107.5    -27.118      0.000      0.000      104
+  36    1.6  1000.0    0 2894471     398    1762      50 ( 0.024%)  339841 (71.7%)   28.525     -113.1    -28.525      0.000      0.000      100
+  37    1.5  1000.0    0 2308808     197     970      51 ( 0.024%)  339461 (71.6%)   28.264     -112.0    -28.264      0.000      0.000      101
+  38    1.6  1000.0    0 2438121     231    1128      46 ( 0.022%)  339548 (71.7%)   27.881     -110.5    -27.881      0.000      0.000      101
+  39    1.3  1000.0    0 2374662     293    1350      42 ( 0.020%)  339588 (71.7%)   27.614     -109.6    -27.614      0.000      0.000      101
+  40    1.3  1000.0    0 2339792     326    1466      30 ( 0.014%)  339698 (71.7%)   27.614     -109.6    -27.614      0.000      0.000      100
+  41    1.1  1000.0    0 2007930     312    1337      33 ( 0.016%)  339742 (71.7%)   27.866     -110.4    -27.866      0.000      0.000       93
+  42    1.2  1000.0    0 2080532     286    1226      40 ( 0.019%)  339652 (71.7%)   27.558     -109.2    -27.558      0.000      0.000       92
+  43    1.3  1000.0    0 2270534     303    1379      34 ( 0.016%)  339816 (71.7%)   27.558     -109.2    -27.558      0.000      0.000       93
+  44    1.3  1000.0    0 2214844     313    1400      32 ( 0.015%)  339639 (71.7%)   27.692     -109.7    -27.692      0.000      0.000       94
+  45    1.2  1000.0    0 2053474     287    1296      32 ( 0.015%)  339749 (71.7%)   27.558     -109.2    -27.558      0.000      0.000       94
+  46    1.3  1000.0    0 2262655     302    1372      34 ( 0.016%)  339819 (71.7%)   27.558     -109.2    -27.558      0.000      0.000       95
+  47    1.2  1000.0    0 2222866     299    1382      27 ( 0.013%)  339726 (71.7%)   27.558     -109.2    -27.558      0.000      0.000       97
+  48    1.3  1000.0    0 2317110     285    1300      27 ( 0.013%)  340087 (71.8%)   28.811     -114.2    -28.811      0.000      0.000       97
+  49    1.1  1000.0    0 1682587     155     707      31 ( 0.015%)  340473 (71.9%)   28.525     -113.1    -28.525      0.000      0.000       98
+  50    1.1  1000.0    0 1842450     183     882      23 ( 0.011%)  340310 (71.8%)   28.493     -113.0    -28.493      0.000      0.000      101
+Routing failed.
+
+Failed routing attempt
+Total number of overused nodes: 23
+Total number of overused nodes is larger than the logging limit (20).
+Displaying the first 20 entries.
+Routing Failure Diagnostics: Printing Overused Nodes Information
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+   No.  NodeId  Occupancy  Capacity  RR Node    Direction    Side     PTC   Block    Xlow    Ylow   Xhigh   Yhigh
+                                        type                          NUM    Name                                 
+------ ------- ---------- --------- -------- ------------ ------- ------- ------- ------- ------- ------- -------
+     0   97904          2         1    CHANX      INC_DIR     N/A      46     clb      34      14      37      14
+     1   97969          2         1    CHANX      DEC_DIR     N/A      41     clb      39      14      42      14
+     2  100932          2         1    CHANX      INC_DIR     N/A      34     clb      57      17      60      17
+     3  102384          2         1    CHANX      INC_DIR     N/A      22     clb      29      19      32      19
+     4  102613          2         1    CHANX      DEC_DIR     N/A      49     clb      46      19      49      19
+     5  104322          2         1    CHANX      INC_DIR     N/A      20     clb      38      21      41      21
+     6  106230          2         1    CHANX      INC_DIR     N/A      14     clb      45      23      48      23
+     7  106780          2         1    CHANX      INC_DIR     N/A      24     clb      17      24      20      24
+     8  106940          2         1    CHANX      INC_DIR     N/A      40     clb      29      24      32      24
+     9  109869          2         1    CHANX      DEC_DIR     N/A       7     clb      45      27      48      27
+    10  112520          2         1    CHANX      INC_DIR     N/A       8     clb      39      30      42      30
+    11  117825          2         1    CHANX      DEC_DIR     N/A      51     clb      26      36      29      36
+    12  120920          2         1    CHANX      INC_DIR     N/A      10     clb      55      39      58      39
+    13  128088          2         1    CHANX      INC_DIR     N/A      32     clb      46      47      49      47
+    14  159665          2         1    CHANY      DEC_DIR     N/A      29     clb      14      25      14      28
+    15  176058          2         1    CHANY      INC_DIR     N/A      26     clb      32      26      32      29
+    16  178797          2         1    CHANY      DEC_DIR     N/A      11     clb      35      27      35      30
+    17  179725          2         1    CHANY      DEC_DIR     N/A      31     clb      36      28      36      31
+    18  182385          2         1    CHANY      DEC_DIR     N/A      11     clb      39      23      39      26
+    19  187990          2         1    CHANY      INC_DIR     N/A      20     clb      45      34      45      37
+
+Final Net Connection Criticality Histogram:
+[        0:      0.1)    0 (  0.0%) |
+[      0.1:      0.2)    0 (  0.0%) |
+[      0.2:      0.3)    0 (  0.0%) |
+[      0.3:      0.4)    0 (  0.0%) |
+[      0.4:      0.5)   40 (  0.2%) |
+[      0.5:      0.6) 1004 (  5.5%) |******
+[      0.6:      0.7) 5731 ( 31.5%) |************************************
+[      0.7:      0.8) 7355 ( 40.4%) |**********************************************
+[      0.8:      0.9) 3393 ( 18.6%) |*********************
+[      0.9:        1)  693 (  3.8%) |****
+Router Stats: total_nets_routed: 62402 total_connections_routed: 232108 total_heap_pushes: 264968098 total_heap_pops: 76428436 
+Serial Connection Router is being destroyed. Time spent on path search: 98.965 seconds.
+## Build routing resource graph
+## Build routing resource graph took 2.69 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+  RR Graph Nodes: 213208
+  RR Graph Edges: 1317258
+Best routing used a channel width factor of 54.
+# Routing took 465.20 seconds (max_rss 235.7 MiB, delta_rss +31.9 MiB)
+
+Checking to ensure routing is legal...
+# Checking to ensure non-configurable edges are legal
+# Checking to ensure non-configurable edges are legal took 0.06 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+Completed routing consistency check successfully.
+
+Serial number (magic cookie) for the routing is: 1686332362
+Circuit successfully routed with a channel width factor of 54.
+# Synchronize the packed netlist to routing optimization
+## Annotating rr_node with routed nets
+## Annotating rr_node with routed nets took 0.01 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+Found 0 mismatches between routing and packing results.
+Fixed 0 routing traces due to mismatch between routing and packing results.
+# Synchronize the packed netlist to routing optimization took 0.01 seconds (max_rss 235.7 MiB, delta_rss +0.0 MiB)
+Final Clustering Statistics: 
+----------   --------   ------------------------------------   --------------------------
+Block Type   # Blocks   Avg. # of input clocks and pins used   Avg. # of output pins used
+----------   --------   ------------------------------------   --------------------------
+     EMPTY          0                                      0                            0   
+        io       1888                             0.00211864                     0.997881   
+       clb       4421                                4.11943                            1   
+Absorbed logical nets 0 out of 6305 nets, 6305 nets not absorbed.
+
+
+Average number of bends per net: 7.64520  Maximum # of bends: 74
+
+Number of global nets: 0
+Number of routed nets (nonglobal): 6305
+Wire length results (in units of 1 clb segments)...
+	Total wirelength: 327425, average net length: 51.9310
+	Maximum net length: 464
+
+Wire length results in terms of physical segments...
+	Total wiring segments used: 83670, average wire segments per net: 13.2704
+	Maximum segments used by a net: 117
+	Total local nets with reserved CLB opins: 0
+Total number of nets absorbed: 0
+
+Routing channel utilization histogram:
+[        1:      inf)    0 (  0.0%) |
+[      0.9:        1)  492 (  5.3%) |******
+[      0.8:      0.9) 1574 ( 17.0%) |******************
+[      0.7:      0.8) 4007 ( 43.3%) |**********************************************
+[      0.5:      0.6) 1588 ( 17.2%) |******************
+[      0.4:      0.5)  881 (  9.5%) |**********
+[      0.3:      0.4)  305 (  3.3%) |****
+[      0.2:      0.3)  184 (  2.0%) |**
+[      0.1:      0.2)   75 (  0.8%) |*
+[        0:      0.1)  142 (  1.5%) |**
+Maximum routing channel utilization:         1 at (33,28)
+
+X - Directed channels:   j max occ ave occ capacity
+                      ---- ------- ------- --------
+                         0      54  45.783       54
+                         1      39  27.275       54
+                         2      40  27.232       54
+                         3      38  27.493       54
+                         4      42  27.957       54
+                         5      41  28.652       54
+                         6      44  29.116       54
+                         7      46  30.232       54
+                         8      43  29.478       54
+                         9      44  33.116       54
+                        10      44  32.464       54
+                        11      48  35.348       54
+                        12      49  34.348       54
+                        13      44  34.623       54
+                        14      47  36.391       54
+                        15      47  36.696       54
+                        16      49  36.797       54
+                        17      49  37.246       54
+                        18      50  38.971       54
+                        19      51  38.986       54
+                        20      50  38.928       54
+                        21      50  39.362       54
+                        22      50  38.971       54
+                        23      49  39.986       54
+                        24      51  40.029       54
+                        25      51  40.377       54
+                        26      50  40.087       54
+                        27      51  40.449       54
+                        28      50  40.014       54
+                        29      49  40.058       54
+                        30      50  40.870       54
+                        31      51  40.768       54
+                        32      51  41.478       54
+                        33      53  40.174       54
+                        34      48  39.420       54
+                        35      52  38.594       54
+                        36      51  39.478       54
+                        37      51  40.580       54
+                        38      51  39.812       54
+                        39      50  40.565       54
+                        40      49  39.377       54
+                        41      47  38.623       54
+                        42      53  38.928       54
+                        43      49  37.826       54
+                        44      48  37.275       54
+                        45      50  37.319       54
+                        46      48  37.000       54
+                        47      48  37.232       54
+                        48      46  35.884       54
+                        49      46  35.551       54
+                        50      47  35.275       54
+                        51      46  36.290       54
+                        52      45  34.232       54
+                        53      46  33.072       54
+                        54      46  33.594       54
+                        55      44  33.145       54
+                        56      44  32.507       54
+                        57      40  31.116       54
+                        58      42  29.855       54
+                        59      40  28.275       54
+                        60      36  27.145       54
+                        61      37  27.275       54
+                        62      38  26.246       54
+                        63      40  26.971       54
+                        64      36  25.000       54
+                        65      39  26.696       54
+                        66      33  22.957       54
+                        67      52  44.449       54
+Y - Directed channels:   i max occ ave occ capacity
+                      ---- ------- ------- --------
+                         0      53  35.203       54
+                         1      39  23.290       54
+                         2      36  22.928       54
+                         3      36  23.594       54
+                         4      39  25.043       54
+                         5      40  27.406       54
+                         6      39  27.464       54
+                         7      36  26.681       54
+                         8      40  28.174       54
+                         9      40  29.246       54
+                        10      39  28.377       54
+                        11      41  31.203       54
+                        12      38  28.942       54
+                        13      41  31.783       54
+                        14      41  31.159       54
+                        15      43  32.493       54
+                        16      45  32.536       54
+                        17      47  32.986       54
+                        18      45  32.710       54
+                        19      44  33.420       54
+                        20      46  34.710       54
+                        21      48  35.754       54
+                        22      45  35.232       54
+                        23      48  36.522       54
+                        24      47  36.174       54
+                        25      49  37.304       54
+                        26      52  35.710       54
+                        27      48  38.174       54
+                        28      48  37.652       54
+                        29      51  38.174       54
+                        30      49  38.362       54
+                        31      53  39.580       54
+                        32      53  39.681       54
+                        33      54  39.841       54
+                        34      50  38.638       54
+                        35      51  39.014       54
+                        36      50  38.304       54
+                        37      53  40.913       54
+                        38      51  39.826       54
+                        39      50  39.493       54
+                        40      51  40.029       54
+                        41      52  39.188       54
+                        42      50  38.710       54
+                        43      49  38.362       54
+                        44      50  39.986       54
+                        45      50  40.174       54
+                        46      51  38.667       54
+                        47      50  38.710       54
+                        48      51  38.899       54
+                        49      50  38.145       54
+                        50      50  38.217       54
+                        51      50  37.884       54
+                        52      48  36.797       54
+                        53      49  37.928       54
+                        54      50  35.551       54
+                        55      50  35.725       54
+                        56      48  35.493       54
+                        57      50  35.464       54
+                        58      46  34.855       54
+                        59      43  32.348       54
+                        60      48  32.826       54
+                        61      44  31.826       54
+                        62      45  30.420       54
+                        63      44  29.826       54
+                        64      44  29.464       54
+                        65      46  28.754       54
+                        66      41  27.000       54
+                        67      54  43.029       54
+
+Total tracks in x-direction: 3672, in y-direction: 3672
+
+Logic area (in minimum width transistor areas, excludes I/Os and empty grid tiles)...
+	Total logic block area (Warning, need to add pitch of routing to blocks with height > 3): 8.0802e+07
+	Total used logic block area: 7.9578e+07
+
+Routing area (in minimum width transistor areas)...
+	Total routing area: 1.10277e+07, per logic tile: 2316.25
+
+Total Number of Wiring Segments by Direction: direction length number
+                                              --------- ------ -------
+                                                      X      4  64260
+                                                      Y      4  64260
+
+X - Directed Wiring Segment usage by length: length utilization
+                                             ------ -----------
+                                             4       0.658
+
+Y - Directed Wiring Segment usage by length: length utilization
+                                             ------ -----------
+                                             4       0.644
+
+Segment occupancy by length: Length Occupancy Capacity Utilization
+                             ------ --------- -------- -----------
+                             L4         83670   128520       0.651
+
+Segment occupancy by type:              name type utilization
+                           ----------------- ---- -----------
+                           unnamed_segment_0    0       0.651
+
+Final hold Worst Negative Slack (hWNS): 0 ns
+Final hold Total Negative Slack (hTNS): 0 ns
+
+Final hold slack histogram:
+[    7e-09:    7e-09) 2 ( 50.0%) |*************************************************
+[    7e-09:  7.1e-09) 0 (  0.0%) |
+[  7.1e-09:  7.2e-09) 0 (  0.0%) |
+[  7.2e-09:  7.2e-09) 0 (  0.0%) |
+[  7.2e-09:  7.3e-09) 0 (  0.0%) |
+[  7.3e-09:  7.3e-09) 0 (  0.0%) |
+[  7.3e-09:  7.4e-09) 0 (  0.0%) |
+[  7.4e-09:  7.5e-09) 0 (  0.0%) |
+[  7.5e-09:  7.5e-09) 1 ( 25.0%) |*************************
+[  7.5e-09:  7.6e-09) 1 ( 25.0%) |*************************
+
+Final critical path delay (least slack): 27.8618 ns, Fmax: 35.8915 MHz
+Final setup Worst Negative Slack (sWNS): -27.8618 ns
+Final setup Total Negative Slack (sTNS): -110.71 ns
+
+Final setup slack histogram:
+[ -2.8e-08: -2.8e-08) 3 ( 75.0%) |*************************************************
+[ -2.8e-08: -2.8e-08) 0 (  0.0%) |
+[ -2.8e-08: -2.8e-08) 0 (  0.0%) |
+[ -2.8e-08: -2.8e-08) 0 (  0.0%) |
+[ -2.8e-08: -2.8e-08) 0 (  0.0%) |
+[ -2.8e-08: -2.7e-08) 0 (  0.0%) |
+[ -2.7e-08: -2.7e-08) 0 (  0.0%) |
+[ -2.7e-08: -2.7e-08) 0 (  0.0%) |
+[ -2.7e-08: -2.7e-08) 0 (  0.0%) |
+[ -2.7e-08: -2.7e-08) 1 ( 25.0%) |****************
+
+Final geomean non-virtual intra-domain period: nan ns (nan MHz)
+Final fanout-weighted geomean non-virtual intra-domain period: nan ns (nan MHz)
+
+Incr Slack updates 1 in 0.000836403 sec
+Full Max Req/Worst Slack updates 1 in 5.843e-06 sec
+Incr Max Req/Worst Slack updates 0 in 0 sec
+Incr Criticality updates 0 in 0 sec
+Full Criticality updates 1 in 0.00235819 sec
+Flow timing analysis took 12.1116 seconds (11.2059 STA, 0.905693 slack) (167 full updates: 1 setup, 0 hold, 166 combined).
+VPR succeeded
+The entire flow of VPR took 519.52 seconds (max_rss 235.7 MiB)
+Incr Slack updates 165 in 0.136467 sec
+Full Max Req/Worst Slack updates 52 in 0.000257325 sec
+Incr Max Req/Worst Slack updates 113 in 0.00080235 sec
+Incr Criticality updates 65 in 0.0996741 sec
+Full Criticality updates 100 in 0.226813 sec
