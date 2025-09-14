@@ -243,6 +243,6 @@ def process_json_metrics(folder_path):
 
 if __name__ == "__main__":
     folder = "/home/jeronimo/GIT/PeR/reports/fpga/EPFL/yoto_df_x1_debug/metrics/"
-    folder = "/home/jeronimo/GIT/PeR/reports/fpga/TEST/_09_11_yoto_df_TC_x6_ION_8/metrics"
+    folder = "/home/jeronimo/GIT/PeR/reports/fpga/TEST/_09_11_yoto_df_limit_2_scan_TC_x6_best_only_ION_8/metrics"
     folder_path = os.path.dirname(os.path.abspath(folder))  # Pasta atual
     process_json_metrics(folder)

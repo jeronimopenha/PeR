@@ -63,7 +63,7 @@
 #define N_DIST_VECTORS 4
 
 //Use search strategy or not
-#define STRATEGY_SEARCH
+//#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH
@@ -103,7 +103,7 @@
 #define REPORT
 #ifdef REPORT
 
-#define REPORT_PREFIX "_09_12_"
+#define REPORT_PREFIX "_09_14_"
 
 //Choose write Make metrics reports
 #define MAKE_METRICS
@@ -130,8 +130,8 @@
 
 // Tests Quantity
 //#define RUN_1
-//#define RUN_6
-#define RUN_60
+#define RUN_6
+//#define RUN_60
 //#define RUN_600
 //#define RUN_10
 //#define RUN_100
