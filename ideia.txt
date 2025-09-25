@@ -1,0 +1,48 @@
+Checklist de implementação
+
+Pré-cálculo (grafo reverso): level[v] (saída=0) e owner[v] (primeira saída que alcança v).
+
+Escolha 1 aresta por v: para cada v (exceto saídas), pegue u* em children(v) com mesmo owner e menor (level[u], slack[u]) (desempates: -hub_static[u], id).
+→ Aresta final é u* → v (apenas uma por v).
+
+Buckets: ordene por slack[v]: 0 → 1 → >1.
+
+Camadas: dentro de cada bucket, emita por level[v] crescente (0,1,2,…).
+
+Round-robin por saída: intercale saídas por bucket/nível com B=1 (comece 1 a 1).
+
+Sementes de IO: prefixe a lista com F → Yk para todas as saídas.
+
+Filtragem: descarte nós com level=INF (fora de qualquer cone).
+Q
+Hiperparâmetros (começo “safe”)
+
+Budget RR: B=1.
+
+Limiar de buckets: τ0=0, τ1=1.
+
+hub_static(x): Σ_{c∈children(x)} 1/(1+level[c]) (apenas p/ desempates dentro do mesmo bucket/nível).
+
+Armadilhas & ajustes rápidos
+
+Empate de nível igual (ex. reconvergência grande): deixe o desempate por slack[u] e depois por hub_static; isso costuma evitar “miolo” ruim.
+
+Cross-cone: se children(v) não tiver mesmo owner, permita outro com penalidade (só use se necessário).
+
+Muitos críticos (B0 gigante): se notar “fila” demais em um cone, aumente B para 2 (pequenos blocos) — ainda mantém equilíbrio.
+
+Avaliação no VPR9 (A/B)
+
+Compare baseline vs. novo scheduler em 3–5 benchmarks:
+
+fmax (1/critical path),
+
+HPWL total (ou “wirelength estimate”),
+
+overuse e chan width mínimo,
+
+# iterações do router.
+
+Fixe a seed e rode 3–5 seeds depois, só pra ver robustez.
+
+Se algo piorar (ex.: um cone dominando espaço), os botões a girar são: (i) reduzir B para 1, (ii) subir o peso implícito de nível (processar mais camadas antes de mudar de bucket), (iii) reforçar o “mesmo owner” na escolha de u*.
