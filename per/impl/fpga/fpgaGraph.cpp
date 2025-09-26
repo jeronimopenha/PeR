@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/**
+ * Class contructor
+ * @param dotPath
+ * @param dotName
+ */
 FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName) : Graph(dotPath, dotName) {
     readNeighbors();
     calcMatrix();
@@ -12,6 +17,9 @@ FPGAGraph::FPGAGraph(const string &dotPath, const string &dotName) : Graph(dotPa
 }
 
 
+/**
+ * Find all neighbors of each node
+ */
 void FPGAGraph::readNeighbors() {
     //neighbors vector
     neighbors.clear();
@@ -24,6 +32,10 @@ void FPGAGraph::readNeighbors() {
     }
 }
 
+
+/**
+ * Calculates the minimal square matrix to place all nodes and I/Os
+ */
 void FPGAGraph::calcMatrix() {
     const long totalInOut = static_cast<long>(inputNodes.size() + outputNodes.size()); // + disconnectedNodes.size());
     const long nBaseNodes = nNodes - totalInOut;
@@ -39,6 +51,10 @@ void FPGAGraph::calcMatrix() {
     nCells = static_cast<long>(pow(nCellsSqrt, 2));
 }
 
+/**
+ * Defines which cells are I/O cells to simplify the code execution
+ * @return
+ */
 vector<long> FPGAGraph::getInOutPos() const {
     vector<long> possibleInOut;
 
@@ -65,6 +81,10 @@ vector<long> FPGAGraph::getInOutPos() const {
     return possibleInOut;
 }
 
+/**
+ * Defines which cells are CLB cells to simplify the code execution
+ * @return
+ */
 vector<long> FPGAGraph::getClbPos() const {
     vector<long> pos;
     for (long i = 1; i < nCellsSqrt - 1; i++) {
@@ -76,6 +96,12 @@ vector<long> FPGAGraph::getClbPos() const {
     return pos;
 }
 
+/**
+ * Get annotations for edges for the YOTO algorithm execution
+ * @param edges
+ * @param convergences
+ * @return
+ */
 unordered_map<string, vector<pair<long, long> > > FPGAGraph::fpgaGetGraphAnnotations(
     const vector<pair<long, long> > &edges,
     const vector<pair<long, long> > &convergences
@@ -153,6 +179,10 @@ unordered_map<string, vector<pair<long, long> > > FPGAGraph::fpgaGetGraphAnnotat
     return annotations;
 }
 
+/**
+ * This function returns the offsets to find I/O cells to be placed
+ * @return
+ */
 vector<vector<long> > FPGAGraph::generateIoOffsets() {
     const long nCells = nCellsSqrt;
     vector<long> negatives;
@@ -167,16 +197,22 @@ vector<vector<long> > FPGAGraph::generateIoOffsets() {
     return result;
 }
 
-vector<BorderInfo> FPGAGraph::getIoBordersSequence(long l, long c) {
+/**
+ * Finds wich border will be searchde first and on
+ * @param line
+ * @param column
+ * @return
+ */
+vector<BorderInfo> FPGAGraph::getIoBordersSequence(long line, long column) {
     const long nRows = nCellsSqrt;
     const long nCols = nCellsSqrt;
 
 
     vector<BorderInfo> borders = {
-        {abs(l - 0), 0, {c, 0}}, // top
-        {abs(c - 0), 2, {0, l}}, // left
-        {abs(l - (nRows - 1)), 1, {c, nRows - 1}}, // bottom
-        {abs(c - (nCols - 1)), 3, {nCols - 1, l}} // right
+        {abs(line - 0), 0, {column, 0}}, // top
+        {abs(column - 0), 2, {0, line}}, // left
+        {abs(line - (nRows - 1)), 1, {column, nRows - 1}}, // bottom
+        {abs(column - (nCols - 1)), 3, {nCols - 1, line}} // right
     };
 
     sort(borders.begin(), borders.end(), [](const auto &a, const auto &b) {
@@ -187,56 +223,3 @@ vector<BorderInfo> FPGAGraph::getIoBordersSequence(long l, long c) {
 
     return borders;
 }
-
-//fixme
-vector<pair<long, long> > FPGAGraph::getEdgesDepthFirstPriority() {
-}/*
-    // Copia os nós de entrada e embaralha, se necessário
-    vector<long> inputList = inputNodes;
-    randomVector(inputList);
-    //move the initial node of the longest path to the end of the stack and so on
-    const auto it = std::find(inputList.begin(), inputList.end(), longestPath[0]);
-
-    if (it != inputList.end()) {
-        const long valor = *it;
-        inputList.erase(it); // remove node
-        inputList.push_back(valor); // add it on last position
-    }
-
-    // Inicializa a pilha com inputList
-    vector<long> stack(inputList);
-    vector<pair<long, long> > edges;
-    vector visited(nNodes, false);
-
-    while (!stack.empty()) {
-        long n = stack.back();
-        stack.pop_back();
-
-        if (visited[n])
-            continue;
-
-        visited[n] = true;
-
-        // Coleta os vizinhos ainda não visitados
-        vector<long> neighbors;
-        for (int i = 0; i < nNodes; i++) {
-            if (successors[n][i] && !visited[i])
-                neighbors.push_back(i);
-        }
-
-        // Ordena os vizinhos para priorizar os maiores caminhos
-        sort(neighbors.begin(), neighbors.end(), [this](const long a, const long b) {
-            // Critério para ordenar: pode ser baseado na quantidade de sucessores
-            return count(successors[a].begin(), successors[a].end(), true) >
-                   count(successors[b].begin(), successors[b].end(), true);
-        });
-
-        // Adiciona os vizinhos à pilha e armazena as arestas
-        for (auto neighbor: neighbors) {
-            stack.push_back(neighbor);
-            edges.emplace_back(n, neighbor);
-        }
-    }
-
-    return edges;
-}*/

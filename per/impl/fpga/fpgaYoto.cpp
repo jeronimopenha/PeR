@@ -15,7 +15,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector<vector<long> > c2n(nCells, vector<long>());
     vector<pair<long, long> > n2c(nNodes, {-1, -1});
 
-    vector<vector<vector<long> > > distCells;
+    vector<vector<vector<long> > > distVectors;
     vector<pair<long, long> > ed;
     vector<long> inOutCells = g.getInOutPos();
 
@@ -47,9 +47,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     std::map<long, vector<long> > originDestin;
 
 
-    //fill the distCells vector
+    //fill the distvectors
     for (int i = 0; i < N_DIST_VECTORS; i++) {
-        distCells.push_back(fpgaGetAdjCellsDist(nCellsSqrt));
+        distVectors.push_back(fpgaGetDistVectors(nCellsSqrt));
     }
 
     //shuffle the possible IO cells
@@ -230,7 +230,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
         //fixme This part is only for YOTO spiral strategy. This should be on that part only
         //Then I will look for a cell next to A's cell
-        for (const auto &ij: distCells[distVectorCounter]) {
+        for (const auto &ij: distVectors[distVectorCounter]) {
             long lB = lA + ij[0];
             long cB = cA + ij[1];
 
@@ -497,6 +497,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     cout << ". Total tries" << unicTry;
                     //exit(1);
                 }
+
+//fixme - this shoud be the error verification to the code
 #ifdef DEBUG
                 placed = true;
 #endif
@@ -506,7 +508,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef DEBUG
         if (!placed) {
             writeMap(c2n, {n2c[a].first, -1}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-            int asfd = 1;
         }
 #endif
     }

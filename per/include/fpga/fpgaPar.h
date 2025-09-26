@@ -136,8 +136,17 @@
 //Debugging *************************************
 //debugging defines
 #define DEBUG
+
 //#define PRINT_DOT
+#ifdef PRINT_DOT
+#define DOT_PATH = "~/tmp/placed.dot"
+#endif
+
+
 #define PRINT_IMG
+#ifdef PRINT_IMG
+#define JPG_PATH = "~/tmp/placed.jpg"
+#endif
 //*******************************
 
 //Execution parameters END

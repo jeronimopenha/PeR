@@ -4,12 +4,21 @@
 #ifdef USE_CACHE
 using namespace std;
 
+/**
+ * Class constructor
+ */
 Cache::Cache() {
     this->cacheValid = std::vector(CACHE_LINES, false);
     this->cacheTag = std::vector<long>(CACHE_LINES);
     this->cacheData = vector(CACHE_LINES, vector<long>(CACHE_COLUMNS));
 }
 
+/**
+ * This function returns if a cache miss occured or not
+ * @param address
+ * @param vec
+ * @return
+ */
 long Cache::readCache(const long address, const vector<long> &vec) {
     const long tag = address >> (CACHE_LINES_EXP + CACHE_COLUMNS_EXP);
     //int column = address & (CACHE_COLUMNS - 1);

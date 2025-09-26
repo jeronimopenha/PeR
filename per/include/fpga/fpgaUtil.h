@@ -54,18 +54,30 @@ struct FpgaReportData {
     [[nodiscard]] std::string metrics_to_json() const;
 };
 
-void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std::vector<long> > &c2n,
-                       const std::vector<std::pair<long, long> > &ed, const long nCellsSqrt,
-                       const std::string &filename);
+enum class QuadrantDirection {
+    TOP,
+    BOTTOM,
+    LEFT,
+    RIGHT
+};
 
-std::vector<std::vector<long> > fpgaGetAdjCellsDist(long nCellsSqrt);
+#ifdef PRINT_DOT
+void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std::vector<long> > &c2n,
+                       const std::vector<std::pair<long, long> > &ed, long nCellsSqrt);
+#endif
+
+#ifdef PRINT_IMG
+void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt,
+              const std::string &filePath);
+#endif
+std::vector<std::vector<long> > fpgaGetDistVectors(long nCellsSqrt);
 
 long fpgaCalcGraphTotalDistance(const std::vector<std::pair<long, long> > &n2c,
                                 const std::vector<std::pair<long, long> > &edges,
                                 long nCellsSqrt);
 
-long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
-                             long nCellsSqrt);
+/*long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
+                             long nCellsSqrt);*/
 
 long fpgaMinBorderDist(long cell, long nCellsSqrt);
 
@@ -80,24 +92,20 @@ void fpgaWriteVpr5Data(const std::string &basePath,
                        FPGAGraph g);
 
 void fpgaWriteVpr9Data(const std::string &basePath,
-                       const std::string &_reportPath,
-                       const std::string &_algPath,
                        const std::string &fileName,
                        const FpgaReportData &data,
                        FPGAGraph g);
 
-bool fpgaIsInvalidCell(long l, long c, long nCellsSqrt);
+bool fpgaIsInvalidCell(long line, long column, long nCellsSqrt);
 
-bool fpgaIsIOCell(long l, long c, long nCellsSqrt);
+bool fpgaIsIOCell(long line, long column, long nCellsSqrt);
 
-long getQuadrant(long l, long c, long nCells, long nCellsSqrt);
+long getQuadrant(long line, long column, long nCellsSqrt);
 
 std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
 
 RGB valueToRGB(float normValue);
 
-void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt,
-              const std::string &filePath);
 
 void writeHeatmap(const std::vector<long> &heatData,
                   const std::vector<std::vector<long> > &c2n,

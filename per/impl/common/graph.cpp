@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/**
+ * Class initializer
+ * @param dotPath
+ * @param dotName
+ * @param str
+ */
 Graph::Graph(const string &dotPath, const string &dotName, const bool str) {
     this->dotPath = dotPath;
     this->dotName = dotName;
@@ -14,6 +20,9 @@ Graph::Graph(const string &dotPath, const string &dotName, const bool str) {
     updateG();
 }
 
+/**
+ * Call the other functions to update everything
+ */
 void Graph::updateG() {
     readAdjList();
     readSuccPred();
@@ -21,6 +30,9 @@ void Graph::updateG() {
     readAsapAlap();
 }
 
+/**
+ * Respondible to read the edges and nodes of graph
+ */
 void Graph::readEdgesNodes() {
     unordered_set<long> nodes;
     unordered_set<long> declaredNodes;
@@ -93,6 +105,9 @@ void Graph::readEdgesNodes() {
     iota(gNodes.begin(), gNodes.end(), 0);
 }
 
+/**
+ * Creates the adjascent list
+ */
 void Graph::readAdjList() {
     //optimization
     if (succList.size() != nNodes)
@@ -112,6 +127,9 @@ void Graph::readAdjList() {
     }
 }
 
+/**
+ * Reads the successors and predecessors for each node
+ */
 void Graph::readSuccPred() {
     //2 - find the successors and the predecessors
     //and find how many succ and pred each node have
@@ -156,6 +174,9 @@ void Graph::readSuccPred() {
     }
 }
 
+/**
+ * Sort the nodes between tree types: input, output and clb nodes
+ */
 void Graph::readTypeOfNodes() {
     //input and output nodes
     outputNodes.clear();
@@ -175,6 +196,9 @@ void Graph::readTypeOfNodes() {
     }
 }
 
+/**
+ * Find the ASAP and ALAP for each node to determine the critical path
+ */
 void Graph::readAsapAlap() {
     // Optimization
     if (asap.size() != nNodes) {
@@ -243,6 +267,11 @@ void Graph::readAsapAlap() {
     }
 }
 
+/**
+ * Returns a list of edges made from a depth first search with critical path priority or not
+ * @param criticalPriority
+ * @return
+ */
 vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalPriority) {
     vector<pair<long, long> > edges;
 
@@ -320,6 +349,12 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalP
     return edges;
 }
 
+/**
+ * Returns a list of edges made from the zig zag traversal algorithm
+ * @param convergence
+ * @param edgeTypes
+ * @return
+ */
 vector<pair<long, long> > Graph::getEdgesZigzag(
     vector<pair<long, long> > &convergence,
     vector<tuple<long, long, string> > *edgeTypes) {
@@ -455,6 +490,11 @@ vector<pair<long, long> > Graph::getEdgesZigzag(
     return edges; //clearEdges(edges);
 }
 
+/**
+ * Clean repeated edges
+ * @param edges
+ * @return
+ */
 vector<pair<long, long> > Graph::clearZigZagEdges(const vector<pair<long, long> > &edges) const {
     vector placedNodes(nNodes, false); // Set to track placed nodes
     vector<pair<long, long> > new_edges; // Vector to store filtered edges
@@ -482,6 +522,9 @@ vector<pair<long, long> > Graph::clearZigZagEdges(const vector<pair<long, long> 
     topo_order.push_back(idx);
 }*/
 
+/**
+ * Read a dot file with nodes with srting names
+ */
 void Graph::readGraphDataStr() {
     unordered_set<string> nodesStr;
     unordered_set<string> declaredNodesStr;
@@ -576,6 +619,9 @@ void Graph::readGraphDataStr() {
 }
 
 
+/**
+ * Used to make shure all outputs have only one input edge
+ */
 void Graph::isolateMultiInputOutputs() {
     vector<long> newOutputs;
     vector<pair<long, long> > newEdges;
@@ -605,6 +651,11 @@ void Graph::isolateMultiInputOutputs() {
     updateG(); // Update the internal graph structures
 }
 
+
+/**
+ * Used to save the graph into a dot file
+ * @param filename
+ */
 void Graph::saveToDot(const string &filename) {
     ofstream file(filename);
     if (!file) {

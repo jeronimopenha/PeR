@@ -7,9 +7,40 @@
 
 using namespace std;
 
+/**
+ * Basic report data
+ */
 FpgaReportData::FpgaReportData() = default;
 
-// Constructor for easy initialization
+/**
+ * Constructor for easy reportData initialization
+ * @param _time
+ * @param dotName
+ * @param dotPath
+ * @param placer
+ * @param size
+ * @param nNodes
+ * @param nIOs
+ * @param cacheMisses
+ * @param w
+ * @param wCost
+ * @param cachePenalties
+ * @param clbTries
+ * @param ioTries
+ * @param tries
+ * @param triesP
+ * @param triesPerNode
+ * @param swaps
+ * @param edges_algorithm
+ * @param costStrategy
+ * @param totalCost
+ * @param c2n
+ * @param n2c
+ * @param hist
+ * @param heatEnd
+ * @param heatBegin
+ * @param orDest
+ */
 FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer, long size,
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
@@ -45,7 +76,11 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       orDest(std::move(orDest)) {
 }
 
-// Serialize ReportData to a JSON string
+
+/**
+ * Serialize ReportData to a JSON string
+ * @return
+ */
 string FpgaReportData::to_json() const {
     ostringstream oss;
     oss << "{\n"
@@ -98,6 +133,10 @@ oss << "]\n";*/
 }
 
 
+/**
+ * Serialize metrics to a JSON string
+ * @return
+ */
 string FpgaReportData::metrics_to_json() const {
     std::ostringstream oss;
     oss << "{\n";
@@ -157,8 +196,17 @@ string FpgaReportData::metrics_to_json() const {
     return oss.str();
 }
 
+#ifdef PRINT_DOT
+
+/**
+ * Saves the dot placement file to debug.
+ * @param n2c
+ * @param c2n
+ * @param ed
+ * @param nCellsSqrt
+ */
 void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
-                       const long nCellsSqrt, const string &filename) {
+                       const long nCellsSqrt) {
     string fileString;
 
     // write the dot header
@@ -226,7 +274,7 @@ void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2
     // write the dot footer
     fileString += "}\n";
 
-    ofstream file(filename);
+    ofstream file(DOT_PATH);
     if (!file) {
         cerr << "Error!" << endl;
         return;
@@ -234,9 +282,83 @@ void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2
     file << fileString;
     file.close();
 }
+#endif
 
+#ifdef PRINT_IMG
+void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
+              const std::string &filePath) {
+    constexpr long minImageSize = 1000;
 
-vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
+    const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
+    const long imageCoreSize = cellSize * nCellsSqrt;
+
+    constexpr long borderPadding = 10;
+    const long imageWidth = imageCoreSize + 2 * borderPadding;
+    const long imageHeight = imageCoreSize + 2 * borderPadding;
+
+    vector<unsigned char> imageData(imageWidth * imageHeight * 3, 255);
+
+    for (long y = 0; y <= imageCoreSize; y++) {
+        for (long x = 0; x <= imageCoreSize; x++) {
+            //border is black
+
+            constexpr RGB white{255, 255, 255};
+            constexpr RGB black{0, 0, 0};
+            constexpr RGB blue{120, 120, 255};
+            constexpr RGB red{255, 120, 120};
+            constexpr RGB gray{230, 230, 230};
+
+            RGB pixel = white;
+
+            const bool isBorder = (x == 0 || y == 0 || x == imageCoreSize || y == imageCoreSize);
+
+            if (isBorder) {
+                pixel = black;
+            } else {
+                const bool isGridLine = (x % cellSize == 0 || y % cellSize == 0);
+                const long srcX = x / cellSize;
+                const long srcY = y / cellSize;
+                const long cellIdx = srcY * nCellsSqrt + srcX;
+
+                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
+                    //grid or invalid cell
+                    pixel = white;
+                } else {
+                    const bool isUsedCell = (static_cast<long>(c2n[cellIdx].size()) > 0l);
+
+                    if (cellIdx == lastPlaced.first) {
+                        pixel = blue;
+                    } else if (cellIdx == lastPlaced.second) {
+                        pixel = red;
+                    } else if (isUsedCell) {
+                        pixel = gray;
+                    }
+                }
+            }
+
+            //calculate the coords
+            const long dstX = x + borderPadding;
+            const long dstY = y + borderPadding;
+            const long pixelIndex = (dstY * imageWidth + dstX) * 3;
+
+            //apply the values to the pixel
+            imageData[pixelIndex + 0] = pixel.r;
+            imageData[pixelIndex + 1] = pixel.g;
+            imageData[pixelIndex + 2] = pixel.b;
+        }
+    }
+
+    stbi_write_jpg(filePath.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
+                   imageData.data(), 100);
+}
+#endif
+
+/**
+ * This function takes the distVectors offsets to find a free cell by YOTO and YOTT algorithms
+ * @param nCellsSqrt
+ * @return
+ */
+vector<vector<long> > fpgaGetDistVectors(const long nCellsSqrt) {
     const long max_dist = (nCellsSqrt * 2) - 1;
     vector<vector<long> > meshDistances;
     vector<vector<vector<long> > > distance_table_raw(max_dist);
@@ -282,6 +404,13 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
 }
 
 
+/**
+ * Calculates the total distance cost with manhattan method
+ * @param n2c
+ * @param edges
+ * @param nCellsSqrt
+ * @return
+ */
 long fpgaCalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vector<pair<long, long> > &edges,
                                 const long nCellsSqrt) {
     long totalDist = -static_cast<long>(edges.size());
@@ -296,7 +425,7 @@ long fpgaCalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vect
     return totalDist;
 }
 
-long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long> &n2c, const long nCellsSqrt) {
+/*long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long> &n2c, const long nCellsSqrt) {
     long totalDist = 0;
 
     for (long idx = 0; idx < longestPath.size() - 1; idx++) {
@@ -307,11 +436,17 @@ long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long>
     }
 
     return totalDist;
-}
+}*/
 
+/**
+ * Finds wich border is near to the node
+ * @param cell
+ * @param nCellsSqrt
+ * @return
+ */
 long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
-    const long line = cell / nCellsSqrt;
-    const long column = cell % nCellsSqrt;
+    const long line = getLine(cell, nCellsSqrt);
+    const long column = getColumn(cell, nCellsSqrt);
 
     long d_top = line;
     long d_bottom = nCellsSqrt - 1 - line;
@@ -322,6 +457,12 @@ long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
 }
 
 
+/**
+ * Writes the json reports (global and metrics)
+ * @param basePath
+ * @param fileName
+ * @param data
+ */
 void fpgaWriteReports(const std::string &basePath,
                       const std::string &fileName,
                       const FpgaReportData &data) {
@@ -356,18 +497,21 @@ void fpgaWriteReports(const std::string &basePath,
 #endif
 }
 
+/**
+ * Writes VPR9 place files to be used by VPR9 to route
+ * @param basePath
+ * @param _reportPath
+ * @param _algPath
+ * @param fileName
+ * @param data
+ * @param g
+ */
 void fpgaWriteVpr9Data(const string &basePath,
-                       const string &_reportPath,
-                       const string &_algPath,
                        const string &fileName,
                        const FpgaReportData &data,
                        FPGAGraph g) {
-    string placePath = basePath + _reportPath + _algPath + "/place/";
+    string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
-
-    string netBasePath = _reportPath + _algPath + "/blif/";
-    string blifPath = basePath + netBasePath;
-    string blifFile = blifPath + fileName + ".blif";
 
     createDir(placePath);
 
@@ -407,6 +551,13 @@ void fpgaWriteVpr9Data(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;
 }
 
+/**
+ * Writes VPR9 place files to be used by VPR5 to route
+ * @param basePath
+ * @param fileName
+ * @param data
+ * @param g
+ */
 void fpgaWriteVpr5Data(const string &basePath,
                        const string &fileName,
                        const FpgaReportData &data,
@@ -515,62 +666,84 @@ void fpgaWriteVpr5Data(const string &basePath,
         cerr << "Error opening file for writing: " << fileName << ".json" << endl;*/
 }
 
-bool fpgaIsInvalidCell(const long l, const long c, const long nCellsSqrt) {
-    const bool outOfBounds = (l < 0 || l >= nCellsSqrt || c < 0 || c >= nCellsSqrt);
+/**
+ * Verifies if the cell is inside the matrix or not
+ * @param line
+ * @param column
+ * @param nCellsSqrt
+ * @return
+ */
+bool fpgaIsInvalidCell(const long line, const long column, const long nCellsSqrt) {
+    const bool outOfBounds = (line < 0 || line >= nCellsSqrt || column < 0 || column >= nCellsSqrt);
 
     const bool isCorner =
-            (l == 0 && c == 0) ||
-            (l == 0 && c == nCellsSqrt - 1) ||
-            (l == nCellsSqrt - 1 && c == 0) ||
-            (l == nCellsSqrt - 1 && c == nCellsSqrt - 1);
+            (line == 0 && column == 0) ||
+            (line == 0 && column == nCellsSqrt - 1) ||
+            (line == nCellsSqrt - 1 && column == 0) ||
+            (line == nCellsSqrt - 1 && column == nCellsSqrt - 1);
 
     return outOfBounds || isCorner;
 }
 
-bool fpgaIsIOCell(const long l, const long c, const long nCellsSqrt) {
-    return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
+/**
+ * Verifies of the cell is an IO cell (border cell in this case)
+ * @param line
+ * @param column
+ * @param nCellsSqrt
+ * @return
+ */
+bool fpgaIsIOCell(const long line, const long column, const long nCellsSqrt) {
+    return line == 0 || line == nCellsSqrt - 1 || column == 0 || column == nCellsSqrt - 1;
 }
 
 //fixme Need to work with bits, not integers
-//fixme transform 16 in parameter
-long getQuadrant(const long l, const long c, const long nCells, const long nCellsSqrt) {
-    constexpr long nQuadrants = 16;
+long getQuadrant(const long line, const long column, const long nCellsSqrt) {
+    constexpr long nQuadrants = SCAN_QUADRANTS;
 
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
 
     const long quadSize = (nCellsSqrt + nQuadrantsSqrt - 1) / nQuadrantsSqrt;
 
-    const long quad_c = c / quadSize;
-    const long quad_l = l / quadSize;
+    const long quad_c = column / quadSize;
+    const long quad_l = line / quadSize;
 
     return quad_l * 4 + quad_c;
 }
 
+/**
+ * Returns the top, bottom, left and right quadrant indexes
+ * @param q
+ * @return
+ */
 vector<pair<long, int> > getAdjacentQuadrants(const long q) {
     std::vector<pair<long, int> > adj;
 
-    constexpr long nQuadrants = 16;
+    constexpr long nQuadrants = SCAN_QUADRANTS;
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
 
 
-    const long l = q / nQuadrantsSqrt;
-    const long c = q % nQuadrantsSqrt;
+    const long line = q / nQuadrantsSqrt;
+    const long column = q % nQuadrantsSqrt;
 
     //fixme transform the direction number in an enum
     // top
-    if (l > 0) adj.emplace_back((l - 1) * nQuadrantsSqrt + c, 0);
+    if (line > 0) adj.emplace_back((line - 1) * nQuadrantsSqrt + column, 0);
     // bottom
-    if (l < nQuadrantsSqrt - 1) adj.emplace_back((l + 1) * nQuadrantsSqrt + c, 1);
+    if (line < nQuadrantsSqrt - 1) adj.emplace_back((line + 1) * nQuadrantsSqrt + column, 1);
     // left
-    if (c > 0) adj.emplace_back(l * nQuadrantsSqrt + (c - 1), 2);
+    if (column > 0) adj.emplace_back(line * nQuadrantsSqrt + (column - 1), 2);
     // right
-    if (c < nQuadrantsSqrt - 1) adj.emplace_back(l * nQuadrantsSqrt + (c + 1), 3);
+    if (column < nQuadrantsSqrt - 1) adj.emplace_back(line * nQuadrantsSqrt + (column + 1), 3);
 
     return adj;
 }
 
 
-// Function to map normalized value (0 to 1) to simple RGB (blue to red)
+/**
+ * Function to map normalized value (0 to 1) to simple RGB (blue to red)
+ * @param normValue
+ * @return
+ */
 RGB valueToRGB(const float normValue) {
     struct ColorPoint {
         float position; // between 0.0 e 1.0
@@ -610,73 +783,18 @@ RGB valueToRGB(const float normValue) {
 }
 
 
-void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
-              const std::string &filePath) {
-    constexpr long minImageSize = 1000;
 
-    const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
-    const long imageCoreSize = cellSize * nCellsSqrt;
 
-    constexpr long borderPadding = 10;
-    const long imageWidth = imageCoreSize + 2 * borderPadding;
-    const long imageHeight = imageCoreSize + 2 * borderPadding;
-
-    vector<unsigned char> imageData(imageWidth * imageHeight * 3, 255);
-
-    for (long y = 0; y <= imageCoreSize; y++) {
-        for (long x = 0; x <= imageCoreSize; x++) {
-            //border is black
-
-            constexpr RGB white{255, 255, 255};
-            constexpr RGB black{0, 0, 0};
-            constexpr RGB blue{120, 120, 255};
-            constexpr RGB red{255, 120, 120};
-            constexpr RGB gray{230, 230, 230};
-
-            RGB pixel = white;
-
-            const bool isBorder = (x == 0 || y == 0 || x == imageCoreSize || y == imageCoreSize);
-
-            if (isBorder) {
-                pixel = black;
-            } else {
-                const bool isGridLine = (x % cellSize == 0 || y % cellSize == 0);
-                const long srcX = x / cellSize;
-                const long srcY = y / cellSize;
-                const long cellIdx = srcY * nCellsSqrt + srcX;
-
-                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
-                    //grid or invalid cell
-                    pixel = white;
-                } else {
-                    const bool isUsedCell = (static_cast<long>(c2n[cellIdx].size()) > 0l);
-
-                    if (cellIdx == lastPlaced.first) {
-                        pixel = blue;
-                    } else if (cellIdx == lastPlaced.second) {
-                        pixel = red;
-                    } else if (isUsedCell) {
-                        pixel = gray;
-                    }
-                }
-            }
-
-            //calculate the coords
-            const long dstX = x + borderPadding;
-            const long dstY = y + borderPadding;
-            const long pixelIndex = (dstY * imageWidth + dstX) * 3;
-
-            //apply the values to the pixel
-            imageData[pixelIndex + 0] = pixel.r;
-            imageData[pixelIndex + 1] = pixel.g;
-            imageData[pixelIndex + 2] = pixel.b;
-        }
-    }
-
-    stbi_write_jpg(filePath.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
-                   imageData.data(), 100);
-}
-
+/**
+ * Writes the heat map for a placement
+ * Not used yet
+ * @param heatData
+ * @param c2n
+ * @param nCellsSqrt
+ * @param basePath
+ * @param fileName
+ * @param suffix
+ */
 void writeHeatmap(const std::vector<long> &heatData,
                   const vector<vector<long> > &c2n,
                   const long nCellsSqrt,
@@ -726,7 +844,8 @@ void writeHeatmap(const std::vector<long> &heatData,
 
                     if (val != 0) {
                         //heatmap
-                        const float normVal = static_cast<float>(val - minVal) / (static_cast<float>(maxVal - minVal) + 1e-5f);
+                        const float normVal = static_cast<float>(val - minVal) / (
+                                                  static_cast<float>(maxVal - minVal) + 1e-5f);
                         pixel = valueToRGB(normVal);
                     } else if (isUsedCell) {
                         //gray occupied cell

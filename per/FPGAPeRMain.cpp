@@ -1,9 +1,5 @@
-#include <string>
-#include <vector>
-#include <iostream>
-#include <algorithm>
-#include <omp.h>
-
+#include <common/definitions.h>
+#include <common/util.h>
 #include <fpga/fpgaPar.h>
 #include  <fpga/fpgaGraph.h>
 #include  <fpga/fpgaUtil.h>
@@ -101,7 +97,7 @@ int main() {
 #ifdef VPR_V5
             fpgaWriteVpr5Data(rootPath, fileName, reports[i], g);
 #elifdef VPR_V9
-            fpgaWriteVpr9Data(rootPath, reportPath, algPath, fileName, reports[i], g);
+            fpgaWriteVpr9Data(rootPath, fileName, reports[i], g);
 #endif
 
             /*

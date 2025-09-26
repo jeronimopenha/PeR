@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <numeric>
+#include <omp.h>
 #include <queue>
 #include <random>
 #include <sstream>
