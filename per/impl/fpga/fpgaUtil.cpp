@@ -14,66 +14,76 @@ FpgaReportData::FpgaReportData() = default;
 
 /**
  * Constructor for easy reportData initialization
- * @param _time
- * @param dotName
- * @param dotPath
- * @param placer
- * @param size
- * @param nNodes
- * @param nIOs
- * @param cacheMisses
- * @param w
- * @param wCost
- * @param cachePenalties
- * @param clbTries
- * @param ioTries
- * @param tries
- * @param triesP
- * @param triesPerNode
- * @param swaps
- * @param edges_algorithm
- * @param costStrategy
- * @param totalCost
- * @param c2n
- * @param n2c
- * @param hist
- * @param heatEnd
- * @param heatBegin
- * @param orDest
  */
-FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPath, string placer, long size,
-                               long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
-                               const long cachePenalties, const long clbTries, const long ioTries, const long tries,
-                               const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
-                               std::string costStrategy, const long totalCost, const vector<vector<long> > &c2n,
-                               const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
-                               vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
+FpgaReportData::FpgaReportData(
+    const double _time,
+    string dotName,
+    string dotPath,
+    string placer,
+    const long size,
+    const long nNodes,
+    const long nIOs,
+    string edgesAlgorithm,
+    string costStrategy,
+    const long totalCost,
+    const vector<vector<long> > &c2n,
+    const vector<pair<long, long> > &n2c
+#ifdef MAKE_METRICS
+    ,
+#ifdef USE_CACHE
+    const long cacheMisses,
+    const long w,
+    const long wCost,
+    const long cachePenalties,
+#endif
+    const long clbTries,
+    const long ioTries,
+    const long tries,
+#ifdef USE_CACHE
+    const long triesP,
+#endif
+    const long triesPerNode,
+    const long swaps,
+    vector<map<long, long> > hist,
+    vector<long> heatEnd,
+    vector<long> heatBegin,
+    map<long, vector<long> > orDest
+#endif
+)
     : _time(_time),
-      dotName(std::move(dotName)),
-      dotPath(std::move(dotPath)),
-      placer(std::move(placer)),
+      dotName(move(dotName)),
+      dotPath(move(dotPath)),
+      placer(move(placer)),
       size(size),
       nNodes(nNodes),
       nIOs(nIOs),
-      cacheMisses(cacheMisses),
-      w(w),
-      wCost(wCost),
-      cachePenalties(cachePenalties),
-      clbTries(clbTries),
-      ioTries(ioTries),
-      tries(tries),
-      triesP(triesP),
-      triesPerNode(triesPerNode),
-      swaps(swaps),
-      edgesAlgorithm(std::move(edges_algorithm)),
-      costStrategy(std::move(costStrategy)),
+      edgesAlgorithm(move(edgesAlgorithm)),
+      costStrategy(move(costStrategy)),
       totalCost(totalCost),
       c2n(c2n),
-      n2c(n2c),
-      hist(std::move(hist)),
-      heatEnd(std::move(heatEnd)),
-      heatBegin(std::move(heatBegin)),
-      orDest(std::move(orDest)) {
+      n2c(n2c)
+#ifdef MAKE_METRICS
+      ,
+#ifdef USE_CACHE
+cacheMisses(cacheMisses),
+        w(w),
+        wCost(wCost),
+        cachePenalties(cachePenalties),
+#endif
+clbTries(clbTries),
+        ioTries(ioTries),
+        tries(tries),
+#ifdef USE_CACHE
+triesP(triesP),
+#endif
+triesPerNode(triesPerNode),
+        swaps(swaps),
+        hist(move(hist)),
+        heatEnd(move(heatEnd)),
+        heatBegin(move(heatBegin)),
+        orDest(move(orDest))
+#endif
+{
 }
 
 
@@ -93,6 +103,10 @@ string FpgaReportData::to_json() const {
             << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"nIOs\": " << nIOs << ",\n"
             << "  \"nIOpCell\": " << nIOpCell << ",\n"
+            << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
+            << "  \"costStrategy\": \"" << costStrategy << "\",\n"
+            << "  \"totalCost\": " << totalCost << ",\n"
+#ifdef MAKE_METRICS
 #ifdef CACHE
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
                << "  \"w\": " << w << ",\n"
@@ -100,17 +114,16 @@ string FpgaReportData::to_json() const {
                << "  \"cachePenalties\": " << cachePenalties << ",\n"
 #endif
             << "  \"clbTries\": " << clbTries << ",\n"
-            << "  \"ioTries\": " << ioTries << ",\n"
+               << "  \"ioTries\": " << ioTries << ",\n"
 #ifdef CACHE
             << "  \"tries\": " << triesP << ",\n"
 #else
             << "  \"tries\": " << tries << ",\n"
 #endif
             << "  \"triesPerNode\": " << triesPerNode << ",\n"
-            << "  \"swaps\": " << swaps << ",\n"
-            << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
-            << "  \"costStrategy\": \"" << costStrategy << "\",\n"
-            << "  \"totalCost\": " << totalCost << ",\n";
+               << "  \"swaps\": " << swaps << ",\n"
+#endif
+            ;
     /*<< "  \"placement\": [";
 
 // Serialize vector<int> placement
@@ -132,226 +145,6 @@ oss << "]\n";*/
     return oss.str();
 }
 
-
-/**
- * Serialize metrics to a JSON string
- * @return
- */
-string FpgaReportData::metrics_to_json() const {
-    std::ostringstream oss;
-    oss << "{\n";
-
-    // heatBegin
-    oss << "  \"heatBegin\": [";
-    for (size_t i = 0; i < heatBegin.size(); ++i) {
-        oss << heatBegin[i];
-        if (i != heatBegin.size() - 1) oss << ", ";
-    }
-    oss << "],\n";
-
-    // heatEnd
-    oss << "  \"heatEnd\": [";
-    for (size_t i = 0; i < heatEnd.size(); ++i) {
-        oss << heatEnd[i];
-        if (i != heatEnd.size() - 1) oss << ", ";
-    }
-    oss << "],\n";
-
-    // Histograms
-    oss << "  \"hist\": {\n";
-    for (size_t h = 0; h < hist.size(); ++h) {
-        oss << "    \"" << h << "\": {";
-        const auto &map = hist[h];
-        size_t count = 0;
-        for (const auto &[k, v]: map) {
-            oss << "\"" << k << "\": " << v;
-            if (++count != map.size()) oss << ", ";
-        }
-        oss << "}";
-        if (h != hist.size() - 1) oss << ",";
-        oss << "\n";
-    }
-    oss << "  },\n";
-
-    // orDest
-    oss << "  \"orDest\": {\n";
-    size_t count = 0;
-    for (const auto &[k, v]: orDest) {
-        oss << " \"" << k << "\": [";
-        size_t vCount = 0;
-        for (const auto dest: v) {
-            oss << dest;
-            if (++vCount != v.size()) oss << ", ";
-        }
-        oss << "]";
-        if (++count != orDest.size()) oss << ", ";
-        oss << "\n";
-    }
-    oss << "}";
-    oss << "\n";
-
-    oss << "}\n";
-
-
-    return oss.str();
-}
-
-#ifdef PRINT_DOT
-
-/**
- * Saves the dot placement file to debug.
- * @param n2c
- * @param c2n
- * @param ed
- * @param nCellsSqrt
- */
-void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
-                       const long nCellsSqrt) {
-    string fileString;
-
-    // write the dot header
-    fileString += "digraph layout{\n";
-    fileString += "rankdir=TB; \n\n";
-    fileString += "splines=ortho; \n\n";
-    fileString += "node [style=filled shape=square fixedsize=true width=0.6];\n";
-
-    for (long i = 0; i < c2n.size(); i++) {
-        string label = "[label = \"";
-        bool flag = !c2n[i].empty();
-
-        for (long j = 0; j < c2n[i].size(); j++) {
-            if (c2n[i][j] == -1) {
-                break;
-            }
-            flag = true;
-            if (j > 0)
-                label += ",\n";
-            label += std::to_string(c2n[i][j]);
-        }
-        fileString += to_string(i) + label + "\", fontsize=8, fillcolor=";
-
-        if (flag)
-            fileString += "\"#a9ccde\"];";
-        else
-            fileString += "\"#ffffff\"];";
-
-        fileString += "\n";
-    }
-    fileString += "edge [constraint=false, style=vis];\n";
-    //normal edges
-    for (auto &[fst,snd]: ed) {
-        if (n2c[fst].first != -1 && n2c[snd].first != -1)
-            fileString += to_string(n2c[fst].first) + " -> " + to_string(n2c[snd].first) + ";\n";
-    }
-
-
-    fileString += "edge [constraint=true, style=invis];\n";
-    //structural edges
-    for (long j = 0; j < nCellsSqrt; j++) {
-        for (long i = 0; i < nCellsSqrt; i++) {
-            long c = j + i * nCellsSqrt;
-            if (i == nCellsSqrt - 1) {
-                fileString += to_string(c) + ";\n";
-            } else {
-                fileString += to_string(c) + " -> ";
-            }
-        }
-    }
-
-    for (long i = 0; i < nCellsSqrt; i++) {
-        fileString += "rank = same { ";
-        for (long j = 0; j < nCellsSqrt; j++) {
-            long c = i * nCellsSqrt + j;
-            if (j == nCellsSqrt - 1) {
-                fileString += to_string(c) + ";";
-            } else {
-                fileString += to_string(c) + " -> ";
-            }
-        }
-        fileString += "};\n";
-    }
-
-    // write the dot footer
-    fileString += "}\n";
-
-    ofstream file(DOT_PATH);
-    if (!file) {
-        cerr << "Error!" << endl;
-        return;
-    }
-    file << fileString;
-    file.close();
-}
-#endif
-
-#ifdef PRINT_IMG
-void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
-              const std::string &filePath) {
-    constexpr long minImageSize = 1000;
-
-    const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
-    const long imageCoreSize = cellSize * nCellsSqrt;
-
-    constexpr long borderPadding = 10;
-    const long imageWidth = imageCoreSize + 2 * borderPadding;
-    const long imageHeight = imageCoreSize + 2 * borderPadding;
-
-    vector<unsigned char> imageData(imageWidth * imageHeight * 3, 255);
-
-    for (long y = 0; y <= imageCoreSize; y++) {
-        for (long x = 0; x <= imageCoreSize; x++) {
-            //border is black
-
-            constexpr RGB white{255, 255, 255};
-            constexpr RGB black{0, 0, 0};
-            constexpr RGB blue{120, 120, 255};
-            constexpr RGB red{255, 120, 120};
-            constexpr RGB gray{230, 230, 230};
-
-            RGB pixel = white;
-
-            const bool isBorder = (x == 0 || y == 0 || x == imageCoreSize || y == imageCoreSize);
-
-            if (isBorder) {
-                pixel = black;
-            } else {
-                const bool isGridLine = (x % cellSize == 0 || y % cellSize == 0);
-                const long srcX = x / cellSize;
-                const long srcY = y / cellSize;
-                const long cellIdx = srcY * nCellsSqrt + srcX;
-
-                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
-                    //grid or invalid cell
-                    pixel = white;
-                } else {
-                    const bool isUsedCell = (static_cast<long>(c2n[cellIdx].size()) > 0l);
-
-                    if (cellIdx == lastPlaced.first) {
-                        pixel = blue;
-                    } else if (cellIdx == lastPlaced.second) {
-                        pixel = red;
-                    } else if (isUsedCell) {
-                        pixel = gray;
-                    }
-                }
-            }
-
-            //calculate the coords
-            const long dstX = x + borderPadding;
-            const long dstY = y + borderPadding;
-            const long pixelIndex = (dstY * imageWidth + dstX) * 3;
-
-            //apply the values to the pixel
-            imageData[pixelIndex + 0] = pixel.r;
-            imageData[pixelIndex + 1] = pixel.g;
-            imageData[pixelIndex + 2] = pixel.b;
-        }
-    }
-
-    stbi_write_jpg(filePath.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
-                   imageData.data(), 100);
-}
-#endif
 
 /**
  * This function takes the distVectors offsets to find a free cell by YOTO and YOTT algorithms
@@ -403,7 +196,7 @@ vector<vector<long> > fpgaGetDistVectors(const long nCellsSqrt) {
     return meshDistances;
 }
 
-
+#ifdef MAKE_METRICS
 /**
  * Calculates the total distance cost with manhattan method
  * @param n2c
@@ -424,6 +217,7 @@ long fpgaCalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vect
 
     return totalDist;
 }
+#endif
 
 /*long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long> &n2c, const long nCellsSqrt) {
     long totalDist = 0;
@@ -453,7 +247,7 @@ long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
     long d_left = column;
     long d_right = nCellsSqrt - 1 - column;
 
-    return std::min({d_top, d_bottom, d_left, d_right});
+    return min({d_top, d_bottom, d_left, d_right});
 }
 
 
@@ -463,8 +257,8 @@ long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
  * @param fileName
  * @param data
  */
-void fpgaWriteReports(const std::string &basePath,
-                      const std::string &fileName,
+void fpgaWriteReports(const string &basePath,
+                      const string &fileName,
                       const FpgaReportData &data) {
     string reportFullPath = basePath + reportPath + algPath + "/json/";
     string reportFile = reportFullPath + fileName + ".json";
@@ -500,8 +294,6 @@ void fpgaWriteReports(const std::string &basePath,
 /**
  * Writes VPR9 place files to be used by VPR9 to route
  * @param basePath
- * @param _reportPath
- * @param _algPath
  * @param fileName
  * @param data
  * @param g
@@ -716,7 +508,7 @@ long getQuadrant(const long line, const long column, const long nCellsSqrt) {
  * @return
  */
 vector<pair<long, int> > getAdjacentQuadrants(const long q) {
-    std::vector<pair<long, int> > adj;
+    vector<pair<long, int> > adj;
 
     constexpr long nQuadrants = SCAN_QUADRANTS;
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
@@ -783,8 +575,230 @@ RGB valueToRGB(const float normValue) {
 }
 
 
+#ifdef MAKE_METRICS
+/**
+ * Serialize metrics to a JSON string
+ * @return
+ */
+string FpgaReportData::metrics_to_json() const {
+    ostringstream oss;
+    oss << "{\n";
+
+    // heatBegin
+    oss << "  \"heatBegin\": [";
+    for (size_t i = 0; i < heatBegin.size(); ++i) {
+        oss << heatBegin[i];
+        if (i != heatBegin.size() - 1) oss << ", ";
+    }
+    oss << "],\n";
+
+    // heatEnd
+    oss << "  \"heatEnd\": [";
+    for (size_t i = 0; i < heatEnd.size(); ++i) {
+        oss << heatEnd[i];
+        if (i != heatEnd.size() - 1) oss << ", ";
+    }
+    oss << "],\n";
+
+    // Histograms
+    oss << "  \"hist\": {\n";
+    for (size_t h = 0; h < hist.size(); ++h) {
+        oss << "    \"" << h << "\": {";
+        const auto &map = hist[h];
+        size_t count = 0;
+        for (const auto &[k, v]: map) {
+            oss << "\"" << k << "\": " << v;
+            if (++count != map.size()) oss << ", ";
+        }
+        oss << "}";
+        if (h != hist.size() - 1) oss << ",";
+        oss << "\n";
+    }
+    oss << "  },\n";
+
+    // orDest
+    oss << "  \"orDest\": {\n";
+    size_t count = 0;
+    for (const auto &[k, v]: orDest) {
+        oss << " \"" << k << "\": [";
+        size_t vCount = 0;
+        for (const auto dest: v) {
+            oss << dest;
+            if (++vCount != v.size()) oss << ", ";
+        }
+        oss << "]";
+        if (++count != orDest.size()) oss << ", ";
+        oss << "\n";
+    }
+    oss << "}";
+    oss << "\n";
+
+    oss << "}\n";
 
 
+    return oss.str();
+}
+#endif
+
+#ifdef PRINT_DOT
+
+/**
+ * Saves the dot placement file to debug.
+ * @param n2c
+ * @param c2n
+ * @param ed
+ * @param nCellsSqrt
+ */
+void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
+                       const long nCellsSqrt) {
+    string fileString;
+
+    // write the dot header
+    fileString += "digraph layout{\n";
+    fileString += "rankdir=TB; \n\n";
+    fileString += "splines=ortho; \n\n";
+    fileString += "node [style=filled shape=square fixedsize=true width=0.6];\n";
+
+    for (long i = 0; i < c2n.size(); i++) {
+        string label = "[label = \"";
+        bool flag = !c2n[i].empty();
+
+        for (long j = 0; j < c2n[i].size(); j++) {
+            if (c2n[i][j] == -1) {
+                break;
+            }
+            flag = true;
+            if (j > 0)
+                label += ",\n";
+            label += to_string(c2n[i][j]);
+        }
+        fileString += to_string(i) + label + "\", fontsize=8, fillcolor=";
+
+        if (flag)
+            fileString += "\"#a9ccde\"];";
+        else
+            fileString += "\"#ffffff\"];";
+
+        fileString += "\n";
+    }
+    fileString += "edge [constraint=false, style=vis];\n";
+    //normal edges
+    for (auto &[fst,snd]: ed) {
+        if (n2c[fst].first != -1 && n2c[snd].first != -1)
+            fileString += to_string(n2c[fst].first) + " -> " + to_string(n2c[snd].first) + ";\n";
+    }
+
+
+    fileString += "edge [constraint=true, style=invis];\n";
+    //structural edges
+    for (long j = 0; j < nCellsSqrt; j++) {
+        for (long i = 0; i < nCellsSqrt; i++) {
+            long c = j + i * nCellsSqrt;
+            if (i == nCellsSqrt - 1) {
+                fileString += to_string(c) + ";\n";
+            } else {
+                fileString += to_string(c) + " -> ";
+            }
+        }
+    }
+
+    for (long i = 0; i < nCellsSqrt; i++) {
+        fileString += "rank = same { ";
+        for (long j = 0; j < nCellsSqrt; j++) {
+            long c = i * nCellsSqrt + j;
+            if (j == nCellsSqrt - 1) {
+                fileString += to_string(c) + ";";
+            } else {
+                fileString += to_string(c) + " -> ";
+            }
+        }
+        fileString += "};\n";
+    }
+
+    // write the dot footer
+    fileString += "}\n";
+
+    ofstream file(DOT_PATH);
+    if (!file) {
+        cerr << "Error!" << endl;
+        return;
+    }
+    file << fileString;
+    file.close();
+}
+#endif
+
+#ifdef PRINT_IMG
+void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
+              const string &filePath) {
+    constexpr long minImageSize = 1000;
+
+    const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
+    const long imageCoreSize = cellSize * nCellsSqrt;
+
+    constexpr long borderPadding = 10;
+    const long imageWidth = imageCoreSize + 2 * borderPadding;
+    const long imageHeight = imageCoreSize + 2 * borderPadding;
+
+    vector<unsigned char> imageData(imageWidth * imageHeight * 3, 255);
+
+    for (long y = 0; y <= imageCoreSize; y++) {
+        for (long x = 0; x <= imageCoreSize; x++) {
+            //border is black
+
+            constexpr RGB white{255, 255, 255};
+            constexpr RGB black{0, 0, 0};
+            constexpr RGB blue{120, 120, 255};
+            constexpr RGB red{255, 120, 120};
+            constexpr RGB gray{230, 230, 230};
+
+            RGB pixel = white;
+
+            const bool isBorder = (x == 0 || y == 0 || x == imageCoreSize || y == imageCoreSize);
+
+            if (isBorder) {
+                pixel = black;
+            } else {
+                const bool isGridLine = (x % cellSize == 0 || y % cellSize == 0);
+                const long srcX = x / cellSize;
+                const long srcY = y / cellSize;
+                const long cellIdx = srcY * nCellsSqrt + srcX;
+
+                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
+                    //grid or invalid cell
+                    pixel = white;
+                } else {
+                    const bool isUsedCell = (static_cast<long>(c2n[cellIdx].size()) > 0l);
+
+                    if (cellIdx == lastPlaced.first) {
+                        pixel = blue;
+                    } else if (cellIdx == lastPlaced.second) {
+                        pixel = red;
+                    } else if (isUsedCell) {
+                        pixel = gray;
+                    }
+                }
+            }
+
+            //calculate the coords
+            const long dstX = x + borderPadding;
+            const long dstY = y + borderPadding;
+            const long pixelIndex = (dstY * imageWidth + dstX) * 3;
+
+            //apply the values to the pixel
+            imageData[pixelIndex + 0] = pixel.r;
+            imageData[pixelIndex + 1] = pixel.g;
+            imageData[pixelIndex + 2] = pixel.b;
+        }
+    }
+
+    stbi_write_jpg(filePath.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
+                   imageData.data(), 100);
+}
+#endif
+
+
+/*
 /**
  * Writes the heat map for a placement
  * Not used yet
@@ -794,13 +808,13 @@ RGB valueToRGB(const float normValue) {
  * @param basePath
  * @param fileName
  * @param suffix
- */
-void writeHeatmap(const std::vector<long> &heatData,
+ #1#
+void writeHeatmap(const vector<long> &heatData,
                   const vector<vector<long> > &c2n,
                   const long nCellsSqrt,
-                  const std::string &basePath,
-                  const std::string &fileName,
-                  const std::string &suffix) {
+                  const string &basePath,
+                  const string &fileName,
+                  const string &suffix) {
     const string heatmapPath = basePath + reportPath + algPath + "/heatmap/";
     const string heatmapFile = heatmapPath + fileName + "_" + suffix + ".jpeg";
     createDir(heatmapPath);
@@ -868,16 +882,16 @@ void writeHeatmap(const std::vector<long> &heatData,
 
     stbi_write_jpg(heatmapFile.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
                    imageData.data(), 100);
-}
+}*/
 
 /*
-void drawChar(std::vector<unsigned char> &image,
+void drawChar(vector<unsigned char> &image,
               const int imgWidth,
               const int x,
               const int y,
               const char c,
               const int scale) {
-    /*static const std::map<char, std::vector<std::string> > font5x7 = {
+    /*static const map<char, vector<string> > font5x7 = {
         {'0', {" ### ", "#   #", "#  ##", "# # #", "##  #", "#   #", " ### "}},
         {'1', {"  #  ", " ##  ", "# #  ", "  #  ", "  #  ", "  #  ", "#####"}},
         {'2', {" ### ", "#   #", "    #", "   # ", "  #  ", " #   ", "#####"}},
@@ -917,25 +931,25 @@ void drawChar(std::vector<unsigned char> &image,
     }
 }
 
-void drawText(std::vector<unsigned char> &image,
+void drawText(vector<unsigned char> &image,
               const int imgWidth,
               const int x,
               const int y,
-              const std::string &text,
+              const string &text,
               const int scale) {
     for (size_t i = 0; i < text.size(); ++i) {
         drawChar(image, imgWidth, x + i * 6 * scale, y, text[i], scale);
     }
 }
 
-void writeHist(const std::map<long, long> &hist,
-               const std::string &basePath,
-               const std::string &reportPath,
-               const std::string &algPath,
-               const std::string &fileName,
-               const std::string &suffix) {
-    const std::string histPath = basePath + reportPath + algPath + "/histogram/";
-    const std::string histFile = histPath + fileName + "_" + suffix + ".jpeg";
+void writeHist(const map<long, long> &hist,
+               const string &basePath,
+               const string &reportPath,
+               const string &algPath,
+               const string &fileName,
+               const string &suffix) {
+    const string histPath = basePath + reportPath + algPath + "/histogram/";
+    const string histFile = histPath + fileName + "_" + suffix + ".jpeg";
     createDir(histPath);
 
     const long nBins = 100;
@@ -946,24 +960,24 @@ void writeHist(const std::map<long, long> &hist,
 
     const long minValue = hist.begin()->first;
     const long maxValue = hist.rbegin()->first;
-    const long binSize = std::max(1L, (maxValue - minValue + 1) / nBins);
+    const long binSize = max(1L, (maxValue - minValue + 1) / nBins);
 
-    std::vector<long> groupedBins(nBins, 0);
+    vector<long> groupedBins(nBins, 0);
     long maxFreq = 0;
 
     for (const auto &[val, count]: hist) {
-        long binIdx = std::min((val - minValue) / binSize, nBins - 1);
+        long binIdx = min((val - minValue) / binSize, nBins - 1);
         groupedBins[binIdx] += count;
-        maxFreq = std::max(maxFreq, groupedBins[binIdx]);
+        maxFreq = max(maxFreq, groupedBins[binIdx]);
     }
 
-    const long width = std::max(nBins * minBarWidth, 1000L);
+    const long width = max(nBins * minBarWidth, 1000L);
     const long height = 400;
     const long barWidth = width / nBins;
     const long imageWidth = width + 2 * padding;
     const long imageHeight = height + 2 * padding + labelHeight;
 
-    std::vector<unsigned char> image(imageWidth * imageHeight * 3, 255);
+    vector<unsigned char> image(imageWidth * imageHeight * 3, 255);
 
     for (long i = 0; i < nBins; ++i) {
         const long count = groupedBins[i];
@@ -971,7 +985,7 @@ void writeHist(const std::map<long, long> &hist,
 
         const long barHeight = static_cast<long>((static_cast<float>(count) / maxFreq) * height);
         const long xStart = padding + i * barWidth;
-        const long xEnd = std::min(xStart + barWidth - 1, padding + width);
+        const long xEnd = min(xStart + barWidth - 1, padding + width);
 
         for (long y = imageHeight - padding - labelHeight - 1; y >= imageHeight - padding - labelHeight - barHeight;
              --
@@ -998,8 +1012,8 @@ void writeHist(const std::map<long, long> &hist,
     // Draw labels
     for (long i = 0; i < nBins; i += labelStep) {
         long binStart = minValue + i * binSize;
-        long binEnd = std::min(binStart + binSize - 1, maxValue);
-        std::string label = std::to_string(binStart) + "-" + std::to_string(binEnd);
+        long binEnd = min(binStart + binSize - 1, maxValue);
+        string label = to_string(binStart) + "-" + to_string(binEnd);
         int xPos = padding + i * barWidth + 2;
         drawText(image, imageWidth, xPos, imageHeight - labelHeight, label, 1);
     }
@@ -1007,28 +1021,28 @@ void writeHist(const std::map<long, long> &hist,
     stbi_write_jpg(histFile.c_str(), imageWidth, imageHeight, 3, image.data(), 90);
 }
 
-void writeBoxplot(const std::map<long, long> &hist,
-                  const std::string &basePath,
-                  const std::string &reportPath,
-                  const std::string &algPath,
-                  const std::string &fileName,
-                  const std::string &suffix) {
-    const std::string outPath = basePath + reportPath + algPath + "/boxplot/";
-    const std::string outFile = outPath + fileName + "_" + suffix + ".jpeg";
+void writeBoxplot(const map<long, long> &hist,
+                  const string &basePath,
+                  const string &reportPath,
+                  const string &algPath,
+                  const string &fileName,
+                  const string &suffix) {
+    const string outPath = basePath + reportPath + algPath + "/boxplot/";
+    const string outFile = outPath + fileName + "_" + suffix + ".jpeg";
     createDir(outPath);
 
     constexpr int width = 1000;
     constexpr int height = 300;
     constexpr int padding = 50;
 
-    std::vector<unsigned char> image(width * height * 3, 255);
+    vector<unsigned char> image(width * height * 3, 255);
 
     // Make the raw data again
-    std::vector<long> rawData;
+    vector<long> rawData;
     for (const auto &[val, count]: hist)
         rawData.insert(rawData.end(), count, val);
 
-    std::sort(rawData.begin(), rawData.end());
+    sort(rawData.begin(), rawData.end());
     long n = rawData.size();
     if (n == 0) return;
 
@@ -1045,10 +1059,10 @@ void writeBoxplot(const std::map<long, long> &hist,
     long Q2 = getQuantile(0.5);
     long Q3 = getQuantile(0.75);
     long IQR = Q3 - Q1;
-    long minNonOut = *std::lower_bound(rawData.begin(), rawData.end(), Q1 - 1.5 * IQR);
-    long maxNonOut = *std::upper_bound(rawData.begin(), rawData.end(), Q3 + 1.5 * IQR);
+    long minNonOut = *lower_bound(rawData.begin(), rawData.end(), Q1 - 1.5 * IQR);
+    long maxNonOut = *upper_bound(rawData.begin(), rawData.end(), Q3 + 1.5 * IQR);
 
-    std::vector<long> outliers;
+    vector<long> outliers;
     for (long v: rawData)
         if (v < minNonOut || v > maxNonOut)
             outliers.push_back(v);
@@ -1120,9 +1134,9 @@ void writeBoxplot(const std::map<long, long> &hist,
     }
 
     // Labels
-    drawText(image, width, scale(minNonOut) - 10, height - 10, std::to_string(minNonOut));
-    drawText(image, width, scale(Q2) - 10, height - 10, "med: " + std::to_string(Q2));
-    drawText(image, width, scale(maxNonOut) - 10, height - 10, std::to_string(maxNonOut));
+    drawText(image, width, scale(minNonOut) - 10, height - 10, to_string(minNonOut));
+    drawText(image, width, scale(Q2) - 10, height - 10, "med: " + to_string(Q2));
+    drawText(image, width, scale(maxNonOut) - 10, height - 10, to_string(maxNonOut));
 
     stbi_write_jpg(outFile.c_str(), width, height, 3, image.data(), 90);
 }

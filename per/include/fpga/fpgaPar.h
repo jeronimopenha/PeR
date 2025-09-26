@@ -91,13 +91,10 @@
 
 //Generate report or not
 
-#define REPORT
-#ifdef REPORT
-
 #define REPORT_PREFIX ""
 
 //Choose write Make metrics reports
-#define MAKE_METRICS
+//#define MAKE_METRICS
 
 //Choose a type of total cost
 //#define FPGA_TOTAL_COST
@@ -112,7 +109,6 @@
 //#define VPR_V5
 #define VPR_V9
 
-#endif
 //Reports parameters END
 //#################################################################################################
 

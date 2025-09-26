@@ -28,11 +28,11 @@ int main() {
 
 
         //fixme The costs functions are not working well
-#ifdef REPORT
+
         auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
             return a.totalCost < b.totalCost;
         };
-#endif
+
 
 #ifndef DEBUG
         //openmp Parallelization for release execution
@@ -60,8 +60,6 @@ int main() {
 #pragma omp critical
 #endif
             {
-#ifdef REPORT
-
                 if (reports.size() < 10 || report.totalCost < reports.back().totalCost) {
                     // look for the right insertion position
                     auto pos = std::lower_bound(reports.begin(), reports.end(), report, comp);
@@ -71,14 +69,12 @@ int main() {
                     if (reports.size() > 10)
                         reports.pop_back();
                 }
-#endif
             }
         }
 #ifndef DEBUG
         }
 #endif
 
-#ifdef REPORT
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
 #else
@@ -108,7 +104,6 @@ int main() {
              */
 #endif
         }
-#endif
     }
     return 0;
 }

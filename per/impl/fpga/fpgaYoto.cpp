@@ -10,7 +10,11 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCells = g.nCells;
     const long nCellsSqrt = g.nCellsSqrt;
     const long nNodes = g.nNodes;
-    const long nEdges = g.nEdges;
+    //const long nEdges = g.nEdges;
+
+    long distSlackCost = 0;
+    //fixme needs to be implemented
+    long distManhattanCost = 0;
 
     vector<vector<long> > c2n(nCells, vector<long>());
     vector<pair<long, long> > n2c(nNodes, {-1, -1});
@@ -18,34 +22,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     vector<vector<vector<long> > > distVectors;
     vector<pair<long, long> > ed;
     vector<long> inOutCells = g.getInOutPos();
-
-    long ioTries = 0;
-    long clbTries = 0;
-    long swaps = 0;
-
-    string alg_type;
-
-#ifdef SCAN_STRATEGY
-    vector<vector<long> > scannedCells(SCAN_QUADRANTS);
-#endif
-
-
-    //fixme metrics variables
-#ifdef USE_CACHE
-    long cacheMisses = 0;
-    auto cacheC2N = Cache();
-    auto cacheN2C = Cache();
-#else
-    constexpr long cacheMisses = 0;
-#endif
-    //fixme cache variable
-
-    std::vector hist(nCells, 0L);
-    vector heatEnd(nCells, 0L);
-    vector heatBegin(nCells, 0L);
-    vector<map<long, long> > histogramFull;
-    std::map<long, vector<long> > originDestin;
-
 
     //fill the distvectors
     for (int i = 0; i < N_DIST_VECTORS; i++) {
@@ -61,27 +37,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #if defined(FPGA_YOTO_ZZ)
     vector<pair<long, long> > convergence;
     ed = g.getEdgesZigzag(convergence);
-    alg_type = "ZIG_ZAG";
+    string alg_type = "ZIG_ZAG";
 #elifdef FPGA_YOTO_DF_PRIO
     ed = g.getEdgesDepthFirstPriority();
-    alg_type = "DEPTH_FIRST_PRIORITY";
+    string alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF
     ed = g.getEdgesDepthFirstCritical();
-    alg_type = "DEPTH_FIRST";
+    string alg_type = "DEPTH_FIRST";
 #endif
-
-
-    //filling the metrics variables
-#ifdef MAKE_METRICS
-    map<long, long> histogram;
-#endif
-    long maxEd = static_cast<long>(ed.size());
-    long edCounter = -1;
-    //fixme Transform 10 in totalSnapshots PARAMETER!!!
-    constexpr int totalSnapshots = 10;
-    const long snapshotInterval = maxEd / totalSnapshots;
-    long nextSnapshotAt = snapshotInterval;
-    int snapId = 0;
 
     //IO placement control
     vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
@@ -93,17 +56,50 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     bool ioBlockBorderPositive = false;
     int ioBorderTickTack = 0;
 
+#ifdef MAKE_METRICS
+#ifdef USE_CACHE
+    long cacheMisses = 0;
+    auto cacheC2N = Cache();
+    auto cacheN2C = Cache();
+#endif
+
+    long ioTries = 0;
+    long clbTries = 0;
+    long swaps = 0;
+
+    std::vector hist(nCells, 0L);
+    vector heatEnd(nCells, 0L);
+    vector heatBegin(nCells, 0L);
+    vector<map<long, long> > histogramFull;
+    std::map<long, vector<long> > originDestin;
+
+    map<long, long> histogram;
+
+    long maxEd = static_cast<long>(ed.size());
+    long edCounter = -1;
+    //fixme Transform 10 in totalSnapshots PARAMETER!!!
+    constexpr int totalSnapshots = 10;
+    const long snapshotInterval = maxEd / totalSnapshots;
+    long nextSnapshotAt = snapshotInterval;
+    int snapId = 0;
+#endif
+
+
+#ifdef SCAN_STRATEGY
+    vector<vector<long> > scannedCells(SCAN_QUADRANTS);
+#endif
+
+
 #ifdef PRINT_DOT
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
 #endif
 
+    long distVectorCounter = 0;
+
     //time counting
     auto start = chrono::high_resolution_clock::now();
 
-    long distVectorCounter = 0;
-    long distSlackCost = 0;
-
-    //YOTO - Begin ****************************8
+    //YOTO - Begin ****************************
 
 #ifdef SCAN_STRATEGY
     bool scanned = false;
@@ -115,31 +111,37 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     for (long l = 1; l < nCellsSqrt - 1; l++) {
         for (long c = 1; c < nCellsSqrt - 1; c++) {
-            const long quadrant = getQuadrant(l, c, nCells, nCellsSqrt); // quad_x * 4 + quad_y;
+            const long quadrant = getQuadrant(l, c, nCellsSqrt); // quad_x * 4 + quad_y;
             limitQuadrants[quadrant]++;
         }
     }
 #endif
 
     //fixme Needs a guarantee that it was placed because if not an error exists in the code!!!
+    //fixme needs to implement this
+
     //While exists an edge...
     for (auto [a,b]: ed) {
+#ifdef MAKE_METRICS
         edCounter++;
         const bool snapTaken = edCounter + 1 == nextSnapshotAt;
 
         if (snapTaken) {
-#ifdef MAKE_METRICS
             histogramFull.push_back(histogram);
-#endif
+
             nextSnapshotAt += snapshotInterval;
             snapId++;
         }
+#endif
 
+        //fixme this can be used to make sure all nudes were placed
 #ifdef DEBUG
         bool placed = false;
 #endif
 
+#ifdef MAKE_METRICS
         long unicTry = 0;
+#endif
 
 #ifdef PRINT_IMG
         if (snapTaken)
@@ -158,8 +160,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         if (targetNode != -1) {
             bool found = false;
             while (!found) {
+#ifdef MAKE_METRICS
                 ioTries++;
                 unicTry++;
+#endif
                 const long ioCell = inOutCells.back();
                 inOutCells.pop_back();
 #ifdef USE_CACHE
@@ -170,8 +174,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     n2c[targetNode].first = ioCell;
                     n2c[targetNode].second = static_cast<long>(c2n[ioCell].size()) - 1;
                     found = true;
-                    swaps++;
 #ifdef MAKE_METRICS
+                    swaps++;
 
                     if (histogram.find(unicTry) != histogram.end()) {
                         histogram[unicTry]++;
@@ -191,7 +195,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
             if (nextEdge)
                 continue;
+#ifdef MAKE_METRICS
             unicTry = 0;
+#endif
         }
 
         distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
@@ -214,8 +220,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-        const long lA = cellA / nCellsSqrt;
-        const long cA = cellA % nCellsSqrt;
+        const long lA = getLine(cellA, nCellsSqrt);
+        const long cA = getColumn(cellA, nCellsSqrt);
 
         bool isTargetCellIO = true;
 
@@ -225,7 +231,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef SCAN_STRATEGY
-        long quadCounter = getQuadrant(lA, cA, nCells, nCellsSqrt);
+        long quadCounter = getQuadrant(lA, cA, nCellsSqrt);
 #endif
 
         //fixme This part is only for YOTO spiral strategy. This should be on that part only
@@ -236,31 +242,34 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
             long targetCell;
 
+            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+
 #ifdef LIMIT_STRATEGY
             bool limitStrategyTrigger = false;
             targetCell = lB * nCellsSqrt + cB;
             const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
             //fixme transform 7 in a parameter
             if (lmsDist > static_cast<long>(LIMIT_DIST) && !fpgaIsInvalidCell(lB, cB, nCellsSqrt) && snapId < 80 *
-                totalSnapshots /
-                100) {
+                totalSnapshots / 100) {
                 limitStrategyTrigger = true;
             }
 #endif
 
-            unicTry++;
 
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+#ifdef MAKE_METRICS
+            unicTry++;
 
             if (IsBIoNode) {
                 ioTries++;
             } else {
                 clbTries++;
             }
-
+#endif
             targetCell = -1;
             long dist;
 
+            //fixme Here the algorithm should stop and enter in a loop while a border is not found.
+            //fixme This shoud be out of the distvector loop
             if (IsBIoNode) {
                 if (!ioSetBorder) {
                     ioBorderSequence = g.getIoBordersSequence(lA, cA);
@@ -498,7 +507,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     //exit(1);
                 }
 
-//fixme - this shoud be the error verification to the code
+                //fixme - this shoud be the error verification to the code
 #ifdef DEBUG
                 placed = true;
 #endif
