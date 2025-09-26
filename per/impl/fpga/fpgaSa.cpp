@@ -166,7 +166,7 @@ FpgaReportData fpgaSa(FPGAGraph &g) {
 }
 
 
-void fpgaGetSwapCost(
+/*void fpgaGetSwapCost(
     const std::vector<long> &n2c,
     const long a,
     const long b,
@@ -205,4 +205,4 @@ void fpgaGetSwapCost(
             }
         }
     }
-}
+}*/

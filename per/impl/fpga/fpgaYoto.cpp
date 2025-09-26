@@ -39,13 +39,22 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     ed = g.getEdgesZigzag(convergence);
     string alg_type = "ZIG_ZAG";
 #elifdef FPGA_YOTO_DF_PRIO
-    ed = g.getEdgesDepthFirstPriority();
+    ed = g.getEdgesDepthFirstCritical();
     string alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF
-    ed = g.getEdgesDepthFirstCritical();
+    ed = g.getEdgesDepthFirstPriority();
     string alg_type = "DEPTH_FIRST";
 #endif
 
+    //snapshots variables used for some parts
+    const long maxEd = static_cast<long>(ed.size());
+    long edCounter = -1;
+    const long snapshotInterval = maxEd / TOTAL_SNAPSHOTS;
+    long nextSnapshotAt = snapshotInterval;
+    int snapId = 0;
+    long swaps = 0;
+
+#ifdef IO_STRATEGY
     //IO placement control
     vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
     std::vector<BorderInfo> ioBorderSequence;
@@ -55,6 +64,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     bool ioBlockBorderNegative = false;
     bool ioBlockBorderPositive = false;
     int ioBorderTickTack = 0;
+#endif
 
 #ifdef MAKE_METRICS
 #ifdef USE_CACHE
@@ -65,7 +75,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     long ioTries = 0;
     long clbTries = 0;
-    long swaps = 0;
 
     std::vector hist(nCells, 0L);
     vector heatEnd(nCells, 0L);
@@ -74,24 +83,19 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     std::map<long, vector<long> > originDestin;
 
     map<long, long> histogram;
-
-    long maxEd = static_cast<long>(ed.size());
-    long edCounter = -1;
-    //fixme Transform 10 in totalSnapshots PARAMETER!!!
-    constexpr int totalSnapshots = 10;
-    const long snapshotInterval = maxEd / totalSnapshots;
-    long nextSnapshotAt = snapshotInterval;
-    int snapId = 0;
 #endif
-
 
 #ifdef SCAN_STRATEGY
     vector<vector<long> > scannedCells(SCAN_QUADRANTS);
 #endif
 
 
+#ifdef PRINT_IMG
+    writeMap(c2n, {-1, -1}, nCellsSqrt);
+#endif
+
 #ifdef PRINT_DOT
-    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
+    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
 
     long distVectorCounter = 0;
@@ -122,17 +126,17 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     //While exists an edge...
     for (auto [a,b]: ed) {
-#ifdef MAKE_METRICS
         edCounter++;
         const bool snapTaken = edCounter + 1 == nextSnapshotAt;
 
         if (snapTaken) {
+#ifdef MAKE_METRICS
             histogramFull.push_back(histogram);
-
+#endif
             nextSnapshotAt += snapshotInterval;
             snapId++;
         }
-#endif
+
 
         //fixme this can be used to make sure all nudes were placed
 #ifdef DEBUG
@@ -145,7 +149,12 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
 #ifdef PRINT_IMG
         if (snapTaken)
-            writeMap(c2n, {-1, -1}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
+            writeMap(c2n, {-1, -1}, nCellsSqrt);
+#endif
+
+#ifdef PRINT_DOT
+        if (snapTaken)
+            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
 
         long targetNode = -1;
@@ -174,9 +183,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     n2c[targetNode].first = ioCell;
                     n2c[targetNode].second = static_cast<long>(c2n[ioCell].size()) - 1;
                     found = true;
-#ifdef MAKE_METRICS
                     swaps++;
-
+#ifdef MAKE_METRICS
                     if (histogram.find(unicTry) != histogram.end()) {
                         histogram[unicTry]++;
                     } else {
@@ -186,21 +194,12 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
-#ifdef PRINT_DOT
-            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-#ifdef PRINT_IMG
-            if (snapTaken)
-                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-#endif
             if (nextEdge)
                 continue;
 #ifdef MAKE_METRICS
             unicTry = 0;
 #endif
         }
-
-        distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
 
         //Verify if A is placed
         //if it is not placed, then place in a random inout cell.
@@ -216,14 +215,23 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
         if (n2c[b].first != -1)
             continue;
-
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
         const long lA = getLine(cellA, nCellsSqrt);
         const long cA = getColumn(cellA, nCellsSqrt);
 
+        long lB;
+        long cB;
+
+        long targetCell = -1;
+        const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
+
         bool isTargetCellIO = true;
+        bool ioPlaceFlag = false;
+        bool clbPlaceFlag = false;
+        bool canPlace = false;
+        bool runSpiral = true;
 
 #ifdef LIMIT_STRATEGY
         long limitAcc = 1;
@@ -234,43 +242,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         long quadCounter = getQuadrant(lA, cA, nCellsSqrt);
 #endif
 
-        //fixme This part is only for YOTO spiral strategy. This should be on that part only
-        //Then I will look for a cell next to A's cell
-        for (const auto &ij: distVectors[distVectorCounter]) {
-            long lB = lA + ij[0];
-            long cB = cA + ij[1];
 
-            long targetCell;
-
-            const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
-
-#ifdef LIMIT_STRATEGY
-            bool limitStrategyTrigger = false;
-            targetCell = lB * nCellsSqrt + cB;
-            const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
-            //fixme transform 7 in a parameter
-            if (lmsDist > static_cast<long>(LIMIT_DIST) && !fpgaIsInvalidCell(lB, cB, nCellsSqrt) && snapId < 80 *
-                totalSnapshots / 100) {
-                limitStrategyTrigger = true;
-            }
-#endif
-
-
+#ifdef IO_STRATEGY
+        if (IsBIoNode) {
+            runSpiral = false;
+            while (!canPlace) {
 #ifdef MAKE_METRICS
-            unicTry++;
-
-            if (IsBIoNode) {
+                unicTry++;
                 ioTries++;
-            } else {
-                clbTries++;
-            }
 #endif
-            targetCell = -1;
-            long dist;
-
-            //fixme Here the algorithm should stop and enter in a loop while a border is not found.
-            //fixme This shoud be out of the distvector loop
-            if (IsBIoNode) {
                 if (!ioSetBorder) {
                     ioBorderSequence = g.getIoBordersSequence(lA, cA);
                     ioSequenceCounter = 0;
@@ -329,42 +309,265 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     ioBlockBorderPositive = false;
                     ioBorderTickTack = 0;
                 }
+
+                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                ioPlaceFlag = (isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
+                clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
+                canPlace = ioPlaceFlag || clbPlaceFlag;
             }
-#ifdef SCAN_STRATEGY
-            //fixme Transform 9 in a parameter!!!
-            else if (snapId >= 80 * totalSnapshots / 100 && !scanned) {
-                scanned = true;
-                clbTries += static_cast<long>(nNodes - g.innerNodes.size());
-                unicTry += static_cast<long>(nNodes - g.innerNodes.size());
-                //scanning all cells and inserting the empty ones in the corresponding quadrant
-                for (long l = 1; l < nCellsSqrt - 1; l++) {
-                    for (long c = 1; c < nCellsSqrt - 1; c++) {
-                        const long cell = l * nCellsSqrt + c;
-                        if (c2n[cell].empty()) {
-                            const long quadrant = getQuadrant(l, c, nCells, nCellsSqrt);
-                            scannedCells[quadrant].push_back(cell);
-                        }
-                    }
-                }
-                continue;
-            } else if (scanned) {
-                if (!scannedCells[quadCounter].empty()) {
-                    targetCell = scannedCells[quadCounter].back();
-                    lB = targetCell / nCellsSqrt;
-                    cB = targetCell % nCellsSqrt;
-                    scannedCells[quadCounter].pop_back();
+        }
+#endif
+
+        if (runSpiral) {
+            distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
+            //YOTO spiral basic strategy
+            for (const auto &ij: distVectors[distVectorCounter]) {
+                lB = lA + ij[0];
+                cB = cA + ij[1];
+
+#ifdef MAKE_METRICS
+                unicTry++;
+
+                if (IsBIoNode) {
+                    ioTries++;
                 } else {
-                    quadCounter++;
-                    if (quadCounter == 16) {
-                        quadCounter = 0;
-                    }
-                    continue;
+                    clbTries++;
                 }
+#endif
+
+                // Check if the target cell is nor allowed, go to next
+                const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
+                if (isInvalidCell)
+                    continue;
+
+                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
+                canPlace = clbPlaceFlag;
+
+                //prevents put a non IO node in an IO cell
+                if (!canPlace)
+                    continue;
+
+                //find the idx for the target cell
+                targetCell = lB * nCellsSqrt + cB;
+
+
+            }
+        }
+        //dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+
+        // Place the node if `placement[targetCell]` is unoccupied
+#ifdef USE_CACHE
+        cacheMisses += cacheC2N.readCache(targetCell, c2n);
+#endif
+        if (canPlace) {
+            c2n[targetCell].push_back(b);
+            /*if (static_cast<long>(c2n[targetCell].size()) > 3) {
+                int asd = 1;
+            }*/
+            n2c[b].first = targetCell;
+            n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
+            ioSetBorder = false;
+            distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt) - 1 - g.slack[b];
+            ++swaps;
+
+#ifdef LIMIT_STRATEGY
+            if (!isTargetCellIO) {
+                const long quadrant = getQuadrant(lB, cB, nCellsSqrt, nCellsSqrt);
+                limitQuadrants[quadrant]--;
             }
 #endif
 
-            else {
+#ifdef MAKE_METRICS
+
+            if (histogram.find(unicTry) != histogram.end()) {
+                histogram[unicTry]++;
+            } else {
+                histogram[unicTry] = 1;
+            }
+            heatEnd[targetCell] = unicTry;
+            heatBegin[cellA]++;
+            if (originDestin.find(cellA) == originDestin.end()) {
+                originDestin[cellA] = vector<long>();
+            }
+            originDestin[cellA].push_back(targetCell);
+#endif
+            /*long _max = 2 * dist * (dist + 1);
+            if ((unicTry > _max) && !IsBIoNode
+#ifdef SCAN_STRATEGY
+                && !scanned
+#endif
 #ifdef LIMIT_STRATEGY
+                && !limitStrategyTrigger
+#endif
+            ) {
+                cout << "Error while placing: dist=" << dist << " max tries:" << _max;
+                cout << ". Total tries" << unicTry;
+                //exit(1);
+            }*/
+
+            //fixme - this shoud be the error verification to the code
+#ifdef PRINT_IMG
+            if (snapTaken)
+                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
+
+#ifdef PRINT_DOT
+            if (snapTaken)
+                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
+#endif
+            break;
+        }
+    }
+
+#ifdef MAKE_METRICS
+    if
+    (snapId < TOTAL_SNAPSHOTS
+    )
+        histogramFull
+                .
+                push_back(histogram);
+#endif
+
+#ifdef PRINT_DOT
+    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
+#endif
+
+#ifdef PRINT_IMG
+    writeMap(c2n, {-1, -1}, nCellsSqrt);
+#endif
+
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> duration = end - start;
+    auto _time = duration.count();
+
+
+#ifdef FPGA_TOTAL_COST
+    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
+#elifdef FPGA_LONG_PATH_COST
+    //fixme
+    const long tc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
+#elifdef FPGA_DISTANCE_SLACK_COST
+    const long tc = distSlackCost;
+#else
+    const long tc = 0;
+#endif
+
+    const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
+
+    if
+    (swaps
+     !=
+     nNodes
+    ) {
+        cout << "Error on processing file " << g.dotName << ". Failed to place some nodes." << endl;
+    }
+
+#ifdef MAKE_METRICS
+    const long tries = (clbTries + ioTries);
+
+#ifdef CACHE
+    const long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
+    constexpr const long cacheWParameter = CACHE_W_PARAMETER;
+    constexpr const long cacheWCost = CACHE_W_CACHE_W_COST;
+    const long triesP = tries + cachePenalties;
+    const long triesPerNode = triesP / nNodes;
+#else
+    const long triesPerNode = tries / nNodes;
+#endif
+
+#endif
+
+    auto report = FpgaReportData(
+        _time,
+        g.dotName,
+        g.dotPath,
+        "yoto",
+        nCellsSqrt,
+        nNodes,
+        nIOs,
+        alg_type,
+        costStrategyName,
+        tc,
+        c2n,
+        n2c
+#ifdef MAKE_METRICS
+        ,
+#ifdef USE_CACHE
+        cacheMisses,
+        cacheWParameter,
+        cacheWCost,
+        cachePenalties,
+#endif
+        clbTries,
+        ioTries,
+        tries,
+#ifdef USE_CACHE
+        triesP,
+#endif
+        triesPerNode,
+        swaps,
+        histogramFull,
+        heatEnd,
+        heatBegin,
+        originDestin
+#endif
+    );
+    return
+            report;
+}
+
+
+/*
+ *
+
+#ifdef LIMIT_STRATEGY
+        long dist;
+        bool limitStrategyTrigger = false;
+        targetCell = lB * nCellsSqrt + cB;
+        const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+        //fixme transform 7 in a parameter
+        if (lmsDist > static_cast<long>(LIMIT_DIST) && !fpgaIsInvalidCell(lB, cB, nCellsSqrt) && snapId < 80 *
+            totalSnapshots / 100) {
+            limitStrategyTrigger = true;
+            }
+#endif
+
+#ifdef SCAN_STRATEGY
+        //fixme Transform 9 in a parameter!!!
+        if (snapId >= 80 * totalSnapshots / 100 && !scanned) {
+            scanned = true;
+            clbTries += static_cast<long>(nNodes - g.innerNodes.size());
+            unicTry += static_cast<long>(nNodes - g.innerNodes.size());
+            //scanning all cells and inserting the empty ones in the corresponding quadrant
+            for (long l = 1; l < nCellsSqrt - 1; l++) {
+                for (long c = 1; c < nCellsSqrt - 1; c++) {
+                    const long cell = l * nCellsSqrt + c;
+                    if (c2n[cell].empty()) {
+                        const long quadrant = getQuadrant(l, c, nCells, nCellsSqrt);
+                        scannedCells[quadrant].push_back(cell);
+                    }
+                }
+            }
+            continue;
+        } else if (scanned) {
+            if (!scannedCells[quadCounter].empty()) {
+                targetCell = scannedCells[quadCounter].back();
+                lB = targetCell / nCellsSqrt;
+                cB = targetCell % nCellsSqrt;
+                scannedCells[quadCounter].pop_back();
+            } else {
+                quadCounter++;
+                if (quadCounter == 16) {
+                    quadCounter = 0;
+                }
+                continue;
+            }
+        }
+#endif
+
+        #ifdef LIMIT_STRATEGY
+            else {
                 long maxValue;
                 pair<long, int> maxQuadrant;
                 bool runYoto = true;
@@ -422,182 +625,4 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 if (runYoto) {
 #endif
-                    //Basic Spiral strategy
-                    lB = lA + ij[0];
-                    cB = cA + ij[1];
-
-                    isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                    //prevents put a non IO node in an IO cell
-                    if (isTargetCellIO)
-                        continue;
-
-                    //find the idx for the target cell
-                    targetCell = lB * nCellsSqrt + cB;
-#ifdef LIMIT_STRATEGY
-                }
-#endif
-            }
-            const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
-            // Check if the target cell is nor allowed, go to next
-            if (isInvalidCell)
-                continue;
-            dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
-
-            const bool ioPlaceFlag = (isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
-            const bool clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
-            const bool placeFlag = ioPlaceFlag || clbPlaceFlag;
-
-
-            // Place the node if `placement[targetCell]` is unoccupied
-#ifdef USE_CACHE
-            cacheMisses += cacheC2N.readCache(targetCell, c2n);
-#endif
-            if (placeFlag) {
-                c2n[targetCell].push_back(b);
-                /*if (static_cast<long>(c2n[targetCell].size()) > 3) {
-                    int asd = 1;
-                }*/
-                n2c[b].first = targetCell;
-                n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
-                ++swaps;
-                ioSetBorder = false;
-                distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt) - 1 - g.slack[b];
-#ifdef LIMIT_STRATEGY
-                if (!isTargetCellIO) {
-                    const long quadrant = getQuadrant(lB, cB, nCellsSqrt, nCellsSqrt);
-                    limitQuadrants[quadrant]--;
-                }
-#endif
-#ifdef MAKE_METRICS
-                if (histogram.find(unicTry) != histogram.end()) {
-                    histogram[unicTry]++;
-                } else {
-                    histogram[unicTry] = 1;
-                }
-                heatEnd[targetCell] = unicTry;
-                heatBegin[cellA]++;
-                if (originDestin.find(cellA) == originDestin.end()) {
-                    originDestin[cellA] = vector<long>();
-                }
-                originDestin[cellA].push_back(targetCell);
-#endif
-#ifdef PRINT_DOT
-                fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-#ifdef PRINT_IMG
-                //if (limitStrategyTrigger && !abortLimitStrategy)
-                //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-                if (snapTaken)
-                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-                //fixme transform 9 in a parameter
-                /*if (snapId >= 90 * 50 / 100)
-                    writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");*/
-#endif
-                long _max = 2 * dist * (dist + 1);
-                if ((unicTry > _max) && !IsBIoNode
-#ifdef SCAN_STRATEGY
-                    && !scanned
-#endif
-#ifdef LIMIT_STRATEGY
-                    && !limitStrategyTrigger
-#endif
-                ) {
-                    cout << "Error while placing: dist=" << dist << " max tries:" << _max;
-                    cout << ". Total tries" << unicTry;
-                    //exit(1);
-                }
-
-                //fixme - this shoud be the error verification to the code
-#ifdef DEBUG
-                placed = true;
-#endif
-                break;
-            }
-        }
-#ifdef DEBUG
-        if (!placed) {
-            writeMap(c2n, {n2c[a].first, -1}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-        }
-#endif
-    }
-
-#ifdef MAKE_METRICS
-    if (snapId < totalSnapshots)
-        histogramFull.push_back(histogram);
-#endif
-
-#ifdef PRINT_DOT
-    fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
-#endif
-#ifdef PRINT_IMG
-    writeMap(c2n, {-1, -1}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
-#endif
-
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double, milli> duration = end - start;
-    auto _time = duration.count();
-
-
-#ifdef FPGA_TOTAL_COST
-    const long tc = fpgaCalcGraphTotalDistance(n2c, g.gEdges, nCellsSqrt);
-#elifdef FPGA_LONG_PATH_COST
-    //fixme
-    const long tc = 0; //fpgaCalcGraphLPDistance(g.longestPath, n2c, nCellsSqrt);
-#elifdef FPGA_DISTANCE_SLACK_COST
-    const long tc = distSlackCost;
-#else
-    const long tc = 0;
-#endif
-
-    const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
-    const long tries = (clbTries + ioTries);
-
-#ifdef CACHE
-    const long cachePenalties = CACHE_W_PARAMETER * CACHE_W_COST * cacheMisses;
-    constexpr const long cacheWParameter = CACHE_W_PARAMETER;
-    constexpr const long cacheWCost = CACHE_W_CACHE_W_COST;
-    const long triesP = tries + cachePenalties;
-    const long triesPerNode = triesP / nNodes;
-#else
-    constexpr long cachePenalties = 0;
-    constexpr const long cacheWParameter = 0;
-    constexpr const long cacheWCost = 0;
-    constexpr long triesP = 0;
-    const long triesPerNode = tries / nNodes;
-#endif
-
-    if (swaps != nNodes) {
-        cout << "Erro ao processar o arquivo " << g.dotName << "Nem todo os nós foram posicionados" << endl;
-    }
-
-    //FIXME reports
-    auto report = FpgaReportData(
-        _time,
-        g.dotName,
-        g.dotPath,
-        "yoto",
-        nCellsSqrt,
-        nNodes,
-        nIOs,
-        cacheMisses,
-        cacheWParameter,
-        cacheWCost,
-        cachePenalties,
-        clbTries,
-        ioTries,
-        tries,
-        triesP,
-        triesPerNode,
-        swaps,
-        alg_type,
-        costStrategyName,
-        tc,
-        c2n,
-        n2c,
-        histogramFull,
-        heatEnd,
-        heatBegin,
-        originDestin
-    );
-    return report;
-}
+ */

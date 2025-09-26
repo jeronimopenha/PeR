@@ -488,7 +488,7 @@ bool fpgaIsIOCell(const long line, const long column, const long nCellsSqrt) {
     return line == 0 || line == nCellsSqrt - 1 || column == 0 || column == nCellsSqrt - 1;
 }
 
-//fixme Need to work with bits, not integers
+#ifdef SCAN_STRATEGY
 long getQuadrant(const long line, const long column, const long nCellsSqrt) {
     constexpr long nQuadrants = SCAN_QUADRANTS;
 
@@ -501,6 +501,7 @@ long getQuadrant(const long line, const long column, const long nCellsSqrt) {
 
     return quad_l * 4 + quad_c;
 }
+
 
 /**
  * Returns the top, bottom, left and right quadrant indexes
@@ -529,7 +530,7 @@ vector<pair<long, int> > getAdjacentQuadrants(const long q) {
 
     return adj;
 }
-
+#endif
 
 /**
  * Function to map normalized value (0 to 1) to simple RGB (blue to red)
@@ -718,7 +719,9 @@ void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2
     // write the dot footer
     fileString += "}\n";
 
-    ofstream file(DOT_PATH);
+    const string filePath = DOT_PATH;
+
+    ofstream file(filePath);
     if (!file) {
         cerr << "Error!" << endl;
         return;
@@ -729,8 +732,8 @@ void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2
 #endif
 
 #ifdef PRINT_IMG
-void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
-              const string &filePath) {
+void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt) {
+    const string filePath = JPG_PATH;
     constexpr long minImageSize = 1000;
 
     const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)

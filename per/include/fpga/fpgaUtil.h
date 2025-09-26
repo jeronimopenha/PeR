@@ -119,9 +119,11 @@ bool fpgaIsInvalidCell(long line, long column, long nCellsSqrt);
 
 bool fpgaIsIOCell(long line, long column, long nCellsSqrt);
 
+#ifdef SCAN_STRATEGY
 long getQuadrant(long line, long column, long nCellsSqrt);
 
 std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
+#endif
 
 #ifdef PRINT_DOT
 void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std::vector<long> > &c2n,
@@ -129,8 +131,7 @@ void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std
 #endif
 
 #ifdef PRINT_IMG
-void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt,
-              const std::string &filePath);
+void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt);
 #endif
 std::vector<std::vector<long> > fpgaGetDistVectors(long nCellsSqrt);
 
