@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<architecture>
+    <models/>
+    <tiles>
+        <tile name="io" area="0">
+            <sub_tile name="io" capacity="8">
+                <equivalent_sites>
+                    <site pb_type="io" pin_mapping="direct"/>
+                </equivalent_sites>
+                <input name="outpad" num_pins="1"/>
+                <output name="inpad" num_pins="1"/>
+                <clock name="clock" num_pins="1"/>
+                <fc in_type="frac" in_val="0.15" out_type="frac" out_val="0.15"/>
+                <pinlocations pattern="custom">
+                    <loc side="left">io.outpad io.inpad io.clock</loc>
+                    <loc side="top">io.outpad io.inpad io.clock</loc>
+                    <loc side="right">io.outpad io.inpad io.clock</loc>
+                    <loc side="bottom">io.outpad io.inpad io.clock</loc>
+                </pinlocations>
+            </sub_tile>
+        </tile>
+        <tile name="clb" area="18000">
+            <sub_tile name="clb">
+                <equivalent_sites>
+                    <site pb_type="clb" pin_mapping="direct"/>
+                </equivalent_sites>
+                <input name="I" num_pins="6"/>
+                <output name="O" num_pins="1"/>
+                <clock name="clk" num_pins="1"/>
+                <fc in_type="frac" in_val="0.15" out_type="frac" out_val="0.15"/>
+                <pinlocations pattern="spread"/>
+            </sub_tile>
+        </tile>
+    </tiles>
+    <layout>
+        <fixed_layout name="lut6_1_76x76" width="76" height="76">
+            <perimeter type="io" priority="100"/>
+            <corners type="EMPTY" priority="101"/>
+            <fill type="clb" priority="10"/>
+        </fixed_layout>
+        <auto_layout aspect_ratio="1.0">
+            <perimeter type="io" priority="100"/>
+            <corners type="EMPTY" priority="101"/>
+            <fill type="clb" priority="10"/>
+        </auto_layout>
+    </layout>
+    <device>
+        <sizing R_minW_nmos="8926" R_minW_pmos="16067"/>
+        <area grid_logic_tile_area="0"/>
+        <chan_width_distr>
+            <x distr="uniform" peak="1.0"/>
+            <y distr="uniform" peak="1.0"/>
+        </chan_width_distr>
+        <switch_block type="wilton" fs="3"/>
+        <connection_block input_switch_name="ipin_cblock"/>
+    </device>
+    <switchlist>
+        <switch type="mux" name="0" R="551" Cin=".77e-15" Cout="4e-15" Tdel="58e-12"
+                mux_trans_size="2.630740" buf_size="27.645901"/>
+        <switch type="mux" name="ipin_cblock" R="2231.5" Cout="0." Cin="1.47e-15"
+                Tdel="7.247000e-11" mux_trans_size="1.222260" buf_size="auto"/>
+    </switchlist>
+    <segmentlist>
+        <segment freq="1.0" length="4" type="unidir" Rmetal="101" Cmetal="22.5e-15">
+            <mux name="0"/>
+            <sb type="pattern">1 1 1 1 1</sb>
+            <cb type="pattern">1 1 1 1</cb>
+        </segment>
+    </segmentlist>
+    <complexblocklist>
+        <pb_type name="io">
+            <input name="outpad" num_pins="1"/>
+            <output name="inpad" num_pins="1"/>
+            <clock name="clock" num_pins="1"/>
+            <mode name="inpad">
+                <pb_type name="inpad" blif_model=".input" num_pb="1">
+                    <output name="inpad" num_pins="1"/>
+                </pb_type>
+                <interconnect>
+                    <direct name="inpad" input="inpad.inpad" output="io.inpad">
+                        <delay_constant max="4.243e-11" in_port="inpad.inpad" out_port="io.inpad"/>
+                    </direct>
+                </interconnect>
+            </mode>
+            <mode name="outpad">
+                <pb_type name="outpad" blif_model=".output" num_pb="1">
+                    <input name="outpad" num_pins="1"/>
+                </pb_type>
+                <interconnect>
+                    <direct name="outpad" input="io.outpad" output="outpad.outpad">
+                        <delay_constant max="1.394e-11" in_port="io.outpad" out_port="outpad.outpad"/>
+                    </direct>
+                </interconnect>
+            </mode>
+            <power method="ignore"/>
+        </pb_type>
+        <pb_type name="clb">
+            <input name="I" num_pins="6"/>
+            <output name="O" num_pins="1"/>
+            <clock name="clk" num_pins="1"/>
+            <pb_type name="lut6" blif_model=".names" num_pb="1" class="lut">
+                <input name="in" num_pins="6" port_class="lut_in"/>
+                <output name="out" num_pins="1" port_class="lut_out"/>
+                <delay_matrix type="max" in_port="lut6.in" out_port="lut6.out">
+                    82e-12
+                    173e-12
+                    261e-12
+                    263e-12
+                    398e-12
+                    397e-12
+                </delay_matrix>
+            </pb_type>
+            <interconnect>
+                <direct name="inputs" input="clb.I" output="lut6.in"/>
+                <direct name="outputs" input="lut6.out" output="clb.O"/>
+            </interconnect>
+        </pb_type>
+    </complexblocklist>
+    <power>
+        <local_interconnect C_wire="2.5e-10"/>
+        <mux_transistor_size mux_transistor_size="3"/>
+        <FF_size FF_size="4"/>
+        <LUT_transistor_size LUT_transistor_size="4"/>
+    </power>
+    <clocks>
+        <clock buffer_size="auto" C_wire="2.5e-10"/>
+    </clocks>
+</architecture>

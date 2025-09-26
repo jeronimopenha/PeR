@@ -55,7 +55,7 @@ def blif_to_dot(base_path, blif_path, blif_file: str):
 
 if __name__ == '__main__':
     root_path = get_project_root()
-    base_path = f"{root_path}/benchmarks/fpga/eval/MINIST_bllif/"
+    base_path = f"{root_path}/benchmarks/fpga/bench_test/"
     files = get_files_list_by_extension(base_path, ".blif")
     # files = Util.get_files_list_by_extension(f"{root_path}/benchmarks/fpga/dot_EPFL/", ".blif")
     for file in files:

@@ -1,8 +1,9 @@
 #ifndef CACHE_H
 #define CACHE_H
-
-
 #include <vector>
+#include <fpga/fpgaPar.h>
+
+#ifdef CACHE
 
 
 class Cache {
@@ -15,6 +16,6 @@ public:
 
     long readCache(long address, const std::vector<long> &vec);
 };
-
+#endif
 
 #endif

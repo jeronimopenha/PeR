@@ -33,8 +33,8 @@ struct FpgaReportData {
     long triesPerNode = 0;
     long swaps = 0;
     std::string edgesAlgorithm;
+    std::string costStrategy;
     long totalCost = 0;
-    long lPCost = 0;
     std::vector<std::vector<long> > c2n;
     std::vector<std::pair<long, long> > n2c;
     std::vector<std::map<long, long> > hist;
@@ -47,9 +47,9 @@ struct FpgaReportData {
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long size, long nNodes,
                    long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
                    long tries, long triesP, long triesPerNode, long swaps, std::string edges_algorithm,
-                   long totalCost, long lPCost, const std::vector<std::vector<long> > &c2n,
+                   const std::string &costStrategy, long totalCost, const std::vector<std::vector<long> > &c2n,
                    const std::vector<std::pair<long, long> > &n2c, std::vector<std::map<long, long> > hist,
-                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> >orDest);
+                   std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> > orDest);
 
     [[nodiscard]] std::string to_json() const;
 
@@ -62,7 +62,8 @@ void fpgaSavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std
 
 std::vector<std::vector<long> > fpgaGetAdjCellsDist(long nCellsSqrt);
 
-long fpgaCalcGraphTotalDistance(const std::vector<std::pair<long, long>> &n2c, const std::vector<std::pair<long, long> > &edges,
+long fpgaCalcGraphTotalDistance(const std::vector<std::pair<long, long> > &n2c,
+                                const std::vector<std::pair<long, long> > &edges,
                                 long nCellsSqrt);
 
 long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
@@ -78,27 +79,34 @@ void fpgaWriteReports(const std::string &basePath,
                       const FpgaReportData &data);
 
 void fpgaWriteVpr5Data(const std::string &basePath,
-                      const std::string &reportPath,
-                      const std::string &algPath,
-                      const std::string &fileName,
-                      const FpgaReportData &data,
-                      FPGAGraph g);
+                       const std::string &reportPath,
+                       const std::string &algPath,
+                       const std::string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g);
 
 void fpgaWriteVpr9Data(const std::string &basePath,
-                      const std::string &_reportPath,
-                      const std::string &_algPath,
-                      const std::string &fileName,
-                      const FpgaReportData &data,
-                      FPGAGraph g);
+                       const std::string &_reportPath,
+                       const std::string &_algPath,
+                       const std::string &fileName,
+                       const FpgaReportData &data,
+                       FPGAGraph g);
 
 bool fpgaIsInvalidCell(long l, long c, long nCellsSqrt);
 
 bool fpgaIsIOCell(long l, long c, long nCellsSqrt);
 
+long getQuadrant(long l, long c, long nCells, long nCellsSqrt);
+
+std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
+
 RGB valueToRGB(float normValue);
 
+void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt,
+              const std::string &filePath);
+
 void writeHeatmap(const std::vector<long> &heatData,
-                  const std::vector<std::vector<long>> &c2n,
+                  const std::vector<std::vector<long> > &c2n,
                   long nCellsSqrt,
                   const std::string &basePath,
                   const std::string &reportPath,

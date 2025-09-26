@@ -57,4 +57,4 @@ if __name__ == "__main__":
     base_path = f"{root_path}/benchmarks/fpga/bench_test/"
     files = get_files_list_by_extension(base_path, ".dot")
     for file in files:
-        dot_to_blif(base_path, file[0], file[1][:-5])
+        dot_to_blif(base_path, file[0], file[1][:-4])

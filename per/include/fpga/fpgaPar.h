@@ -8,7 +8,11 @@
 
 //PER FPGA  Paramenters File
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 //#################################################################################################
+//fixme
 //CACHE definitions BEGIN
 
 //The code needs to simulate a cache or not
@@ -33,17 +37,24 @@
 //Algorithms parameters BEGIN
 
 //Choose the I/O qty of ports per cell to the architecture
-#define IO_NUMBER  12
+#define IO_NUMBER  8
 //TODO CLB N LUT number per cell too
 
 //Wich algorithm will be run ********************
 //Needs at least one
 
+//fixme this algorithm was used with priority. Needed to change the code to use the correct one
 //Greedy algorithm that traverses the source and destination graphs once without priority
+//with depth first search
 //#define FPGA_YOTO_DF
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
-#define FPGA_YOTO_DF_PRIO
+//with depth first search
+//#define FPGA_YOTO_DF_PRIO
+
+//Greedy algorithm that traverses the source and destination graphs once without priority
+//with zigzag search
+#define FPGA_YOTO_ZZ
 
 //Greedy algorithm that traverses the source and destination graphs twice with annotations on the edges
 //#define FPGA_YOTT
@@ -66,41 +77,73 @@
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
 //At least one strategy is needed
-#define SPIRAL_STRATEGY
-//#define CURTAIN_STRATEGY
+//#define SPIRAL_STRATEGY
+#define SCAN_STRATEGY
 
+#ifdef SCAN_STRATEGY
+#define SCAN_QUADRANTS 16
+#endif
+
+#define LIMIT_STRATEGY
+
+#ifdef LIMIT_STRATEGY
 //Set the maximum search distance before using the chosen strategy
-#define LIMIT_DIST 4
+#define LIMIT_DIST 2
+//#define LIMIT_DIST 3
+//#define LIMIT_DIST 4
 //#define LIMIT_DIST 5
 //#define LIMIT_DIST  6
 //#define LIMIT_DIST 7
 //#define LIMIT_DIST 8
+#endif
 
 #endif
 //STRATEGY SEARCH parameters END ****************
 
 #endif
-//GREEDY algorithms parameters EN **************
+//GREEDY algorithms parameters END **************
 
 //Algorithms parameters END
 //#################################################################################################
 
 //#################################################################################################
-//Rrports parameters BEGIN
+//Reports parameters BEGIN
+
+//Generate report or not
+
+#define REPORT
+#ifdef REPORT
+
+#define REPORT_PREFIX ""
+
+//Choose write Make metrics reports
+#define MAKE_METRICS
+
+//Choose a type of total cost
+//#define FPGA_TOTAL_COST
+#define FPGA_DISTANCE_SLACK_COST
+
 
 //Save only the best one placement
 #define BEST_ONLY
 
-//TODO Stopped here
-//Rrports parameters BEND
-//#################################################################################################
-
 //VPR version
+//fixme need to debug if the vpr5 reports are still working
 //#define VPR_V5
 #define VPR_V9
 
+#endif
+//Reports parameters END
+//#################################################################################################
+
+//#################################################################################################
+//Execution parameters Begin
+
 // Tests Quantity
 #define RUN_1
+//#define RUN_6
+//#define RUN_60
+//#define RUN_600
 //#define RUN_10
 //#define RUN_100
 //#define RUN_1000
@@ -110,31 +153,18 @@
 //#define TRETS
 //#define EPFL
 
-//###############################
-
+//Debugging *************************************
 //debugging defines
 #define DEBUG
 //#define PRINT_DOT
 #define PRINT_IMG
 //*******************************
 
-//Generate report or not
+//Execution parameters END
+//#################################################################################################
 
-#define REPORT
-#ifdef REPORT
-
-//Choose write Make metrics reports
-#define MAKE_METRICS
-
-//Choose a type of total cost
-#define FPGA_TOTAL_COST
-//#define FPGA_LONG_PATH_COST
-
-#endif
-//*******************************
 
 //Some standard variables
-
 
 inline std::string benchPath = [] {
 #ifdef TEST
@@ -151,31 +181,49 @@ inline std::string benchPath = [] {
 inline std::string algPath = [] {
     std::string path;
 #ifdef TEST
-    path = "/TEST";
+    path = "/TEST/";
 #elifdef TRETS
-    path = "/TRETS";
+    path = "/TRETS/";
 #elif defined(EPFL)
-    path = "/EPFL";
+    path = "/EPFL/";
 #endif
 
+#ifdef REPORT_PREFIX
+    path += REPORT_PREFIX;
+#endif
+
+
 #ifdef FPGA_YOTO_DF
-    path += "/yoto_df";
+    path += "yoto_df";
 #elif defined(FPGA_YOTO_DF_PRIO)
-    path += "/yoto_df_prio";
+    path += "yoto_df_prio";
 #elif defined(FPGA_YOTO_ZZ)
-    path += "/yoto_zz";
+    path += "yoto_zz";
 #elif defined(FPGA_YOTT)
-    path += "/yott";
+    path += "yott";
 #elif defined(FPGA_YOTT_IO)
-    path += "/yott_io";
+    path += "yott_io";
 #elif defined(FPGA_SA)
-    path += "/sa";
+    path += "sa";
 #endif
 
 #if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
-#ifndef STRATEGY_SEARCH
+#ifdef LIMIT_STRATEGY
     path += "_limit_" + std::to_string(LIMIT_DIST);
 #endif
+
+#ifdef SCAN_STRATEGY
+    path += "_scan";
+#endif
+
+#ifdef FPGA_TOTAL_COST
+    path += "_TC";
+#elifdef FPGA_LONG_PATH_COST
+    path += "_LPC";
+#elifdef FPGA_DISTANCE_SLACK_COST
+    path += "_DSC";
+#endif
+
 #endif
 
 #ifdef USE_CACHE
@@ -193,6 +241,12 @@ inline std::string algPath = [] {
     path += "_x100";
 #elif defined(RUN_1000)
     path += "_x1000";
+#elif defined(RUN_6)
+    path += "_x6";
+#elif defined(RUN_60)
+    path += "_x60";
+#elif defined(RUN_600)
+    path += "_x600";
 #endif
 
 #ifdef BEST_ONLY
@@ -208,9 +262,6 @@ inline std::string algPath = [] {
     return path;
 }();
 
-inline constexpr auto reportPath = "reports/fpga";
-inline constexpr auto benchExt = ".dot";
-
 //Execution quantity parameter
 #ifdef RUN_1
 inline constexpr int nExec = 1;
@@ -220,6 +271,25 @@ inline constexpr int nExec = 10;
 inline constexpr int nExec = 100;
 #elifdef RUN_1000
 inline constexpr int nExec = 1000;
+#elifdef RUN_6
+inline constexpr int nExec = 6;
+#elifdef RUN_60
+inline constexpr int nExec = 60;
+#elifdef RUN_600
+inline constexpr int nExec = 600;
 #endif
+
+#ifdef FPGA_TOTAL_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_TOTAL_COST);
+#elifdef FPGA_LONG_PATH_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_LONG_PATH_COST);
+#elifdef FPGA_DISTANCE_SLACK_COST
+inline const std::string costStrategyName = STRINGIFY(FPGA_DISTANCE_SLACK_COST);
+#else
+inline const std::string costStrategyName;
+#endif
+
+inline constexpr auto reportPath = "reports/fpga";
+inline constexpr auto benchExt = ".dot";
 
 #endif //FPGA_PAR_H

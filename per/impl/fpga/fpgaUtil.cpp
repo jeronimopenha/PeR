@@ -12,7 +12,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
-                               const long totalCost, const long lPCost, const vector<vector<long> > &c2n,
+                               const std::string &costStrategy, const long totalCost, const vector<vector<long> > &c2n,
                                const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
                                vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
@@ -33,8 +33,8 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       triesPerNode(triesPerNode),
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
+      costStrategy(costStrategy),
       totalCost(totalCost),
-      lPCost(lPCost),
       c2n(c2n),
       n2c(n2c),
       hist(std::move(hist)),
@@ -56,19 +56,24 @@ string FpgaReportData::to_json() const {
             << "  \"nNodes\": " << nNodes << ",\n"
             << "  \"nIOs\": " << nIOs << ",\n"
             << "  \"nIOpCell\": " << nIOpCell << ",\n"
+#ifdef CACHE
             << "  \"cacheMisses\": " << cacheMisses << ",\n"
-            << "  \"w\": " << w << ",\n"
-            << "  \"wCost\": " << wCost << ",\n"
-            << "  \"cachePenalties\": " << cachePenalties << ",\n"
+               << "  \"w\": " << w << ",\n"
+               << "  \"wCost\": " << wCost << ",\n"
+               << "  \"cachePenalties\": " << cachePenalties << ",\n"
+#endif
             << "  \"clbTries\": " << clbTries << ",\n"
             << "  \"ioTries\": " << ioTries << ",\n"
+#ifdef CACHE
+            << "  \"tries\": " << triesP << ",\n"
+#else
             << "  \"tries\": " << tries << ",\n"
-            << "  \"triesP\": " << triesP << ",\n"
+#endif
             << "  \"triesPerNode\": " << triesPerNode << ",\n"
             << "  \"swaps\": " << swaps << ",\n"
             << "  \"edgesAlgorithm\": \"" << edgesAlgorithm << "\",\n"
-            << "  \"totalCost\": " << totalCost << ",\n"
-            << "  \"lPCost\": " << lPCost << "\n";
+            << "  \"costStrategy\": \"" << costStrategy << "\",\n"
+            << "  \"totalCost\": " << totalCost << ",\n";
     /*<< "  \"placement\": [";
 
 // Serialize vector<int> placement
@@ -275,7 +280,7 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
 }
 
 
-long fpgaCalcGraphTotalDistance(const vector<pair<long, long>> &n2c, const vector<pair<long, long> > &edges,
+long fpgaCalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vector<pair<long, long> > &edges,
                                 const long nCellsSqrt) {
     long totalDist = -static_cast<long>(edges.size());
 
@@ -531,6 +536,45 @@ bool fpgaIsIOCell(const long l, const long c, const long nCellsSqrt) {
     return l == 0 || l == nCellsSqrt - 1 || c == 0 || c == nCellsSqrt - 1;
 }
 
+//fixme Need to work with bits, not integers
+//fixme transform 16 in parameter
+long getQuadrant(const long l, const long c, const long nCells, const long nCellsSqrt) {
+    constexpr long nQuadrants = 16;
+
+    const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
+
+    const long quadSize = (nCellsSqrt + nQuadrantsSqrt - 1) / nQuadrantsSqrt;
+
+    const long quad_c = c / quadSize;
+    const long quad_l = l / quadSize;
+
+    return quad_l * 4 + quad_c;
+}
+
+vector<pair<long, int> > getAdjacentQuadrants(const long q) {
+    std::vector<pair<long, int> > adj;
+
+    constexpr long nQuadrants = 16;
+    const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
+
+
+    const long l = q / nQuadrantsSqrt;
+    const long c = q % nQuadrantsSqrt;
+
+    //fixme transform the direction number in an enum
+    // top
+    if (l > 0) adj.push_back({(l - 1) * nQuadrantsSqrt + c, 0});
+    // bottom
+    if (l < nQuadrantsSqrt - 1) adj.push_back({(l + 1) * nQuadrantsSqrt + c, 1});
+    // left
+    if (c > 0) adj.push_back({l * nQuadrantsSqrt + (c - 1), 2});
+    // right
+    if (c < nQuadrantsSqrt - 1) adj.push_back({l * nQuadrantsSqrt + (c + 1), 3});
+
+    return adj;
+}
+
+
 // Function to map normalized value (0 to 1) to simple RGB (blue to red)
 RGB valueToRGB(const float normValue) {
     struct ColorPoint {
@@ -571,8 +615,75 @@ RGB valueToRGB(const float normValue) {
 }
 
 
+void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
+              const std::string &filePath) {
+    constexpr long minImageSize = 1000;
+
+    const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
+    const long imageCoreSize = cellSize * nCellsSqrt;
+
+    constexpr long borderPadding = 10;
+    const long imageWidth = imageCoreSize + 2 * borderPadding;
+    const long imageHeight = imageCoreSize + 2 * borderPadding;
+
+    vector<unsigned char> imageData(imageWidth * imageHeight * 3, 255);
+
+    for (long y = 0; y <= imageCoreSize; y++) {
+        for (long x = 0; x <= imageCoreSize; x++) {
+            //border is black
+
+            constexpr RGB white{255, 255, 255};
+            constexpr RGB black{0, 0, 0};
+            constexpr RGB blue{120, 120, 255};
+            constexpr RGB red{255, 120, 120};
+            constexpr RGB gray{230, 230, 230};
+
+            RGB pixel = white;
+
+            const bool isBorder = (x == 0 || y == 0 || x == imageCoreSize || y == imageCoreSize);
+
+            if (isBorder) {
+                pixel = black;
+            } else {
+                const bool isGridLine = (x % cellSize == 0 || y % cellSize == 0);
+                const long srcX = x / cellSize;
+                const long srcY = y / cellSize;
+                const long cellIdx = srcY * nCellsSqrt + srcX;
+
+                if (isGridLine || fpgaIsInvalidCell(srcY, srcX, nCellsSqrt)) {
+                    //grid or invalid cell
+                    pixel = white;
+                } else {
+                    const bool isUsedCell = (static_cast<long>(c2n[cellIdx].size()) > 0l);
+
+                    if (cellIdx == lastPlaced.first) {
+                        pixel = blue;
+                    } else if (cellIdx == lastPlaced.second) {
+                        pixel = red;
+                    } else if (isUsedCell) {
+                        pixel = gray;
+                    }
+                }
+            }
+
+            //caclulate the coords
+            const long dstX = x + borderPadding;
+            const long dstY = y + borderPadding;
+            const long pixelIndex = (dstY * imageWidth + dstX) * 3;
+
+            //apply the values to the pixel
+            imageData[pixelIndex + 0] = pixel.r;
+            imageData[pixelIndex + 1] = pixel.g;
+            imageData[pixelIndex + 2] = pixel.b;
+        }
+    }
+
+    stbi_write_jpg(filePath.c_str(), static_cast<int>(imageWidth), static_cast<int>(imageHeight), 3,
+                   imageData.data(), 100);
+}
+
 void writeHeatmap(const std::vector<long> &heatData,
-                  const vector<vector<long>> &c2n,
+                  const vector<vector<long> > &c2n,
                   const long nCellsSqrt,
                   const std::string &basePath,
                   const std::string &reportPath,
@@ -618,7 +729,7 @@ void writeHeatmap(const std::vector<long> &heatData,
                     pixel = {255, 255, 255};
                 } else {
                     const long val = heatData[cellIdx];
-                    const bool isUsedCell = (c2n[cellIdx] != -1);
+                    const bool isUsedCell = (static_cast<int>(c2n[cellIdx].size()) != -1);
 
                     if (val != 0) {
                         //heatmap

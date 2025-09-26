@@ -1,6 +1,7 @@
 #include "common/cache.h"
 #include <fpga/fpgaPar.h>
 
+#ifdef CACHE
 using namespace std;
 
 Cache::Cache() {
@@ -33,3 +34,4 @@ long Cache::readCache(const long address, const vector<long> &vec) {
 
     return (cacheMiss) ? 1 : 0;
 }
+#endif
