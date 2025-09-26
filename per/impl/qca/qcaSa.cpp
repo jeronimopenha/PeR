@@ -162,8 +162,8 @@ QcaCost computeQcaCostForNode(
     if (node == -1) return cost;
 
     const long nCellsSqrt = g.nCellsSqrt;
-    const long x = getX(nodeCell, nCellsSqrt);
-    const long y = getY(nodeCell, nCellsSqrt);
+    const long x = getColumn(nodeCell, nCellsSqrt);
+    const long y = getLine(nodeCell, nCellsSqrt);
 
     const auto inDirs = qcaGetInputDirections(x, y);
     const auto outDirs = qcaGetOutputDirections(x, y);
@@ -189,8 +189,8 @@ QcaCost computeQcaCostForNode(
             continue;
 
         if (expectedInputs.count(cell)) {
-            const long dx = abs(getX(cell, nCellsSqrt) - x);
-            const long dy = abs(getY(cell, nCellsSqrt) - y);
+            const long dx = abs(getColumn(cell, nCellsSqrt) - x);
+            const long dy = abs(getLine(cell, nCellsSqrt) - y);
             const long dist = dx + dy;
             if (dist == 1)
                 cost.bonus += 1.0f;
@@ -207,8 +207,8 @@ QcaCost computeQcaCostForNode(
             continue;
 
         if (expectedOutputs.count(cell)) {
-            const long dx = abs(getX(cell, nCellsSqrt) - x);
-            const long dy = abs(getY(cell, nCellsSqrt) - y);
+            const long dx = abs(getColumn(cell, nCellsSqrt) - x);
+            const long dy = abs(getLine(cell, nCellsSqrt) - y);
             const long dist = dx + dy;
             if (dist == 1)
                 cost.bonus += 1.0f;

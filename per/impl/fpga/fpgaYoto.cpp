@@ -1,9 +1,6 @@
 #include <fpga/fpgaYoto.h>
-#include <fpga/fpgaPar.h>
+#include <common/util.h>
 #include <common/cache.h>
-#include <vector>
-#include <map>
-#include <unordered_set>
 
 using namespace std;
 
@@ -124,6 +121,8 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     }
 #endif
 
+    //fixme Needs a guarantee that it was placed because if not an error exists in the code!!!
+    //While exists an edge...
     for (auto [a,b]: ed) {
         edCounter++;
         const bool snapTaken = edCounter + 1 == nextSnapshotAt;
@@ -414,17 +413,17 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 if (runYoto) {
 #endif
-                //Basic Spiral strategy
-                lB = lA + ij[0];
-                cB = cA + ij[1];
+                    //Basic Spiral strategy
+                    lB = lA + ij[0];
+                    cB = cA + ij[1];
 
-                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                //prevents put a non IO node in an IO cell
-                if (isTargetCellIO)
-                    continue;
+                    isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                    //prevents put a non IO node in an IO cell
+                    if (isTargetCellIO)
+                        continue;
 
-                //find the idx for the target cell
-                targetCell = lB * nCellsSqrt + cB;
+                    //find the idx for the target cell
+                    targetCell = lB * nCellsSqrt + cB;
 #ifdef LIMIT_STRATEGY
                 }
 #endif

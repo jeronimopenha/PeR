@@ -1,9 +1,8 @@
 #ifndef FPGA_GRAPH_H
 #define FPGA_GRAPH_H
 
-#include <unordered_map>
+#include <common/definitions.h>
 #include <common/graph.h>
-#include <common/util.h>
 
 struct BorderInfo {
     long distance;
@@ -12,7 +11,7 @@ struct BorderInfo {
     //2 - left
     //3-  right
     int direction;
-    std::pair<long, long> coord; // coordenada da borda mais próxima
+    std::pair<long, long> coord; // nearest border
 };
 
 class FPGAGraph : public Graph {

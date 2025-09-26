@@ -1,17 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <filesystem>
-#include <iostream>
-#include <fstream>
-//#include <string>
-#include <vector>
-#include <random>
-#include <algorithm>
-
+#include <common/definitions.h>
 
 namespace fs = std::filesystem;
-
 
 template<typename T>
 void randomVector(std::vector<T> &vec) {
@@ -35,13 +27,13 @@ std::string funcKey(const std::string &a, const std::string &b);
 long getManhattanDist(long cell1, long cell2, long n_cells_sqrt);
 
 
-void createDir(const fs::path &pth);
+void createDir(const fs::path &path);
 
-long getX(long cellIndex, long nCellsSqrt);
+long getColumn(long cellIndex, long nCellsSqrt);
 
-long getY(long cellIndex, long nCellsSqrt);
+long getLine(long cellIndex, long nCellsSqrt);
 
-long getCellIndex(long x, long y, long nCellsSqrt);
+long getCellIndex(long column, long line, long nCellsSqrt);
 
 int randomInt(int min, int max);
 

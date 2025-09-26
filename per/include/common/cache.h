@@ -1,9 +1,11 @@
 #ifndef CACHE_H
 #define CACHE_H
 #include <vector>
-#include <fpga/fpgaPar.h>
 
-#ifdef CACHE
+#include <common/definitions.h>
+#include <common/cachePar.h>
+
+#ifdef USE_CACHE
 
 
 class Cache {

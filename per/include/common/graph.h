@@ -1,11 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <common/util.h>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <utility>
+#include <common/definitions.h>
 
 
 class Graph {
@@ -60,7 +56,7 @@ public:
 
     void readAsapAlap();
 
-void readTypeOfNodes();
+    void readTypeOfNodes();
 
     std::vector<std::pair<long, long> > getEdgesDepthFirstCritical(bool criticalPriority = true);
 
@@ -70,10 +66,9 @@ void readTypeOfNodes();
 
     std::vector<std::pair<long, long> > clearZigZagEdges(const std::vector<std::pair<long, long> > &edges) const;
 
-    void dfs(long idx, const std::vector<std::vector<long> > &adj, std::vector<bool> &visited,
-             std::vector<long> &topo_order);
+    /*void dfs(long idx, const std::vector<std::vector<long> > &adj, std::vector<bool> &visited,
+             std::vector<long> &topo_order);*/
 
-    void saveToDot( const std::string &filename);
-
+    void saveToDot(const std::string &filename);
 };
 #endif

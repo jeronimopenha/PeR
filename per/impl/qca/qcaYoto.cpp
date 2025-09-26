@@ -68,8 +68,8 @@ QcaReportData qcaYoto(QCAGraph &g) {
         // Now I will try to find an adjacent cell from A to place B
 
         // Find the idx of A's cell
-        const long xA = getX(n2c[a], nCellsSqrt);
-        const long yA = getY(n2c[a], nCellsSqrt);
+        const long xA = getColumn(n2c[a], nCellsSqrt);
+        const long yA = getLine(n2c[a], nCellsSqrt);
 
         vector<pair<long, long> > distCells;
 

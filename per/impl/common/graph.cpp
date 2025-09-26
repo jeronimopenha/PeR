@@ -1,13 +1,5 @@
 #include <common/graph.h>
-#include <tuple>
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <unordered_set>
-#include <queue>
-#include <stack>
+#include <common/util.h>
 
 using namespace std;
 
@@ -481,14 +473,14 @@ vector<pair<long, long> > Graph::clearZigZagEdges(const vector<pair<long, long> 
 }
 
 
-void Graph::dfs(const long idx, const vector<vector<long> > &adj, vector<bool> &visited, vector<long> &topo_order) {
+/*void Graph::dfs(const long idx, const vector<vector<long> > &adj, vector<bool> &visited, vector<long> &topo_order) {
     visited[idx] = true;
     for (const long v: adj[idx]) {
         if (!visited[v])
             dfs(v, adj, visited, topo_order);
     }
     topo_order.push_back(idx);
-}
+}*/
 
 void Graph::readGraphDataStr() {
     unordered_set<string> nodesStr;
@@ -604,13 +596,13 @@ void Graph::isolateMultiInputOutputs() {
             newOutputs.push_back(node);
     }
 
-    // Atualiza lista de outputs
+    // Update the output list
     outputNodes = newOutputs;
 
-    // Adiciona nova aresta ao grafo
+    // Add new edges to the graph
     gEdges.insert(gEdges.end(), newEdges.begin(), newEdges.end());
 
-    updateG(); // atualiza estruturas internas
+    updateG(); // Update the internal graph structures
 }
 
 void Graph::saveToDot(const string &filename) {

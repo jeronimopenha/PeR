@@ -4,14 +4,34 @@
 //todo Unified param header for all project and stop using parameters to choose something
 //todo those parameters will be used to choose what code will be compiled
 
-#include <common/definitions.h>
-
-//CACHE definitions on cachePar.h file
-
+#include <string>
 
 //PER FPGA  Paramenters File
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
+
+//#################################################################################################
+//fixme
+//CACHE definitions BEGIN
+
+//The code needs to simulate a cache or not
+//#define USE_CACHE
+
+//CACHE Parameters ******************************
+#ifdef USE_CACHE
+#define CACHE_LINES_EXP 10
+#define CACHE_LINES (1 << CACHE_LINES_EXP)
+#define CACHE_COLUMNS_EXP 2
+#define CACHE_COLUMNS (1 << CACHE_COLUMNS_EXP)
+#define CACHE_W_PARAMETER 8
+#define CACHE_W_COST 10
+#endif
+//***********************************************
+
+//CACHE definitions END
+//#################################################################################################
+
 
 //#################################################################################################
 //Algorithms parameters BEGIN

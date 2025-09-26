@@ -1,7 +1,7 @@
-#include "common/cache.h"
-#include <fpga/fpgaPar.h>
+#include <common/cache.h>
 
-#ifdef CACHE
+
+#ifdef USE_CACHE
 using namespace std;
 
 Cache::Cache() {
@@ -18,15 +18,15 @@ long Cache::readCache(const long address, const vector<long> &vec) {
     const bool cacheMiss = !cacheValid[line] | (cacheTag[line] != tag);
 
     if (cacheMiss) {
-        const long readAddressoffset = (address >> CACHE_COLUMNS_EXP) << CACHE_COLUMNS_EXP;
-        const long readTag = readAddressoffset >> (CACHE_LINES_EXP + CACHE_COLUMNS_EXP);
+        const long readAddressOffset = (address >> CACHE_COLUMNS_EXP) << CACHE_COLUMNS_EXP;
+        const long readTag = readAddressOffset >> (CACHE_LINES_EXP + CACHE_COLUMNS_EXP);
         cacheTag[line] = readTag;
         cacheValid[line] = true;
 
         for (long i = 0; i < CACHE_COLUMNS; i++) {
-            const long readAddress = readAddressoffset + i;
+            const long readAddress = readAddressOffset + i;
             if (readAddress < vec.size())
-                cacheData[line][i] = vec[readAddressoffset + i];
+                cacheData[line][i] = vec[readAddressOffset + i];
             else
                 cacheData[line][i] = 0;
         }

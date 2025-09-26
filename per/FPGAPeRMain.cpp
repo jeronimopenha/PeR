@@ -1,15 +1,19 @@
-#include <fpga/fpgaPar.h>
-#include  <fpga/fpgaUtil.h>
-#include  <fpga/fpgaGraph.h>
-#include "fpga/fpgaYoto.h"
-#include "fpga/fpgaYott.h"
-#include "fpga/fpgaSa.h"
-
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
 #include <omp.h>
+
+#include <fpga/fpgaPar.h>
+#include  <fpga/fpgaGraph.h>
+#include  <fpga/fpgaUtil.h>
+#include "fpga/fpgaYoto.h"
+//#include "fpga/fpgaYott.h"
+//#include "fpga/fpgaSa.h"
 
 using namespace std;
 
-//Choose the algorithm in util.h defines
+//Choose the parameters in fpgaPar.h definitions
 int main() {
     const string rootPath = verifyPath(getProjectRoot());
 
@@ -90,12 +94,12 @@ int main() {
             string fileName = g.dotName + "_" + to_string(i);
 
             //save reports for the 10 better placements
-            fpgaWriteReports(rootPath, reportPath, algPath, fileName, reports[i]);
+            fpgaWriteReports(rootPath, fileName, reports[i]);
 
 #if !defined(USE_CACHE)
             //generate reports and files for vpr
 #ifdef VPR_V5
-            fpgaWriteVpr5Data(rootPath, reportPath, algPath, fileName, reports[i], g);
+            fpgaWriteVpr5Data(rootPath, fileName, reports[i], g);
 #elifdef VPR_V9
             fpgaWriteVpr9Data(rootPath, reportPath, algPath, fileName, reports[i], g);
 #endif

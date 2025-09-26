@@ -1,6 +1,8 @@
+#include <common/util.h>
 #include <fpga/fpgaUtil.h>
-#include <utility>
 #include <common/std_image_write.h>
+
+#include <utility>
 
 
 using namespace std;
@@ -12,7 +14,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
                                long nNodes, long nIOs, const long cacheMisses, const long w, const long wCost,
                                const long cachePenalties, const long clbTries, const long ioTries, const long tries,
                                const long triesP, const long triesPerNode, const long swaps, string edges_algorithm,
-                               const std::string &costStrategy, const long totalCost, const vector<vector<long> > &c2n,
+                               std::string costStrategy, const long totalCost, const vector<vector<long> > &c2n,
                                const vector<pair<long, long> > &n2c, vector<map<long, long> > hist,
                                vector<long> heatEnd, vector<long> heatBegin, map<long, vector<long> > orDest)
     : _time(_time),
@@ -33,7 +35,7 @@ FpgaReportData::FpgaReportData(const double _time, string dotName, string dotPat
       triesPerNode(triesPerNode),
       swaps(swaps),
       edgesAlgorithm(std::move(edges_algorithm)),
-      costStrategy(costStrategy),
+      costStrategy(std::move(costStrategy)),
       totalCost(totalCost),
       c2n(c2n),
       n2c(n2c),
@@ -116,7 +118,7 @@ string FpgaReportData::metrics_to_json() const {
     }
     oss << "],\n";
 
-    // Histogramas
+    // Histograms
     oss << "  \"hist\": {\n";
     for (size_t h = 0; h < hist.size(); ++h) {
         oss << "    \"" << h << "\": {";
@@ -157,7 +159,7 @@ string FpgaReportData::metrics_to_json() const {
 
 void fpgaSavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
                        const long nCellsSqrt, const string &filename) {
-    string fileString = "";
+    string fileString;
 
     // write the dot header
     fileString += "digraph layout{\n";
@@ -266,7 +268,7 @@ vector<vector<long> > fpgaGetAdjCellsDist(const long nCellsSqrt) {
             }
         }
     }
-    // Shuffle the distance table if make_shuffle is set
+    // Shuffle the distance table if you make_shuffle is set
 
     auto rng = default_random_engine(chrono::system_clock::now().time_since_epoch().count());
     for (auto &d: distance_table_raw) {
@@ -321,8 +323,6 @@ long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
 
 
 void fpgaWriteReports(const std::string &basePath,
-                      const std::string &reportPath,
-                      const std::string &algPath,
                       const std::string &fileName,
                       const FpgaReportData &data) {
     string reportFullPath = basePath + reportPath + algPath + "/json/";
@@ -370,9 +370,6 @@ void fpgaWriteVpr9Data(const string &basePath,
     string blifFile = blifPath + fileName + ".blif";
 
     createDir(placePath);
-    //createDir(blifPath);
-
-    const long k = 6;
 
     ofstream file = ofstream(placeFile);
     if (file.is_open()) {
@@ -411,8 +408,6 @@ void fpgaWriteVpr9Data(const string &basePath,
 }
 
 void fpgaWriteVpr5Data(const string &basePath,
-                       const string &reportPath,
-                       const string &algPath,
                        const string &fileName,
                        const FpgaReportData &data,
                        FPGAGraph g) {
@@ -563,13 +558,13 @@ vector<pair<long, int> > getAdjacentQuadrants(const long q) {
 
     //fixme transform the direction number in an enum
     // top
-    if (l > 0) adj.push_back({(l - 1) * nQuadrantsSqrt + c, 0});
+    if (l > 0) adj.emplace_back((l - 1) * nQuadrantsSqrt + c, 0);
     // bottom
-    if (l < nQuadrantsSqrt - 1) adj.push_back({(l + 1) * nQuadrantsSqrt + c, 1});
+    if (l < nQuadrantsSqrt - 1) adj.emplace_back((l + 1) * nQuadrantsSqrt + c, 1);
     // left
-    if (c > 0) adj.push_back({l * nQuadrantsSqrt + (c - 1), 2});
+    if (c > 0) adj.emplace_back(l * nQuadrantsSqrt + (c - 1), 2);
     // right
-    if (c < nQuadrantsSqrt - 1) adj.push_back({l * nQuadrantsSqrt + (c + 1), 3});
+    if (c < nQuadrantsSqrt - 1) adj.emplace_back(l * nQuadrantsSqrt + (c + 1), 3);
 
     return adj;
 }
@@ -590,27 +585,27 @@ RGB valueToRGB(const float normValue) {
         {1.0f, 255, 0, 0} // red
     };
 
-    // limitar value entre 0 e 1
+    // limit value entre 0 e 1
     //value = max(0.0f, min(1.0f, value));
 
-    // encontrar faixa para interpolar
+    // find interpolar interval
     for (size_t i = 1; i < colors.size(); ++i) {
         if (normValue <= colors[i].position) {
-            const auto &c0 = colors[i - 1];
-            const auto &c1 = colors[i];
+            const auto &[position0, r0, g0, b0] = colors[i - 1];
+            const auto &[position1, r1, g1, b1] = colors[i];
 
-            float range = c1.position - c0.position;
-            float localVal = (normValue - c0.position) / range;
+            const float range = position1 - position0;
+            const float localVal = (normValue - position0) / range;
 
-            const int r = c0.r + (c1.r - c0.r) * localVal;
-            const int g = c0.g + (c1.g - c0.g) * localVal;
-            const int b = c0.b + (c1.b - c0.b) * localVal;
+            const int r = r0 + static_cast<int>(static_cast<float>(r1 - r0) * localVal);
+            const int g = g0 + static_cast<int>(static_cast<float>((g1 - g0)) * localVal);
+            const int b = b0 + static_cast<int>(static_cast<float>((b1 - b0)) * localVal);
 
             return {r, g, b};
         }
     }
 
-    // fallback (deve nunca acontecer)
+    // fallback (should never occur)
     return {255, 255, 255};
 }
 
@@ -666,7 +661,7 @@ void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlac
                 }
             }
 
-            //caclulate the coords
+            //calculate the coords
             const long dstX = x + borderPadding;
             const long dstY = y + borderPadding;
             const long pixelIndex = (dstY * imageWidth + dstX) * 3;
@@ -686,8 +681,6 @@ void writeHeatmap(const std::vector<long> &heatData,
                   const vector<vector<long> > &c2n,
                   const long nCellsSqrt,
                   const std::string &basePath,
-                  const std::string &reportPath,
-                  const std::string &algPath,
                   const std::string &fileName,
                   const std::string &suffix) {
     const string heatmapPath = basePath + reportPath + algPath + "/heatmap/";
@@ -733,7 +726,7 @@ void writeHeatmap(const std::vector<long> &heatData,
 
                     if (val != 0) {
                         //heatmap
-                        const float normVal = static_cast<float>(val - minVal) / (maxVal - minVal + 1e-5f);
+                        const float normVal = static_cast<float>(val - minVal) / (static_cast<float>(maxVal - minVal) + 1e-5f);
                         pixel = valueToRGB(normVal);
                     } else if (isUsedCell) {
                         //gray occupied cell
@@ -742,7 +735,7 @@ void writeHeatmap(const std::vector<long> &heatData,
                 }
             }
 
-            //caclulate the coords
+            //calculate the coords
             const long dstX = x + borderPadding;
             const long dstY = y + borderPadding;
             const long pixelIndex = (dstY * imageWidth + dstX) * 3;
@@ -758,6 +751,7 @@ void writeHeatmap(const std::vector<long> &heatData,
                    imageData.data(), 100);
 }
 
+/*
 void drawChar(std::vector<unsigned char> &image,
               const int imgWidth,
               const int x,
@@ -778,7 +772,7 @@ void drawChar(std::vector<unsigned char> &image,
         {'-', {"     ", "     ", "     ", " ### ", "     ", "     ", "     "}},
         {'.', {"     ", "     ", "     ", "     ", "     ", "  ## ", "  ## "}},
         {' ', {"     ", "     ", "     ", "     ", "     ", "     ", "     "}}
-    };*/
+    };#1#
 
     const auto it = font5x7.find(c);
     if (it == font5x7.end()) return;
@@ -910,7 +904,7 @@ void writeBoxplot(const std::map<long, long> &hist,
 
     std::vector<unsigned char> image(width * height * 3, 255);
 
-    // Reconstroi os dados brutos
+    // Make the raw data again
     std::vector<long> rawData;
     for (const auto &[val, count]: hist)
         rawData.insert(rawData.end(), count, val);
@@ -960,7 +954,7 @@ void writeBoxplot(const std::map<long, long> &hist,
             image[idx + 2] = 200;
         }
 
-    // Linhas verticais (whiskers e mediana)
+    // vertical lines (whiskers e median)
     auto drawVLine = [&](int x, int y1, int y2, RGB color) {
         for (int y = y1; y <= y2; ++y) {
             int idx = (y * width + x) * 3;
@@ -1013,3 +1007,4 @@ void writeBoxplot(const std::map<long, long> &hist,
 
     stbi_write_jpg(outFile.c_str(), width, height, 3, image.data(), 90);
 }
+*/

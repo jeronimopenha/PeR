@@ -1,8 +1,6 @@
+#include <fpga/fpgaPar.h>
 #include <fpga/fpgaGraph.h>
-#include <algorithm>
-#include <list>
-
-#include "fpga/fpgaPar.h"
+#include <common/util.h>
 
 using namespace std;
 

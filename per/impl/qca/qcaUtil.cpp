@@ -193,8 +193,8 @@ void qcaExportUSEToDot(const string &filename, const vector<vector<long>> &n2c, 
     //normal edges
 
     for (long cell = 0; cell < nCells; cell++) {
-        const long x0 = getX(cell, nCellsSqrt);
-        const long y0 = getY(cell, nCellsSqrt);
+        const long x0 = getColumn(cell, nCellsSqrt);
+        const long y0 = getLine(cell, nCellsSqrt);
         const vector<pair<long, long> > directions = qcaGetOutputDirections(x0, y0);
 
         for (const auto &[dx, dy]: directions) {

@@ -333,10 +333,10 @@ bool QCAGraph::verifyPlacement(const vector<long> &n2c, const vector<pair<long, 
             continue;
         }
 
-        const long srcX = getX(srcCell, nCellsSqrt);
-        const long srcY = getY(srcCell, nCellsSqrt);
-        const long dstX = getX(dstCell, nCellsSqrt);
-        const long dstY = getY(dstCell, nCellsSqrt);
+        const long srcX = getColumn(srcCell, nCellsSqrt);
+        const long srcY = getLine(srcCell, nCellsSqrt);
+        const long dstX = getColumn(dstCell, nCellsSqrt);
+        const long dstY = getLine(dstCell, nCellsSqrt);
 
         const auto outputDirs = qcaGetOutputDirections(srcX, srcY);
 

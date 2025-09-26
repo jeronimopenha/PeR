@@ -3,11 +3,9 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include <algorithm>
-#include <fpga/fpgaGraph.h>
-#include <common/util.h>
-#include <map>
+#include <common/definitions.h>
 #include <fpga/fpgaPar.h>
+#include <fpga/fpgaGraph.h>
 
 struct RGB {
     int r, g, b;
@@ -47,7 +45,7 @@ struct FpgaReportData {
     FpgaReportData(double _time, std::string dotName, std::string dotPath, std::string placer, long size, long nNodes,
                    long nIOs, long cacheMisses, long w, long wCost, long cachePenalties, long clbTries, long ioTries,
                    long tries, long triesP, long triesPerNode, long swaps, std::string edges_algorithm,
-                   const std::string &costStrategy, long totalCost, const std::vector<std::vector<long> > &c2n,
+                   std::string costStrategy, long totalCost, const std::vector<std::vector<long> > &c2n,
                    const std::vector<std::pair<long, long> > &n2c, std::vector<std::map<long, long> > hist,
                    std::vector<long> heatEnd, std::vector<long> heatBegin, std::map<long, std::vector<long> > orDest);
 
@@ -73,14 +71,10 @@ long fpgaMinBorderDist(long cell, long nCellsSqrt);
 
 
 void fpgaWriteReports(const std::string &basePath,
-                      const std::string &reportPath,
-                      const std::string &algPath,
                       const std::string &fileName,
                       const FpgaReportData &data);
 
 void fpgaWriteVpr5Data(const std::string &basePath,
-                       const std::string &reportPath,
-                       const std::string &algPath,
                        const std::string &fileName,
                        const FpgaReportData &data,
                        FPGAGraph g);
@@ -114,7 +108,7 @@ void writeHeatmap(const std::vector<long> &heatData,
                   const std::string &fileName,
                   const std::string &suffix);
 
-void drawChar(std::vector<unsigned char> &image,
+/*void drawChar(std::vector<unsigned char> &image,
               int imgWidth,
               int x,
               int y,
@@ -287,6 +281,6 @@ const std::map<char, std::vector<std::string> > font5x7 = {
             "     "
         }
     }
-};
+};*/
 
 #endif
