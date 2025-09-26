@@ -9,9 +9,6 @@ using namespace std;
 
 //todo posicionamento Melhorar um dia
 //ideia colocar blocks de neg e pos para col e cell pra tudo
-//pra isso vetores de offset serão gerados por delta col e delta line
-//todo Direcionar após dist 4 a 8 testar o posicionamento de CLBs
-//ainda falta implementar
 FpgaReportData fpgaYoto(FPGAGraph &g) {
     const long nCells = g.nCells;
     const long nCellsSqrt = g.nCellsSqrt;
@@ -32,8 +29,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     string alg_type;
 
 #ifdef SCAN_STRATEGY
-    //fixme Transform 16 in a parameter - quadrants
-    vector<vector<long> > scannedCells(16);
+    vector<vector<long> > scannedCells(SCAN_QUADRANTS);
 #endif
 
 
@@ -46,7 +42,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     constexpr long cacheMisses = 0;
 #endif
     //fixme cache variable
-
 
     std::vector hist(nCells, 0L);
     vector heatEnd(nCells, 0L);
@@ -419,17 +414,17 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 }
                 if (runYoto) {
 #endif
-                    //Basic Spiral strategy
-                    lB = lA + ij[0];
-                    cB = cA + ij[1];
+                //Basic Spiral strategy
+                lB = lA + ij[0];
+                cB = cA + ij[1];
 
-                    isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                    //prevents put a non IO node in an IO cell
-                    if (isTargetCellIO)
-                        continue;
+                isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                //prevents put a non IO node in an IO cell
+                if (isTargetCellIO)
+                    continue;
 
-                    //find the idx for the target cell
-                    targetCell = lB * nCellsSqrt + cB;
+                //find the idx for the target cell
+                targetCell = lB * nCellsSqrt + cB;
 #ifdef LIMIT_STRATEGY
                 }
 #endif
@@ -483,7 +478,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 #ifdef PRINT_IMG
                 //if (limitStrategyTrigger && !abortLimitStrategy)
-                    //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
+                //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
                 if (snapTaken)
                     writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt, "/home/jeronimo/tmp/placed.jpg");
                 //fixme transform 9 in a parameter

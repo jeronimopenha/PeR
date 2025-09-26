@@ -43,11 +43,18 @@
 //Wich algorithm will be run ********************
 //Needs at least one
 
+//fixme this algorithm was used with priority. Needed to change the code to use the correct one
 //Greedy algorithm that traverses the source and destination graphs once without priority
-#define FPGA_YOTO_DF
+//with depth first search
+//#define FPGA_YOTO_DF
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
+//with depth first search
 //#define FPGA_YOTO_DF_PRIO
+
+//Greedy algorithm that traverses the source and destination graphs once without priority
+//with zigzag search
+#define FPGA_YOTO_ZZ
 
 //Greedy algorithm that traverses the source and destination graphs twice with annotations on the edges
 //#define FPGA_YOTT
@@ -57,13 +64,13 @@
 //***********************************************
 
 //GREEDY algorithms parameters BRGIN ************
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
 
 //Number of random search sequences for placement
 #define N_DIST_VECTORS 4
 
 //Use search strategy or not
-//#define STRATEGY_SEARCH
+#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH
@@ -72,7 +79,11 @@
 //At least one strategy is needed
 //#define SPIRAL_STRATEGY
 #define SCAN_STRATEGY
-//#define CURTAIN_STRATEGY
+
+#ifdef SCAN_STRATEGY
+#define SCAN_QUADRANTS 16
+#endif
+
 #define LIMIT_STRATEGY
 
 #ifdef LIMIT_STRATEGY
@@ -103,21 +114,21 @@
 #define REPORT
 #ifdef REPORT
 
-#define REPORT_PREFIX "_09_14_"
+#define REPORT_PREFIX ""
 
 //Choose write Make metrics reports
 #define MAKE_METRICS
 
 //Choose a type of total cost
-#define FPGA_TOTAL_COST
-//#define FPGA_DISTANCE_SLACK_COST
+//#define FPGA_TOTAL_COST
+#define FPGA_DISTANCE_SLACK_COST
 
 
 //Save only the best one placement
 #define BEST_ONLY
 
 //VPR version
-//fixme
+//fixme need to debug if the vpr5 reports are still working
 //#define VPR_V5
 #define VPR_V9
 
@@ -129,8 +140,8 @@
 //Execution parameters Begin
 
 // Tests Quantity
-//#define RUN_1
-#define RUN_6
+#define RUN_1
+//#define RUN_6
 //#define RUN_60
 //#define RUN_600
 //#define RUN_10
@@ -144,9 +155,9 @@
 
 //Debugging *************************************
 //debugging defines
-//#define DEBUG
+#define DEBUG
 //#define PRINT_DOT
-//#define PRINT_IMG
+#define PRINT_IMG
 //*******************************
 
 //Execution parameters END
@@ -196,7 +207,7 @@ inline std::string algPath = [] {
     path += "sa";
 #endif
 
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
 #ifdef LIMIT_STRATEGY
     path += "_limit_" + std::to_string(LIMIT_DIST);
 #endif
