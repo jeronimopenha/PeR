@@ -488,9 +488,9 @@ bool fpgaIsIOCell(const long line, const long column, const long nCellsSqrt) {
     return line == 0 || line == nCellsSqrt - 1 || column == 0 || column == nCellsSqrt - 1;
 }
 
-#ifdef SCAN_STRATEGY
+#if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
 long getQuadrant(const long line, const long column, const long nCellsSqrt) {
-    constexpr long nQuadrants = SCAN_QUADRANTS;
+    constexpr long nQuadrants = QUADRANTS;
 
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
 
@@ -511,7 +511,7 @@ long getQuadrant(const long line, const long column, const long nCellsSqrt) {
 vector<pair<long, int> > getAdjacentQuadrants(const long q) {
     vector<pair<long, int> > adj;
 
-    constexpr long nQuadrants = SCAN_QUADRANTS;
+    constexpr long nQuadrants = QUADRANTS;
     const long nQuadrantsSqrt = ceil(sqrt(nQuadrants));
 
 

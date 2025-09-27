@@ -85,10 +85,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     map<long, long> histogram;
 #endif
 
-#ifdef SCAN_STRATEGY
-    vector<vector<long> > scannedCells(SCAN_QUADRANTS);
-#endif
-
 
 #ifdef PRINT_IMG
     writeMap(c2n, {-1, -1}, nCellsSqrt);
@@ -106,12 +102,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     //YOTO - Begin ****************************
 
 #ifdef SCAN_STRATEGY
+    vector<vector<long> > scannedCells(QUADRANTS);
     bool scanned = false;
 #endif
 
 #ifdef LIMIT_STRATEGY
     //fixme transform 16 in parameter
-    vector<long> limitQuadrants(16, 0l);
+    vector<long> limitQuadrants(QUADRANTS, 0l);
 
     for (long l = 1; l < nCellsSqrt - 1; l++) {
         for (long c = 1; c < nCellsSqrt - 1; c++) {
@@ -136,12 +133,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             nextSnapshotAt += snapshotInterval;
             snapId++;
         }
-
-
-        //fixme this can be used to make sure all nudes were placed
-#ifdef DEBUG
-        bool placed = false;
-#endif
 
 #ifdef MAKE_METRICS
         long unicTry = 0;
@@ -194,6 +185,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
+#ifdef PRINT_DOT
+            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
+#endif
             if (nextEdge)
                 continue;
 #ifdef MAKE_METRICS
@@ -227,8 +221,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         long targetCell = -1;
         const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
-        bool isTargetCellIO = true;
+        bool isTargetCellIO;
+#ifdef IO_STRATEGY
         bool ioPlaceFlag = false;
+#endif
         bool clbPlaceFlag = false;
         bool canPlace = false;
         bool runSpiral = true;
@@ -312,15 +308,15 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
                 isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
                 ioPlaceFlag = (isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
-                clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
-                canPlace = ioPlaceFlag || clbPlaceFlag;
+                canPlace = ioPlaceFlag;
             }
+            ioSetBorder = false;
         }
 #endif
 
+        //YOTO spiral basic strategy
         if (runSpiral) {
             distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
-            //YOTO spiral basic strategy
             for (const auto &ij: distVectors[distVectorCounter]) {
                 lB = lA + ij[0];
                 cB = cA + ij[1];
@@ -340,18 +336,16 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 if (isInvalidCell)
                     continue;
 
+                //find the idx for the target cell
+                targetCell = lB * nCellsSqrt + cB;
+
                 isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
                 clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
                 canPlace = clbPlaceFlag;
 
                 //prevents put a non IO node in an IO cell
-                if (!canPlace)
-                    continue;
-
-                //find the idx for the target cell
-                targetCell = lB * nCellsSqrt + cB;
-
-
+                if (canPlace)
+                    break;
             }
         }
         //dist = getManhattanDist(cellA, targetCell, nCellsSqrt);
@@ -367,13 +361,12 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             }*/
             n2c[b].first = targetCell;
             n2c[b].second = static_cast<long>(c2n[targetCell].size()) - 1;
-            ioSetBorder = false;
             distSlackCost += getManhattanDist(cellA, targetCell, nCellsSqrt) - 1 - g.slack[b];
             ++swaps;
 
 #ifdef LIMIT_STRATEGY
             if (!isTargetCellIO) {
-                const long quadrant = getQuadrant(lB, cB, nCellsSqrt, nCellsSqrt);
+                const long quadrant = getQuadrant(lB, cB, nCellsSqrt);
                 limitQuadrants[quadrant]--;
             }
 #endif
@@ -391,6 +384,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 originDestin[cellA] = vector<long>();
             }
             originDestin[cellA].push_back(targetCell);
+#endif
+
+#ifdef PRINT_DOT
+            fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
             /*long _max = 2 * dist * (dist + 1);
             if ((unicTry > _max) && !IsBIoNode
@@ -416,17 +413,12 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             if (snapTaken)
                 fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
-            break;
         }
     }
 
 #ifdef MAKE_METRICS
-    if
-    (snapId < TOTAL_SNAPSHOTS
-    )
-        histogramFull
-                .
-                push_back(histogram);
+    if (snapId < TOTAL_SNAPSHOTS)
+        histogramFull.push_back(histogram);
 #endif
 
 #ifdef PRINT_DOT
@@ -455,11 +447,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
     const long nIOs = static_cast<long>(g.outputNodes.size() + g.inputNodes.size());
 
-    if
-    (swaps
-     !=
-     nNodes
-    ) {
+    if (swaps != nNodes) {
         cout << "Error on processing file " << g.dotName << ". Failed to place some nodes." << endl;
     }
 

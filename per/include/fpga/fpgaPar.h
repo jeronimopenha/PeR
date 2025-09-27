@@ -56,17 +56,16 @@
 #ifdef STRATEGY_SEARCH
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
-//At least one strategy is needed
-//#define SPIRAL_STRATEGY
+
 //#define SCAN_STRATEGY
 
-#define IO_STRATEGY
+//#define IO_STRATEGY
 
-#ifdef SCAN_STRATEGY
-#define SCAN_QUADRANTS 16
+#define LIMIT_STRATEGY
+
+#if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
+#define QUADRANTS 16
 #endif
-
-//#define LIMIT_STRATEGY
 
 #ifdef LIMIT_STRATEGY
 //Set the maximum search distance before using the chosen strategy
@@ -96,7 +95,7 @@
 #define REPORT_PREFIX ""
 
 //Choose write Make metrics reports
-#define MAKE_METRICS
+//#define MAKE_METRICS
 
 //Choose a type of total cost
 //#define FPGA_TOTAL_COST
@@ -135,7 +134,7 @@
 //debugging defines
 #define DEBUG
 
-//#define PRINT_DOT
+#define PRINT_DOT
 #ifdef PRINT_DOT
 #define DOT_PATH  "/home/jeronimo/tmp/placed.dot"
 #endif

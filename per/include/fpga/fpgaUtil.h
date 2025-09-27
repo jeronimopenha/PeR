@@ -119,7 +119,7 @@ bool fpgaIsInvalidCell(long line, long column, long nCellsSqrt);
 
 bool fpgaIsIOCell(long line, long column, long nCellsSqrt);
 
-#ifdef SCAN_STRATEGY
+#if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
 long getQuadrant(long line, long column, long nCellsSqrt);
 
 std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
