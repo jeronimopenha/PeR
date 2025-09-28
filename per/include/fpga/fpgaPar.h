@@ -57,15 +57,15 @@
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
 
-//#define SCAN_STRATEGY
+#define SCAN_STRATEGY
 
 #define IO_STRATEGY
 
 #define LIMIT_STRATEGY
 
 #if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
-#define QUADRANTS 16
-#define STRATEGY_PERCENTAGE 80
+#define QUADRANTS 16L
+#define STRATEGY_PERCENTAGE 90
 #endif
 
 #ifdef LIMIT_STRATEGY
@@ -141,7 +141,7 @@
 #endif
 
 
-#define PRINT_IMG
+//#define PRINT_IMG
 #ifdef PRINT_IMG
 #define JPG_PATH  "/home/jeronimo/tmp/placed.jpg"
 #endif

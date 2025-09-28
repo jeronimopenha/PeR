@@ -184,9 +184,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
-#ifdef PRINT_IMG
+/*#ifdef PRINT_IMG
             writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif
+#endif*/
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -314,6 +314,52 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         }
 #endif
 
+#ifdef SCAN_STRATEGY
+        if (snapId >= STRATEGY_PERCENTAGE * TOTAL_SNAPSHOTS / 100 && !scanned) {
+            scanned = true;
+#ifdef MAKE_METRICS
+            clbTries += static_cast<long>(nNodes - g.innerNodes.size());
+            unicTry += static_cast<long>(nNodes - g.innerNodes.size());
+#endif
+            //scanning all cells and inserting the empty ones in the corresponding quadrant
+            for (long l = 1; l < nCellsSqrt - 1; l++) {
+                for (long c = 1; c < nCellsSqrt - 1; c++) {
+                    const long cell = l * nCellsSqrt + c;
+                    if (c2n[cell].empty()) {
+                        const long quadrant = getQuadrant(l, c, nCellsSqrt);
+                        scannedCells[quadrant].push_back(cell);
+                    }
+                }
+            }
+            continue;
+        }
+
+        if (scanned) {
+            bool scannedFound = false;
+            runSpiral = false;
+            while (!scannedFound) {
+#ifdef MAKE_METRICS
+                clbTries++;
+                unicTry++;
+#endif
+                if (!scannedCells[quadCounter].empty()) {
+                    targetCell = scannedCells[quadCounter].back();
+                    scannedCells[quadCounter].pop_back();
+                    scannedFound = true;
+                    canPlace = true;
+#ifdef PRINT_IMG
+                    writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt);
+#endif
+                } else {
+                    quadCounter++;
+                    if (quadCounter == QUADRANTS) {
+                        quadCounter = 0;
+                    }
+                }
+            }
+        }
+#endif
+
         //YOTO spiral basic strategy
         if (runSpiral) {
             distVectorCounter = (distVectorCounter < N_DIST_VECTORS - 1) ? distVectorCounter + 1 : 0;
@@ -338,7 +384,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                 //find the idx for the target cell
                 targetCell = lB * nCellsSqrt + cB;
 #ifdef LIMIT_STRATEGY
-                long dist;
+                //long dist;
                 bool limitStrategyTrigger = false;
                 const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
                 if (lmsDist > LIMIT_DIST && snapId < STRATEGY_PERCENTAGE * TOTAL_SNAPSHOTS / 100) {
@@ -392,9 +438,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
                             targetCell = lB * nCellsSqrt + cB;
                             if (c2n[targetCell].empty()) {
-#ifdef PRINT_IMG
+/*#ifdef PRINT_IMG
                                 writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif
+#endif*/
                                 break;
                             }
                             limitAcc++;
@@ -454,9 +500,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             originDestin[cellA].push_back(targetCell);
 #endif
 
-#ifdef PRINT_IMG
+/*#ifdef PRINT_IMG
             writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif
+#endif*/
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -582,7 +628,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
 
 #ifdef SCAN_STRATEGY
-        //fixme Transform 9 in a parameter!!!
         if (snapId >= 80 * totalSnapshots / 100 && !scanned) {
             scanned = true;
             clbTries += static_cast<long>(nNodes - g.innerNodes.size());
@@ -614,63 +659,4 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         }
 #endif
 
-        #ifdef LIMIT_STRATEGY
-            else {
-                long maxValue;
-                pair<long, int> maxQuadrant;
-                bool runYoto = true;
-
-                if (limitStrategyTrigger && !abortLimitStrategy) {
-                    const long quadrantA = getQuadrant(lA, cA, nCellsSqrt, nCellsSqrt);
-                    std::vector<pair<long, int> > adjacentQuadrants = getAdjacentQuadrants(quadrantA);
-                    maxQuadrant = adjacentQuadrants.front();
-                    maxValue = limitQuadrants[maxQuadrant.first];
-                    for (int i = 1; i < adjacentQuadrants.size(); i++) {
-                        const pair<long, int> quadrantTmp = adjacentQuadrants[i];
-                        const long valueTmp = limitQuadrants[quadrantTmp.first];
-                        if (valueTmp > maxValue) {
-                            maxValue = valueTmp;
-                            maxQuadrant = quadrantTmp;
-                        }
-                    }
-                    if (maxValue > 0) {
-                        while (true) {
-                            switch (maxQuadrant.second) {
-                                case 0: // top
-                                    lB = lA - limitAcc;
-                                    cB = cA;
-                                    break;
-                                case 1: // bottom
-                                    lB = lA + limitAcc;
-                                    cB = cA;
-                                    break;
-                                case 2: // left
-                                    lB = lA;
-                                    cB = cA - limitAcc;
-                                    break;
-                                case 3: // right
-                                    lB = lA;
-                                    cB = cA + limitAcc;
-                                    break;
-                            }
-                            isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                            const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
-                            // Check if the target cell is nor allowed, go to next
-                            if (isInvalidCell || isTargetCellIO) {
-                                abortLimitStrategy = true;
-                                break;
-                            }
-                            targetCell = lB * nCellsSqrt + cB;
-                            if (c2n[targetCell].empty()) {
-                                runYoto = false;
-                                break;
-                            }
-                            limitAcc++;
-                            unicTry++;
-                            clbTries++;
-                        }
-                    }
-                }
-                if (runYoto) {
-#endif
  */
