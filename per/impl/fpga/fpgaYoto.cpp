@@ -89,7 +89,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #ifdef PRINT_IMG
     writeMap(c2n, {-1, -1}, nCellsSqrt);
 #endif
-
 #ifdef PRINT_DOT
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -185,6 +184,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
+#ifdef PRINT_IMG
+            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -222,9 +224,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         const bool IsBIoNode = g.nSuccV[b] == 0 || g.nPredV[b] == 0;
 
         bool isTargetCellIO;
-#ifdef IO_STRATEGY
         bool ioPlaceFlag = false;
-#endif
         bool clbPlaceFlag = false;
         bool canPlace = false;
         bool runSpiral = true;
@@ -330,20 +330,88 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     clbTries++;
                 }
 #endif
-
                 // Check if the target cell is nor allowed, go to next
-                const bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
+                bool isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
                 if (isInvalidCell)
                     continue;
 
                 //find the idx for the target cell
                 targetCell = lB * nCellsSqrt + cB;
+#ifdef LIMIT_STRATEGY
+                long dist;
+                bool limitStrategyTrigger = false;
+                const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
+                if (lmsDist > LIMIT_DIST && snapId < STRATEGY_PERCENTAGE * TOTAL_SNAPSHOTS / 100) {
+                    limitStrategyTrigger = true;
+                }
+
+                long maxValue;
+                pair<long, int> maxQuadrant;
+
+
+                if (limitStrategyTrigger && !abortLimitStrategy) {
+                    const long quadrantA = getQuadrant(lA, cA, nCellsSqrt);
+                    std::vector<pair<long, int> > adjacentQuadrants = getAdjacentQuadrants(quadrantA);
+                    maxQuadrant = adjacentQuadrants.front();
+                    maxValue = limitQuadrants[maxQuadrant.first];
+                    for (int i = 1; i < adjacentQuadrants.size(); i++) {
+                        const pair<long, int> quadrantTmp = adjacentQuadrants[i];
+                        const long valueTmp = limitQuadrants[quadrantTmp.first];
+                        if (valueTmp > maxValue) {
+                            maxValue = valueTmp;
+                            maxQuadrant = quadrantTmp;
+                        }
+                    }
+                    if (maxValue > 0) {
+                        while (true) {
+                            switch (maxQuadrant.second) {
+                                case 0: // top
+                                    lB = lA - limitAcc;
+                                    cB = cA;
+                                    break;
+                                case 1: // bottom
+                                    lB = lA + limitAcc;
+                                    cB = cA;
+                                    break;
+                                case 2: // left
+                                    lB = lA;
+                                    cB = cA - limitAcc;
+                                    break;
+                                case 3: // right
+                                    lB = lA;
+                                    cB = cA + limitAcc;
+                                    break;
+                            }
+                            isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
+                            isInvalidCell = fpgaIsInvalidCell(lB, cB, nCellsSqrt);
+                            // Check if the target cell is nor allowed, go to next
+                            if (isInvalidCell || isTargetCellIO) {
+                                abortLimitStrategy = true;
+                                break;
+                            }
+
+                            targetCell = lB * nCellsSqrt + cB;
+                            if (c2n[targetCell].empty()) {
+#ifdef PRINT_IMG
+                                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
+                                break;
+                            }
+                            limitAcc++;
+#ifdef MAKE_METRICS
+                            unicTry++;
+                            clbTries++;
+#endif
+                        }
+                    }
+                }
+#endif
 
                 isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
-                clbPlaceFlag = (!isTargetCellIO && c2n[targetCell].empty());
-                canPlace = clbPlaceFlag;
+                clbPlaceFlag = (!IsBIoNode && !isTargetCellIO && c2n[targetCell].empty());
+                ioPlaceFlag = (IsBIoNode && isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
+                canPlace = clbPlaceFlag || ioPlaceFlag;
 
-                //prevents put a non IO node in an IO cell
                 if (canPlace)
                     break;
             }
@@ -386,6 +454,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             originDestin[cellA].push_back(targetCell);
 #endif
 
+#ifdef PRINT_IMG
+            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -509,17 +580,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 /*
  *
 
-#ifdef LIMIT_STRATEGY
-        long dist;
-        bool limitStrategyTrigger = false;
-        targetCell = lB * nCellsSqrt + cB;
-        const long lmsDist = getManhattanDist(cellA, targetCell, nCellsSqrt);
-        //fixme transform 7 in a parameter
-        if (lmsDist > static_cast<long>(LIMIT_DIST) && !fpgaIsInvalidCell(lB, cB, nCellsSqrt) && snapId < 80 *
-            totalSnapshots / 100) {
-            limitStrategyTrigger = true;
-            }
-#endif
 
 #ifdef SCAN_STRATEGY
         //fixme Transform 9 in a parameter!!!

@@ -17,7 +17,7 @@
 //Algorithms parameters BEGIN
 
 //Choose the I/O qty of ports per cell to the architecture
-#define IO_NUMBER  8
+#define IO_NUMBER  3
 //TODO CLB N LUT number per cell too
 
 //Wich algorithm will be run ********************
@@ -59,23 +59,24 @@
 
 //#define SCAN_STRATEGY
 
-//#define IO_STRATEGY
+#define IO_STRATEGY
 
 #define LIMIT_STRATEGY
 
 #if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
 #define QUADRANTS 16
+#define STRATEGY_PERCENTAGE 80
 #endif
 
 #ifdef LIMIT_STRATEGY
 //Set the maximum search distance before using the chosen strategy
-#define LIMIT_DIST 2
-//#define LIMIT_DIST 3
-//#define LIMIT_DIST 4
-//#define LIMIT_DIST 5
-//#define LIMIT_DIST  6
-//#define LIMIT_DIST 7
-//#define LIMIT_DIST 8
+#define LIMIT_DIST 2L
+//#define LIMIT_DIST 3L
+//#define LIMIT_DIST 4L
+//#define LIMIT_DIST 5L
+//#define LIMIT_DIST  6L
+//#define LIMIT_DIST 7L
+//#define LIMIT_DIST 8L
 #endif
 
 #endif
@@ -134,7 +135,7 @@
 //debugging defines
 #define DEBUG
 
-#define PRINT_DOT
+//#define PRINT_DOT
 #ifdef PRINT_DOT
 #define DOT_PATH  "/home/jeronimo/tmp/placed.dot"
 #endif
