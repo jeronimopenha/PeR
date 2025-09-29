@@ -43,7 +43,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     string alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF_HY
     //****************************************************************
-    ed;
+    ed = g.getEdgesHybrid();
     string alg_type = "HYBRID";
 #elifdef FPGA_YOTO_DF
     ed = g.getEdgesDepthFirst(false);
@@ -156,6 +156,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             nextEdge = true;
         } else if (n2c[a].first == -1) {
             targetNode = a;
+            if (g.nSuccV[a] != 0) {
+                int asdf=1;
+            }
         }
 
         if (targetNode != -1) {
@@ -501,7 +504,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef PRINT_IMG
-            //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
 #endif
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);

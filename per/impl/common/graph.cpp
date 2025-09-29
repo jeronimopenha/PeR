@@ -267,6 +267,126 @@ void Graph::readAsapAlap() {
     }
 }
 
+vector<pair<long, long> > Graph::getEdgesHybrid() {
+    using Edge = std::pair<long, long>;
+
+    vector<pair<long, long> > edges;
+
+    const long k = static_cast<long>(outputNodes.size());
+    //out-slack0,1,>1-vector = edge or->dest
+    vector<vector<vector<Edge> > > edgesTmp(k, vector<vector<Edge> >(3));
+
+    vector<long> outputList = outputNodes;
+    outputList.insert(outputList.end(), disconnectedNodes.begin(), disconnectedNodes.end());
+
+    sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
+        const long slack_a = slack[a];
+        const long slack_b = slack[b];
+        return slack_a < slack_b;
+    });
+
+    unordered_map<long, long> outIdx;
+    outIdx.reserve(k * 2);
+    for (long i = 0; i < k; i++) {
+        outIdx[outputList[i]] = i;
+    }
+
+    //outparent, origin, destin
+    queue<tuple<long, long, long> > q;
+
+    vector<bool> visited(nNodes, false);
+
+    for (long i = 0; i < k; i++) {
+        const long y = outputList[i];
+        q.emplace(i, -1, y);
+    }
+
+    auto bucket_of = [&](const long v)-> int {
+        const long s = slack[v];
+        return (s <= 0) ? 0 : (s == 1) ? 1 : 2;
+    };
+
+    vector<long> neigh;
+
+    while (!q.empty()) {
+        auto [own, last, node] = q.front();
+        q.pop();
+
+        if (visited[node]) continue;
+        visited[node] = true;
+
+        if (last != -1) {
+            const long bucket = bucket_of(node);
+            edgesTmp[own][bucket].emplace_back(last, node);
+        }
+
+        neigh.clear();
+        neigh.insert(neigh.end(), predList[node].begin(), predList[node].end());
+
+        sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
+            const long slack_a = slack[a];
+            const long slack_b = slack[b];
+            return slack_a < slack_b;
+        });
+
+        // Process all neighbors
+        for (const auto pred: neigh) {
+            if (!visited[pred]) {
+                q.emplace(own, node, pred);
+            }
+        }
+    }
+
+    const int B = 1;
+    for (int bucket = 0; bucket < 3; ++bucket) {
+        vector<size_t> pos(k, 0);
+        bool any = true;
+        while (any) {
+            any = false;
+            for (long owner = 0; owner < k; ++owner) {
+                auto &vec = edgesTmp[owner][bucket];
+                int take = 0;
+                while (pos[owner] < vec.size() && take < B) {
+                    const long last = vec[pos[owner]].first;
+                    const long node = vec[pos[owner]].second;
+                    edges.push_back(vec[pos[owner]++]);
+                    ++take;
+                    any = true;
+                }
+            }
+        }
+    }
+    fill(visited.begin(), visited.end(), false);
+
+    for (auto [fst,snd]:edges) {
+        const bool IsBONode = nSuccV[fst] == 0;
+        if (IsBONode)
+            visited[fst] = true;
+        if (!visited[fst]) {
+            cout << "error edges"<<endl;
+            exit(0);
+        }
+        visited[snd] = true;
+
+    }
+    /*for (long slackIdx = 0; slackIdx < 3; slackIdx++) {
+        bool outProcessing = true;
+        while (outProcessing) {
+            outProcessing = false;
+            for (int outIdx = 0; outIdx < static_cast<long>(outputNodes.size()); ++outIdx) {
+                if (edgesTmp[outIdx][slackIdx].empty())
+                    continue;
+                const long last = edgesTmp[outIdx][slackIdx].front().first;
+                const long node = edgesTmp[outIdx][slackIdx].front().second;
+                edges.emplace_back(last, node);
+                outProcessing = true;
+            }
+        }
+    }*/
+
+    return edges;
+}
+
 /**
  * Returns a list of edges made from a depth first search with critical path priority or not
  * @param criticalPriority
@@ -275,7 +395,7 @@ void Graph::readAsapAlap() {
 vector<pair<long, long> > Graph::getEdgesDepthFirst(const bool criticalPriority) {
     vector<pair<long, long> > edges;
 
-    vector<long> visited;
+    vector<long> visited(nNodes);
     if (visited.size() != nNodes) {
         visited.resize(nNodes);
     }
