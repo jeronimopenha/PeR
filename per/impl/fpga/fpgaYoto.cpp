@@ -41,6 +41,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #elifdef FPGA_YOTO_DF_PRIO
     ed = g.getEdgesDepthFirst();
     string alg_type = "DEPTH_FIRST_PRIORITY";
+#elifdef FPGA_YOTO_DF_HY
+    //****************************************************************
+    ed;
+    string alg_type = "HYBRID";
 #elifdef FPGA_YOTO_DF
     ed = g.getEdgesDepthFirst(false);
     string alg_type = "DEPTH_FIRST";

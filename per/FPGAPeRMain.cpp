@@ -48,7 +48,7 @@ int main() {
             FpgaReportData report;
 
             //defining which algorithm will be run
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)||defined(FPGA_YOTO_DF_HY)
             report = fpgaYoto(g);
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
             report = fpgaYott(g);
@@ -78,8 +78,8 @@ int main() {
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
 #else
-            const int limit = min(10, static_cast<int>(reports.size()));
-            for (int i = 0; i < limit; i++) {
+        const int limit = min(10, static_cast<int>(reports.size()));
+        for (int i = 0; i < limit; i++) {
 #endif
             //savePlacedDot(reports[i].n2c, gEdges, nCellsSqrt, "/home/jeronimo/placed.dot");
             cout << g.dotName << endl;

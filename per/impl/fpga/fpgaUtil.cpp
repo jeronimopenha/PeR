@@ -65,23 +65,23 @@ FpgaReportData::FpgaReportData(
 #ifdef MAKE_METRICS
       ,
 #ifdef USE_CACHE
-cacheMisses(cacheMisses),
-        w(w),
-        wCost(wCost),
-        cachePenalties(cachePenalties),
+      cacheMisses(cacheMisses),
+              w(w),
+              wCost(wCost),
+              cachePenalties(cachePenalties),
 #endif
-clbTries(clbTries),
-        ioTries(ioTries),
-        tries(tries),
+      clbTries(clbTries),
+      ioTries(ioTries),
+      tries(tries),
 #ifdef USE_CACHE
-triesP(triesP),
+      triesP(triesP),
 #endif
-triesPerNode(triesPerNode),
-        swaps(swaps),
-        hist(move(hist)),
-        heatEnd(move(heatEnd)),
-        heatBegin(move(heatBegin)),
-        orDest(move(orDest))
+      triesPerNode(triesPerNode),
+      swaps(swaps),
+      hist(move(hist)),
+      heatEnd(move(heatEnd)),
+      heatBegin(move(heatBegin)),
+      orDest(move(orDest))
 #endif
 {
 }
@@ -114,14 +114,14 @@ string FpgaReportData::to_json() const {
                << "  \"cachePenalties\": " << cachePenalties << ",\n"
 #endif
             << "  \"clbTries\": " << clbTries << ",\n"
-               << "  \"ioTries\": " << ioTries << ",\n"
+            << "  \"ioTries\": " << ioTries << ",\n"
 #ifdef CACHE
             << "  \"tries\": " << triesP << ",\n"
 #else
             << "  \"tries\": " << tries << ",\n"
 #endif
             << "  \"triesPerNode\": " << triesPerNode << ",\n"
-               << "  \"swaps\": " << swaps << ",\n"
+            << "  \"swaps\": " << swaps << ",\n"
 #endif
             ;
     /*<< "  \"placement\": [";
@@ -218,37 +218,6 @@ long fpgaCalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vect
     return totalDist;
 }
 #endif
-
-/*long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long> &n2c, const long nCellsSqrt) {
-    long totalDist = 0;
-
-    for (long idx = 0; idx < longestPath.size() - 1; idx++) {
-        const long tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx + 1]], nCellsSqrt);
-
-        // Acc the total distance
-        totalDist += tempDist;
-    }
-
-    return totalDist;
-}*/
-
-/**
- * Finds wich border is near to the node
- * @param cell
- * @param nCellsSqrt
- * @return
- */
-long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
-    const long line = getLine(cell, nCellsSqrt);
-    const long column = getColumn(cell, nCellsSqrt);
-
-    long d_top = line;
-    long d_bottom = nCellsSqrt - 1 - line;
-    long d_left = column;
-    long d_right = nCellsSqrt - 1 - column;
-
-    return min({d_top, d_bottom, d_left, d_right});
-}
 
 
 /**
@@ -532,49 +501,6 @@ vector<pair<long, int> > getAdjacentQuadrants(const long q) {
 }
 #endif
 
-/**
- * Function to map normalized value (0 to 1) to simple RGB (blue to red)
- * @param normValue
- * @return
- */
-RGB valueToRGB(const float normValue) {
-    struct ColorPoint {
-        float position; // between 0.0 e 1.0
-        int r, g, b;
-    };
-
-    const vector<ColorPoint> colors = {
-        //{0.0f, 255, 255, 255}, // white
-        {0.0f, 173, 216, 230}, //lightblue
-        {0.33f, 100, 149, 237}, // cornflower blue
-        {0.66f, 138, 43, 226}, // blueviolet
-        {1.0f, 255, 0, 0} // red
-    };
-
-    // limit value entre 0 e 1
-    //value = max(0.0f, min(1.0f, value));
-
-    // find interpolar interval
-    for (size_t i = 1; i < colors.size(); ++i) {
-        if (normValue <= colors[i].position) {
-            const auto &[position0, r0, g0, b0] = colors[i - 1];
-            const auto &[position1, r1, g1, b1] = colors[i];
-
-            const float range = position1 - position0;
-            const float localVal = (normValue - position0) / range;
-
-            const int r = r0 + static_cast<int>(static_cast<float>(r1 - r0) * localVal);
-            const int g = g0 + static_cast<int>(static_cast<float>((g1 - g0)) * localVal);
-            const int b = b0 + static_cast<int>(static_cast<float>((b1 - b0)) * localVal);
-
-            return {r, g, b};
-        }
-    }
-
-    // fallback (should never occur)
-    return {255, 255, 255};
-}
-
 
 #ifdef MAKE_METRICS
 /**
@@ -799,6 +725,84 @@ void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlac
                    imageData.data(), 100);
 }
 #endif
+
+
+/*long fpgaCalcGraphLPDistance(const vector<long> &longestPath, const vector<long> &n2c, const long nCellsSqrt) {
+    long totalDist = 0;
+
+    for (long idx = 0; idx < longestPath.size() - 1; idx++) {
+        const long tempDist = getManhattanDist(n2c[longestPath[idx]], n2c[longestPath[idx + 1]], nCellsSqrt);
+
+        // Acc the total distance
+        totalDist += tempDist;
+    }
+
+    return totalDist;
+}*/
+
+/*/**
+ * Finds wich border is near to the node
+ * @param cell
+ * @param nCellsSqrt
+ * @return
+ #1#
+long fpgaMinBorderDist(const long cell, const long nCellsSqrt) {
+    const long line = getLine(cell, nCellsSqrt);
+    const long column = getColumn(cell, nCellsSqrt);
+
+    long d_top = line;
+    long d_bottom = nCellsSqrt - 1 - line;
+    long d_left = column;
+    long d_right = nCellsSqrt - 1 - column;
+
+    return min({d_top, d_bottom, d_left, d_right});
+}*/
+
+
+/*
+/**
+ * Function to map normalized value (0 to 1) to simple RGB (blue to red)
+ * @param normValue
+ * @return
+ #1#
+RGB valueToRGB(const float normValue) {
+    struct ColorPoint {
+        float position; // between 0.0 e 1.0
+        int r, g, b;
+    };
+
+    const vector<ColorPoint> colors = {
+        //{0.0f, 255, 255, 255}, // white
+        {0.0f, 173, 216, 230}, //lightblue
+        {0.33f, 100, 149, 237}, // cornflower blue
+        {0.66f, 138, 43, 226}, // blueviolet
+        {1.0f, 255, 0, 0} // red
+    };
+
+    // limit value entre 0 e 1
+    //value = max(0.0f, min(1.0f, value));
+
+    // find interpolar interval
+    for (size_t i = 1; i < colors.size(); ++i) {
+        if (normValue <= colors[i].position) {
+            const auto &[position0, r0, g0, b0] = colors[i - 1];
+            const auto &[position1, r1, g1, b1] = colors[i];
+
+            const float range = position1 - position0;
+            const float localVal = (normValue - position0) / range;
+
+            const int r = r0 + static_cast<int>(static_cast<float>(r1 - r0) * localVal);
+            const int g = g0 + static_cast<int>(static_cast<float>((g1 - g0)) * localVal);
+            const int b = b0 + static_cast<int>(static_cast<float>((b1 - b0)) * localVal);
+
+            return {r, g, b};
+        }
+    }
+
+    // fallback (should never occur)
+    return {255, 255, 255};
+}
+*/
 
 
 /*

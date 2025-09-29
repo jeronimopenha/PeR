@@ -32,9 +32,13 @@
 //with depth first search
 //#define FPGA_YOTO_DF_PRIO
 
+//Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
+//with hybrid traversal
+#define FPGA_YOTO_DF_HY
+
 //Greedy algorithm that traverses the source and destination graphs once without priority
 //with zigzag search
-#define FPGA_YOTO_ZZ
+//#define FPGA_YOTO_ZZ
 
 //Greedy algorithm that traverses the source and destination graphs twice with annotations on the edges
 //#define FPGA_YOTT
@@ -44,7 +48,7 @@
 //***********************************************
 
 //GREEDY algorithms parameters BRGIN ************
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ) || defined(FPGA_YOTO_DF_HY)
 
 //Number of random search sequences for placement
 #define N_DIST_VECTORS 4
@@ -184,6 +188,8 @@ inline std::string algPath = [] {
     path += "yoto_df";
 #elif defined(FPGA_YOTO_DF_PRIO)
     path += "yoto_df_prio";
+#elif defined(FPGA_YOTO_DF_HY)
+    path += "yoto_df_hy";
 #elif defined(FPGA_YOTO_ZZ)
     path += "yoto_zz";
 #elif defined(FPGA_YOTT)
@@ -194,7 +200,7 @@ inline std::string algPath = [] {
     path += "sa";
 #endif
 
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
+#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ) || defined(FPGA_YOTO_DF_HY)
 #ifdef LIMIT_STRATEGY
     path += "_limit_" + std::to_string(LIMIT_DIST);
 #endif

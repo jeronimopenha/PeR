@@ -98,9 +98,6 @@ enum class QuadrantDirection {
 };
 
 
-long fpgaMinBorderDist(long cell, long nCellsSqrt);
-
-
 void fpgaWriteReports(const std::string &basePath,
                       const std::string &fileName,
                       const FpgaReportData &data);
@@ -141,6 +138,10 @@ long fpgaCalcGraphTotalDistance(const std::vector<std::pair<long, long> > &n2c,
                                 long nCellsSqrt);
 #endif
 
+
+/*
+long fpgaMinBorderDist(long cell, long nCellsSqrt);
+*/
 
 /*long fpgaCalcGraphLPDistance(const std::vector<long> &longestPath, const std::vector<long> &n2c,
                              long nCellsSqrt);*/
