@@ -30,11 +30,11 @@
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
 //with depth first search
-#define FPGA_YOTO_DF_PRIO
+//#define FPGA_YOTO_DF_PRIO
 
 //Greedy algorithm that traverses the source and destination graphs once without priority
 //with zigzag search
-//#define FPGA_YOTO_ZZ
+#define FPGA_YOTO_ZZ
 
 //Greedy algorithm that traverses the source and destination graphs twice with annotations on the edges
 //#define FPGA_YOTT
@@ -57,9 +57,9 @@
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
 
-//#define SCAN_STRATEGY
+#define SCAN_STRATEGY
 
-//#define LIMIT_STRATEGY
+#define LIMIT_STRATEGY
 
 #if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
 #define QUADRANTS 16L
@@ -94,7 +94,7 @@
 #define REPORT_PREFIX ""
 
 //Choose write Make metrics reports
-//#define MAKE_METRICS
+#define MAKE_METRICS
 
 //Choose a type of total cost
 //#define FPGA_TOTAL_COST
@@ -133,13 +133,13 @@
 //debugging defines
 #define DEBUG
 
-#define PRINT_DOT
+//#define PRINT_DOT
 #ifdef PRINT_DOT
 #define DOT_PATH  "/home/jeronimo/tmp/placed.dot"
 #endif
 
 
-//#define PRINT_IMG
+#define PRINT_IMG
 #ifdef PRINT_IMG
 #define JPG_PATH  "/home/jeronimo/tmp/placed.jpg"
 #endif

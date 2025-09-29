@@ -272,7 +272,7 @@ void Graph::readAsapAlap() {
  * @param criticalPriority
  * @return
  */
-vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalPriority) {
+vector<pair<long, long> > Graph::getEdgesDepthFirst(const bool criticalPriority) {
     vector<pair<long, long> > edges;
 
     vector<long> visited;
@@ -282,25 +282,17 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalP
     fill(visited.begin(), visited.end(), false);
 
     stack<pair<long, long> > s;
-    while (!s.empty()) {
-        s.pop();
-    }
 
     //sort outputs by slack
     vector<long> outputList = outputNodes;
     outputList.insert(outputList.end(), disconnectedNodes.begin(), disconnectedNodes.end());
     randomVector(outputList);
-    sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
-        const long slack_a = slack[a];
-        const long slack_b = slack[b];
-        return slack_a > slack_b;
-    });
-
-    //insert face edge to output nodes
-    /*for (const auto node: outputList) {
-        s.push(node);
-        edges.emplace_back(-1, node);
-    }*/
+    if (criticalPriority)
+        sort(outputList.begin(), outputList.end(), [&](const long a, const long b) {
+            const long slack_a = slack[a];
+            const long slack_b = slack[b];
+            return slack_a > slack_b;
+        });
 
     s.emplace(-1, -1);
 
@@ -331,12 +323,12 @@ vector<pair<long, long> > Graph::getEdgesDepthFirstCritical(const bool criticalP
             for (const auto pred: predList[node])
                 neigh.push_back(pred);
         }
-
-        sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
-            const long slack_a = slack[a];
-            const long slack_b = slack[b];
-            return slack_a > slack_b;
-        });
+        if (criticalPriority)
+            sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
+                const long slack_a = slack[a];
+                const long slack_b = slack[b];
+                return slack_a > slack_b;
+            });
 
         for (const auto pred: neigh) {
             if (!visited[pred]) {

@@ -39,10 +39,10 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     ed = g.getEdgesZigzag(convergence);
     string alg_type = "ZIG_ZAG";
 #elifdef FPGA_YOTO_DF_PRIO
-    ed = g.getEdgesDepthFirstCritical();
+    ed = g.getEdgesDepthFirst();
     string alg_type = "DEPTH_FIRST_PRIORITY";
 #elifdef FPGA_YOTO_DF
-    ed = g.getEdgesDepthFirstPriority();
+    ed = g.getEdgesDepthFirst(false);
     string alg_type = "DEPTH_FIRST";
 #endif
 
@@ -92,13 +92,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
 
-    long distVectorCounter = 0;
-
-    //time counting
-    auto start = chrono::high_resolution_clock::now();
-
-    //YOTO - Begin ****************************
-
 #ifdef SCAN_STRATEGY
     vector<vector<long> > scannedCells(QUADRANTS);
     bool scanned = false;
@@ -116,8 +109,14 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     }
 #endif
 
+    long distVectorCounter = 0;
+
+    //time counting
+    auto start = chrono::high_resolution_clock::now();
+
+    //YOTO - Begin ****************************
+
     //fixme Needs a guarantee that it was placed because if not an error exists in the code!!!
-    //fixme needs to implement this
 
     //While exists an edge...
     for (auto [a,b]: ed) {
@@ -183,9 +182,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 #endif
                 }
             }
-/*#ifdef PRINT_IMG
-            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif*/
+#ifdef PRINT_IMG
+            //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
@@ -332,7 +331,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             continue;
         }
 
-        if (scanned) {
+        if (scanned && !IsBIoNode) {
             bool scannedFound = false;
             runSpiral = false;
             while (!scannedFound) {
@@ -346,7 +345,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
                     scannedFound = true;
                     canPlace = true;
 #ifdef PRINT_IMG
-                    writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt);
+                    //writeMap(c2n, {n2c[a].first, targetCell}, nCellsSqrt);
 #endif
                 } else {
                     quadCounter++;
@@ -436,9 +435,9 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
                             targetCell = lB * nCellsSqrt + cB;
                             if (c2n[targetCell].empty()) {
-/*#ifdef PRINT_IMG
-                                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif*/
+#ifdef PRINT_IMG
+                                //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
                                 break;
                             }
                             limitAcc++;
@@ -453,8 +452,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
 
                 isTargetCellIO = fpgaIsIOCell(lB, cB, nCellsSqrt);
                 clbPlaceFlag = (!IsBIoNode && !isTargetCellIO && c2n[targetCell].empty());
-                ioPlaceFlag = (IsBIoNode && isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
-                canPlace = clbPlaceFlag || ioPlaceFlag;
+                canPlace = clbPlaceFlag;
 
                 if (canPlace)
                     break;
@@ -498,27 +496,13 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             originDestin[cellA].push_back(targetCell);
 #endif
 
-/*#ifdef PRINT_IMG
-            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
-#endif*/
+#ifdef PRINT_IMG
+            //writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+#endif
 #ifdef PRINT_DOT
             fpgaSavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
 #endif
-            /*long _max = 2 * dist * (dist + 1);
-            if ((unicTry > _max) && !IsBIoNode
-#ifdef SCAN_STRATEGY
-                && !scanned
-#endif
-#ifdef LIMIT_STRATEGY
-                && !limitStrategyTrigger
-#endif
-            ) {
-                cout << "Error while placing: dist=" << dist << " max tries:" << _max;
-                cout << ". Total tries" << unicTry;
-                //exit(1);
-            }*/
-
-            //fixme - this shoud be the error verification to the code
+            //fixme - this should be the error verification to the code
 #ifdef PRINT_IMG
             if (snapTaken)
                 writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
