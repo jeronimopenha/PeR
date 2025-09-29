@@ -57,11 +57,9 @@
 
 //Wich strategy for search if STRATEGY_SEARCH is chosen
 
-#define SCAN_STRATEGY
+//#define SCAN_STRATEGY
 
-#define IO_STRATEGY
-
-#define LIMIT_STRATEGY
+//#define LIMIT_STRATEGY
 
 #if defined(SCAN_STRATEGY) || defined(LIMIT_STRATEGY)
 #define QUADRANTS 16L
@@ -135,7 +133,7 @@
 //debugging defines
 #define DEBUG
 
-//#define PRINT_DOT
+#define PRINT_DOT
 #ifdef PRINT_DOT
 #define DOT_PATH  "/home/jeronimo/tmp/placed.dot"
 #endif

@@ -49,7 +49,7 @@ int main() {
 
             //defining which algorithm will be run
 #if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)
-            report = fpgaYoto(g);
+            report = fpgaYoto(g);W
 #elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
             report = fpgaYott(g);
 #elifdef FPGA_SA

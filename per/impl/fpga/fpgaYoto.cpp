@@ -54,7 +54,6 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     int snapId = 0;
     long swaps = 0;
 
-#ifdef IO_STRATEGY
     //IO placement control
     vector<vector<long> > ioSearchSequence = g.generateIoOffsets();
     std::vector<BorderInfo> ioBorderSequence;
@@ -64,7 +63,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
     bool ioBlockBorderNegative = false;
     bool ioBlockBorderPositive = false;
     int ioBorderTickTack = 0;
-#endif
+
 
 #ifdef MAKE_METRICS
 #ifdef USE_CACHE
@@ -238,8 +237,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
         long quadCounter = getQuadrant(lA, cA, nCellsSqrt);
 #endif
 
-
-#ifdef IO_STRATEGY
+        //IO_STRATEGY - default
         if (IsBIoNode) {
             runSpiral = false;
             while (!canPlace) {
@@ -312,7 +310,7 @@ FpgaReportData fpgaYoto(FPGAGraph &g) {
             }
             ioSetBorder = false;
         }
-#endif
+
 
 #ifdef SCAN_STRATEGY
         if (snapId >= STRATEGY_PERCENTAGE * TOTAL_SNAPSHOTS / 100 && !scanned) {
