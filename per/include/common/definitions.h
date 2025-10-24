@@ -23,4 +23,6 @@
 #include <utility>
 #include <vector>
 
+#define PROJECT_ROOT_OFFSET 2
+
 #endif //DEFINITIONS_H

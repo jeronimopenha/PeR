@@ -9,7 +9,7 @@ using namespace std;
  */
 string getProjectRoot() {
     filesystem::path path = filesystem::current_path();
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < PROJECT_ROOT_OFFSET; ++i)
         path = path.parent_path();
 
     return path.string();
@@ -68,11 +68,11 @@ string funcKey(const string &a, const string &b) {
  * @return
  */
 long getManhattanDist(const long cell1, const long cell2, const long n_cells_sqrt) {
-    const long cell1_x = cell1 % n_cells_sqrt;
-    const long cell1_y = cell1 / n_cells_sqrt;
-    const long cell2_x = cell2 % n_cells_sqrt;
-    const long cell2_y = cell2 / n_cells_sqrt;
-    return abs(cell1_y - cell2_y) + abs(cell1_x - cell2_x);
+    const long cell1Column = getColumn(cell1, n_cells_sqrt);
+    const long cell1Line = getLine(cell1, n_cells_sqrt);
+    const long cell2Column = getColumn(cell2, n_cells_sqrt);
+    const long cell2Line = getLine(cell2, n_cells_sqrt);
+    return abs(cell1Line - cell2Line) + abs(cell1Column - cell2Column);
 }
 
 

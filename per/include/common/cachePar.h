@@ -16,7 +16,7 @@
 //CACHE definitions BEGIN
 
 //The code needs to simulate a cache or not
-#define USE_CACHE
+//#define USE_CACHE
 
 //CACHE Parameters ******************************
 #ifdef USE_CACHE

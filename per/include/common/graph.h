@@ -58,7 +58,9 @@ public:
 
     void readTypeOfNodes();
 
-    std::vector<std::pair<long, long> > getEdgesDepthFirstCritical(bool criticalPriority = true);
+    std::vector<std::pair<long, long> > getEdgesHybrid();
+
+    std::vector<std::pair<long, long> > getEdgesDepthFirst(bool criticalPriority = true);
 
     std::vector<std::pair<long, long> > getEdgesZigzag(
         std::vector<std::pair<long, long> > &convergence,
