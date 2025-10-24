@@ -44,8 +44,8 @@
 #define EXPLORE_FACTOR 1
 
 //QCA Tecnology
-//#define USE
-#define WAVE2D
+#define USE
+//#define WAVE2D
 
 //Choose the algorithm to be run
 //#define QCA_YOTO_ZZ

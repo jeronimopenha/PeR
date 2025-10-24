@@ -54,7 +54,7 @@
 #define N_DIST_VECTORS 4
 
 //Use search strategies or not
-#define STRATEGY_SEARCH
+/#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH

@@ -23,9 +23,7 @@ std::vector<std::pair<std::string, std::string> > getFilesListByExtension(
 
 std::string funcKey(const std::string &a, const std::string &b);
 
-
 long getManhattanDist(long cell1, long cell2, long n_cells_sqrt);
-
 
 void createDir(const fs::path &path);
 
