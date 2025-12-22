@@ -121,7 +121,7 @@ vector<pair<long, long> > qcaGetOutputDirections(const long x, const long y) {
 // Returns the relative offset vectors for output directions of a cell at (x, y)
 vector<pair<long, long> > qcaGetInputDirections(const long x, const long y) {
     vector<pair<long, long> > directions;
-#ifdef USE
+//#ifdef USE
     const bool isEvenRow = (y % 2 == 0);
     const bool isEvenCol = (x % 2 == 0);
 
@@ -144,10 +144,10 @@ vector<pair<long, long> > qcaGetInputDirections(const long x, const long y) {
             directions.emplace_back(-1, 0); // left
         }
     }
-#elifdef WAVE2D
-    directions.emplace_back(-1, 0);
+//#elifdef WAVE2D
+//    directions.emplace_back(-1, 0);
     directions.emplace_back(0, -1);
-#endif
+//#endif
     return directions;
 }
 

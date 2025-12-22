@@ -35,7 +35,7 @@ QcaReportData qcaSa(QCAGraph &g) {
 #ifdef PRINT
     qcaExportUSEToDot("/home/jeronimo/use.dot", n2c, ed, nCellsSqrt);
 #endif
-/*
+
     //begin of SA algorithm
     constexpr float t_min = 0.001f;
     float t = 100;
@@ -145,7 +145,7 @@ QcaReportData qcaSa(QCAGraph &g) {
         ed
     );
 
-    return report;*/
+    return report;
 }
 
 

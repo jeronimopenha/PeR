@@ -3,7 +3,8 @@
 
 //definitions for all project
 
-#include <algorithm>
+#include <bits/stdc++.h>
+/*#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -21,7 +22,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-#include <vector>
+#include <vector>*/
 
 #define PROJECT_ROOT_OFFSET 2
 
