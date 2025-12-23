@@ -23,7 +23,6 @@
 //Wich algorithm will be run ********************
 //Needs at least one
 
-//fixme this algorithm was used with priority. Needed to change the code to use the correct one
 //Greedy algorithm that traverses the source and destination graphs once without priority
 //with depth first search
 //#define YOTO_DF
@@ -211,10 +210,6 @@ inline std::string algPath = [] {
 
 #ifdef TOTAL_COST
     path += "_TC";
-#elifdef FPGA_LONG_PATH_COST
-    path += "_LPC";
-#elifdef FPGA_DISTANCE_SLACK_COST
-    path += "_DSC";
 #endif
 
 #endif
@@ -274,12 +269,8 @@ inline constexpr int nExec = 600;
 
 #ifdef TOTAL_COST
 inline const std::string costStrategyName = STRINGIFY(FPGA_TOTAL_COST);
-#elifdef FPGA_LONG_PATH_COST
-inline const std::string costStrategyName = STRINGIFY(FPGA_LONG_PATH_COST);
-#elifdef FPGA_DISTANCE_SLACK_COST
-inline const std::string costStrategyName = STRINGIFY(FPGA_DISTANCE_SLACK_COST);
 #else
-inline const std::string costStrategyName;
+inline const std::string costStrategyName = "None";
 #endif
 
 inline constexpr auto reportPath = "reports/fpga";

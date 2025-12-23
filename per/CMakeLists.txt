@@ -32,6 +32,14 @@ target_include_directories(FPGAPeRMain PRIVATE
 
 )
 
+add_executable(FPGAPeRKMTest FPGAPeRKMTest.cpp ${COMMON_SRCS} ${FPGA_SRCS})
+target_include_directories(FPGAPeRKMTest PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+        ${CMAKE_SOURCE_DIR}/impl/fpga/include
+        ${CMAKE_SOURCE_DIR}/impl/cache/include
+
+)
+
 # QCA Executável
 file(GLOB_RECURSE QCA_SRCS impl/qca/src/*.cpp)
 add_executable(QCAPeRMain QCAPeRMain.cpp ${COMMON_SRCS} ${QCA_SRCS})

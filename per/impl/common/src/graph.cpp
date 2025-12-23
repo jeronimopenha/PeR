@@ -262,6 +262,7 @@ void Graph::readAsapAlap() {
         }
     }
 
+    //slack calculation
     for (auto i = 0; i < nNodes; i++) {
         slack[i] = alap[i] - asap[i];
     }
@@ -358,16 +359,15 @@ vector<pair<long, long> > Graph::getEdgesHybrid() {
     }
     fill(visited.begin(), visited.end(), false);
 
-    for (auto [fst,snd]:edges) {
+    for (auto [fst,snd]: edges) {
         const bool IsBONode = nSuccV[fst] == 0;
         if (IsBONode)
             visited[fst] = true;
         if (!visited[fst]) {
-            cout << "error edges"<<endl;
+            cout << "error edges" << endl;
             exit(0);
         }
         visited[snd] = true;
-
     }
     /*for (long slackIdx = 0; slackIdx < 3; slackIdx++) {
         bool outProcessing = true;
