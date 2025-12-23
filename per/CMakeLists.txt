@@ -10,23 +10,46 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 
-include_directories(include)
+#include_directories(
+#        impl/common/include
+#        impl/fpga/include
+#        impl/qca/include
+#)
 
 # Fontes comuns
-file(GLOB_RECURSE COMMON_SRCS impl/common/*.cpp)
+file(GLOB_RECURSE COMMON_SRCS impl/common/src/*.cpp)
 
 # FPGA Executável
-file(GLOB_RECURSE FPGA_SRCS impl/fpga/*.cpp)
+file(GLOB_RECURSE FPGA_SRCS
+        impl/fpga/src/*.cpp
+        impl/cache/src/*.cpp
+)
 add_executable(FPGAPeRMain FPGAPeRMain.cpp ${COMMON_SRCS} ${FPGA_SRCS})
+target_include_directories(FPGAPeRMain PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+        ${CMAKE_SOURCE_DIR}/impl/fpga/include
+        ${CMAKE_SOURCE_DIR}/impl/cache/include
+
+)
 
 # QCA Executável
-file(GLOB_RECURSE QCA_SRCS impl/qca/*.cpp)
+file(GLOB_RECURSE QCA_SRCS impl/qca/src/*.cpp)
 add_executable(QCAPeRMain QCAPeRMain.cpp ${COMMON_SRCS} ${QCA_SRCS})
+target_include_directories(QCAPeRMain PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+        ${CMAKE_SOURCE_DIR}/impl/qca/include
+)
 
 # Ferramentas / Outros
 #file(GLOB_RECURSE TOOL_SRCS impl/tools/*.cpp)
 add_executable(chDotStrToN chDotStrToNMain.cpp ${COMMON_SRCS})
+target_include_directories(chDotStrToN PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+)
 
 add_executable(rearrange rearrangeInOut.cpp ${COMMON_SRCS})
+target_include_directories(rearrange PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+)
 
 add_executable(test test.cpp ${COMMON_SRCS})

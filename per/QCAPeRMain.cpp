@@ -1,11 +1,11 @@
 #include <algorithm>
 
-#include <include/fpga/parametersFpga.h>
-#include  <common/util.h>
-#include  <qca/qcaGraph.h>
-#include <qca/qcaYoto.h>
-#include <qca/qcaYott.h>
-#include <qca/qcaSa.h>
+#include <parametersQca.h>
+#include <util.h>
+#include <qcaGraph.h>
+#include <qcaYoto.h>
+#include <qcaYott.h>
+#include <qcaSa.h>
 
 #include <omp.h>
 

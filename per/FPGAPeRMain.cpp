@@ -1,9 +1,9 @@
-#include <common/definitions.h>
-#include <common/util.h>
-#include <fpga/fpgaPar.h>
-#include  <fpga/fpgaGraph.h>
-#include  <fpga/fpgaUtil.h>
-#include "fpga/fpgaYoto.h"
+#include <definitions.h>
+#include <util.h>
+#include <fpgaPar.h>
+#include <fpgaGraph.h>
+#include  <fpgaUtil.h>
+#include <fpgaYoto.h>
 //#include "fpga/fpgaYott.h"
 //#include "fpga/fpgaSa.h"
 
@@ -24,12 +24,12 @@ int main() {
         auto g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
 
         // reports vector
-        vector<FpgaReportData> reports;
+        vector<ReportData> reports;
 
 
         //fixme The costs functions are not working well
 
-        auto comp = [](const FpgaReportData &a, const FpgaReportData &b) {
+        auto comp = [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;
         };
 
@@ -45,14 +45,14 @@ int main() {
 #endif
 
         for (int exec = 0; exec < nExec; exec++) {
-            FpgaReportData report;
+            ReportData report;
 
             //defining which algorithm will be run
-#if defined(FPGA_YOTO_DF) || defined(FPGA_YOTO_DF_PRIO) || defined(FPGA_YOTO_ZZ)||defined(FPGA_YOTO_DF_HY)
+#if defined(YOTO_DF) || defined(YOTO_DF_PRIO) || defined(YOTO_ZZ)||defined(YOTO_DF_HY)
             report = fpgaYoto(g);
-#elif  defined(FPGA_YOTT) || defined(FPGA_YOTT_IO)
+#elif  defined(YOTT) || defined(YOTT_IO)
             report = fpgaYott(g);
-#elifdef FPGA_SA
+#elifdef SA
             report = fpgaSa(g);
 #endif
 
@@ -86,14 +86,14 @@ int main() {
             string fileName = g.dotName + "_" + to_string(i);
 
             //save reports for the 10 better placements
-            fpgaWriteReports(rootPath, fileName, reports[i]);
+            WriteReports(rootPath, fileName, reports[i]);
 
 #if !defined(USE_CACHE)
             //generate reports and files for vpr
 #ifdef VPR_V5
-            fpgaWriteVpr5Data(rootPath, fileName, reports[i], g);
+            WriteVpr5Data(rootPath, fileName, reports[i], g);
 #elifdef VPR_V9
-            fpgaWriteVpr9Data(rootPath, fileName, reports[i], g);
+            WriteVpr9Data(rootPath, fileName, reports[i], g);
 #endif
 
             /*
