@@ -10,9 +10,6 @@ def get_directed_graph_parameters(gph: Graph):
 
     prmts = {}
 
-    prmts['nodes'] = gph.g.number_of_nodes()
-    prmts['edges'] = gph.g.number_of_edges()
-
     in_degree = dict(gph.g.in_degree())
     out_degree = dict(gph.g.out_degree())
 
@@ -29,14 +26,21 @@ def get_directed_graph_parameters(gph: Graph):
         if inp == 0 or outp == 0:
             io += 1
 
+    prmts['nodes'] = gph.g.number_of_nodes()
+    prmts['edges'] = gph.g.number_of_edges()
+    luts = gph.n_nodes - io
+    prmts['luts'] = luts
+    prmts['io'] = io
+
     prmts['g_input'] = g_in
     prmts['g_output'] = g_out
 
-    prmts['io'] = io
+    total_utilization = gph.n_nodes / gph.n_cells
+    prmts['total_utilization'] = f"{total_utilization:.2%}"
 
-    utilization = gph.n_nodes / gph.n_cells
-
-    prmts['utilization'] = f"{utilization:.2%}"
+    lut_cells = (gph.n_cells_sqrt-2)*(gph.n_cells_sqrt-2)
+    lut_utilization = luts / lut_cells
+    prmts['lut_utilization'] = f"{lut_utilization:.2%}"
 
     prmts['in_degree_avg'] = sum(in_degree.values()) / len(in_degree)
     prmts['out_degree_avg'] = sum(out_degree.values()) / len(out_degree)
@@ -65,16 +69,18 @@ def get_directed_graph_parameters(gph: Graph):
     # parameters['strongly_connected_components'] = list(nx.strongly_connected_components(graph))
     # parameters['betweenness_centrality'] = nx.betweenness_centrality(graph)
     # parameters['closeness_centrality'] = nx.closeness_centrality(graph)
-    prmts['degree_assortativity_coefficient'] = nx.degree_assortativity_coefficient(gph.g, x='in', y='out')
+    prmts['degree_assortativity_coefficient'] = f"{nx.degree_assortativity_coefficient(gph.g, x='in', y='out'):.2f}"
 
     return prmts
 
 if __name__ == "__main__":
 
     root_path = verify_path(get_project_root())
-    base_path_origin = root_path + "benchmarks/fpga/DATE_TEMP/"
+    #base_path_origin = root_path + "benchmarks/fpga/DATE_TEMP/"
+    #base_path_origin = root_path + "benchmarks/fpga/eval/EPFL/"
+    base_path_origin = root_path + "benchmarks/fpga/bench_test/"
     base_path_destiny = root_path + "reports/fpga/"
-    file_name = "complex_parameters_DATE"
+    file_name = "2026_02_11_complex_parameters_EPFL_Defesa"
 
     files = get_files_list_by_extension(base_path_origin, ".dot")
     parameters = {"dot_name": []}
