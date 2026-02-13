@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 
 from graphs.graph import Graph
 from graphs.util import verify_path, get_project_root, get_files_list_by_extension, save_cvs_data_rows
@@ -42,8 +43,11 @@ def get_directed_graph_parameters(gph: Graph):
     lut_utilization = luts / lut_cells
     prmts['lut_utilization'] = f"{lut_utilization:.2%}"
 
-    prmts['in_degree_avg'] = sum(in_degree.values()) / len(in_degree)
-    prmts['out_degree_avg'] = sum(out_degree.values()) / len(out_degree)
+    soma = sum(in_degree.values())
+    n = len(in_degree)
+
+    prmts['in_degree_avg'] = np.mean([d for _, d in gph.g.in_degree()])#sum(in_degree.values()) / len(in_degree)
+    prmts['out_degree_avg'] = np.mean([d for _, d in gph.g.out_degree()])#sum(out_degree.values()) / len(out_degree)
 
     prmts['is_DAG'] = nx.is_directed_acyclic_graph(gph.g)
 
