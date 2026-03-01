@@ -102,18 +102,18 @@ enum class QuadrantDirection {
 
 
 void WriteReports(const std::string &basePath,
-                      const std::string &fileName,
-                      const ReportData &data);
+                  const std::string &fileName,
+                  const ReportData &data);
 
 void WriteVpr5Data(const std::string &basePath,
-                       const std::string &fileName,
-                       const ReportData &data,
-                       FPGAGraph g);
+                   const std::string &fileName,
+                   const ReportData &data,
+                   FPGAGraph g);
 
 void WriteVpr9Data(const std::string &basePath,
-                       const std::string &fileName,
-                       const ReportData &data,
-                       FPGAGraph g);
+                   const std::string &fileName,
+                   const ReportData &data,
+                   FPGAGraph g);
 
 bool IsInvalidCell(long line, long column, long nCellsSqrt);
 
@@ -127,18 +127,19 @@ std::vector<std::pair<long, int> > getAdjacentQuadrants(long q);
 
 #ifdef PRINT_DOT
 void SavePlacedDot(std::vector<std::pair<long, long> > &n2c, std::vector<std::vector<long> > &c2n,
-                       const std::vector<std::pair<long, long> > &ed, long nCellsSqrt);
+                   const std::vector<std::pair<long, long> > &ed, long nCellsSqrt);
 #endif
 
 #ifdef PRINT_IMG
-void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt);
+void writeMap(const std::vector<std::vector<long> > &c2n, const std::pair<long, long> &lastPlaced, long nCellsSqrt,
+              long edgeNum = -11);
 #endif
 std::vector<std::vector<long> > getDistVectors(long nCellsSqrt);
 
 #ifdef MAKE_METRICS
 long CalcGraphTotalDistance(const std::vector<std::pair<long, long> > &n2c,
-                                const std::vector<std::pair<long, long> > &edges,
-                                long nCellsSqrt);
+                            const std::vector<std::pair<long, long> > &edges,
+                            long nCellsSqrt);
 #endif
 
 

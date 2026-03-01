@@ -53,7 +53,7 @@
 #define N_DIST_VECTORS 4
 
 //Use search strategies or not
-#define STRATEGY_SEARCH
+//#define STRATEGY_SEARCH
 
 //STRATEGY SEARCH parameters BEGIN **************
 #ifdef STRATEGY_SEARCH
@@ -94,7 +94,7 @@
 
 //Generate report or not
 
-#define REPORT_PREFIX "_testZigZag"
+#define REPORT_PREFIX "_defesa"
 
 //Choose write Make metrics reports
 #define MAKE_METRICS

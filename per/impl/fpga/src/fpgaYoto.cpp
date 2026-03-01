@@ -90,7 +90,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
 
 
 #ifdef PRINT_IMG
-    writeMap(c2n, {-1, -1}, nCellsSqrt);
+    writeMap(c2n, {-1, -1}, nCellsSqrt,0);
 #endif
 #ifdef PRINT_DOT
     SavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
@@ -141,7 +141,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
 
 #ifdef PRINT_IMG
         if (snapTaken)
-            writeMap(c2n, {-1, -1}, nCellsSqrt);
+            writeMap(c2n, {-1, -1}, nCellsSqrt, edCounter);
 #endif
 
 #ifdef PRINT_DOT
@@ -504,7 +504,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef PRINT_IMG
-            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+            writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt,edCounter);
 #endif
 #ifdef PRINT_DOT
             SavePlacedDot(n2c, c2n, g.gEdges, nCellsSqrt);
@@ -512,7 +512,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
             //fixme - this should be the error verification to the code
 #ifdef PRINT_IMG
             if (snapTaken)
-                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt);
+                writeMap(c2n, {n2c[a].first, n2c[b].first}, nCellsSqrt,edCounter);
 #endif
 
 #ifdef PRINT_DOT
@@ -532,7 +532,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
 #endif
 
 #ifdef PRINT_IMG
-    writeMap(c2n, {-1, -1}, nCellsSqrt);
+    writeMap(c2n, {-1, -1}, nCellsSqrt,edCounter);
 #endif
 
     auto end = chrono::high_resolution_clock::now();

@@ -205,7 +205,7 @@ vector<vector<long> > getDistVectors(const long nCellsSqrt) {
  * @return
  */
 long CalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vector<pair<long, long> > &edges,
-                                const long nCellsSqrt) {
+                            const long nCellsSqrt) {
     long totalDist = -static_cast<long>(edges.size());
 
     for (const auto &[fst, snd]: edges) {
@@ -227,8 +227,8 @@ long CalcGraphTotalDistance(const vector<pair<long, long> > &n2c, const vector<p
  * @param data
  */
 void WriteReports(const string &basePath,
-                      const string &fileName,
-                      const ReportData &data) {
+                  const string &fileName,
+                  const ReportData &data) {
     string reportFullPath = basePath + reportPath + algPath + "/json/";
     string reportFile = reportFullPath + fileName + ".json";
 
@@ -268,9 +268,9 @@ void WriteReports(const string &basePath,
  * @param g
  */
 void WriteVpr9Data(const string &basePath,
-                       const string &fileName,
-                       const ReportData &data,
-                       FPGAGraph g) {
+                   const string &fileName,
+                   const ReportData &data,
+                   FPGAGraph g) {
     string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
@@ -320,9 +320,9 @@ void WriteVpr9Data(const string &basePath,
  * @param g
  */
 void WriteVpr5Data(const string &basePath,
-                       const string &fileName,
-                       const ReportData &data,
-                       FPGAGraph g) {
+                   const string &fileName,
+                   const ReportData &data,
+                   FPGAGraph g) {
     string placePath = basePath + reportPath + algPath + "/place/";
     string placeFile = placePath + fileName + ".place";
 
@@ -577,7 +577,7 @@ string ReportData::metrics_to_json() const {
  * @param nCellsSqrt
  */
 void SavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, const vector<pair<long, long> > &ed,
-                       const long nCellsSqrt) {
+                   const long nCellsSqrt) {
     string fileString;
 
     // write the dot header
@@ -658,8 +658,22 @@ void SavePlacedDot(vector<pair<long, long> > &n2c, vector<vector<long> > &c2n, c
 #endif
 
 #ifdef PRINT_IMG
-void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt) {
-    const string filePath = JPG_PATH;
+void writeMap(const vector<vector<long> > &c2n, const pair<long, long> &lastPlaced, const long nCellsSqrt,
+              const long edgeNum) {
+    string filePath = JPG_PATH;
+
+    if (edgeNum > -1) {
+        auto pos = filePath.rfind(".jpg");
+        if (pos != std::string::npos) {
+            std::ostringstream oss;
+            oss << filePath.substr(0, pos)
+                    << "_"
+                    << std::setw(5) << std::setfill('0') << edgeNum
+                    << ".jpg";
+            filePath = oss.str();
+        }
+    }
+
     constexpr long minImageSize = 1000;
 
     const long cellSize = (minImageSize + nCellsSqrt - 1) / nCellsSqrt; // ceil(minImageSize / n)
