@@ -17,7 +17,7 @@
 //Algorithms parameters BEGIN
 
 //Choose the I/O qty of ports per cell to the architecture
-#define IO_NUMBER  1
+#define IO_NUMBER  8
 //TODO CLB AND LUT number per cell too
 
 //Wich algorithm will be run ********************
@@ -25,11 +25,11 @@
 
 //Greedy algorithm that traverses the source and destination graphs once without priority
 //with depth first search
-//#define YOTO_DF
+#define YOTO_DF
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
 //with depth first search
-#define YOTO_DF_PRIO
+//#define YOTO_DF_PRIO
 
 //Greedy algorithm that traverses the source and destination graphs once with priority given to the critical path.
 //with hybrid traversal
@@ -94,7 +94,7 @@
 
 //Generate report or not
 
-#define REPORT_PREFIX "_defesa"
+#define REPORT_PREFIX "_teste_ricardo"
 
 //Choose write Make metrics reports
 #define MAKE_METRICS
@@ -119,13 +119,17 @@
 //Execution parameters Begin
 
 // Tests Quantity
-#define RUN_1
-//#define RUN_6
+//#define RUN_1
+#define RUN_6
 //#define RUN_60
 //#define RUN_600
 //#define RUN_10
 //#define RUN_100
 //#define RUN_1000
+
+//Print total Threads execution time
+//FIXME need to be implemented
+//#define GET_TOTAL_TH_TIME
 
 // Benchmarks
 #define TEST
@@ -134,7 +138,7 @@
 
 //Debugging *************************************
 //debugging defines
-#define DEBUG
+//#define DEBUG
 
 //#define PRINT_DOT
 #ifdef PRINT_DOT
@@ -142,13 +146,15 @@
 #endif
 
 
-#define PRINT_IMG
+//#define PRINT_IMG
 #ifdef PRINT_IMG
 #define JPG_PATH  "/home/jeronimo/tmp/placed.jpg"
 #endif
 //*******************************
 
+//#if defined(PRINT_DOT) || defined(PRINT_IMG)
 #define TOTAL_SNAPSHOTS 10
+//#endif
 
 //Execution parameters END
 //#################################################################################################

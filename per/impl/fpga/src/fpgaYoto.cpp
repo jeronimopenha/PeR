@@ -310,7 +310,7 @@ ReportData fpgaYoto(FPGAGraph &g) {
                     ioBorderTickTack = 0;
                 }
 
-                isTargetCellIO = IsIOCell(lB, cB, nCellsSqrt);
+                isTargetCellIO = IsIOCell(lB, cB, nCellsSqrt) && !IsInvalidCell(lB,cB,nCellsSqrt);
                 ioPlaceFlag = (isTargetCellIO && static_cast<long>(c2n[targetCell].size()) < IO_NUMBER);
                 canPlace = ioPlaceFlag;
             }

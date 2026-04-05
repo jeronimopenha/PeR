@@ -4,6 +4,7 @@
 #include <fpgaGraph.h>
 #include  <fpgaUtil.h>
 #include <fpgaYoto.h>
+#include <omp.h>
 //#include "fpga/fpgaYott.h"
 //#include "fpga/fpgaSa.h"
 
@@ -32,12 +33,14 @@ int main() {
         auto comp = [](const ReportData &a, const ReportData &b) {
             return a.totalCost < b.totalCost;
         };
-
+        auto start = chrono::high_resolution_clock::now();
 
 #ifndef DEBUG
         //openmp Parallelization for release execution
         int nThreads = max(1, omp_get_num_procs());
         omp_set_num_threads(nThreads);
+
+
 
 #pragma omp parallel
         {
@@ -74,6 +77,11 @@ int main() {
 #ifndef DEBUG
         }
 #endif
+
+        auto end = chrono::high_resolution_clock::now();
+        chrono::duration<double, milli> duration = end - start;
+        auto _time = duration.count();
+        cout << snd << " - Total Time: " << _time << "ms" << endl;
 
 #ifdef BEST_ONLY
         for (int i = 0; i < 1; i++) {
