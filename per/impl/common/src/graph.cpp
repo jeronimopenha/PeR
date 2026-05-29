@@ -443,12 +443,15 @@ vector<pair<long, long> > Graph::getEdgesDepthFirst(const bool criticalPriority)
             for (const auto pred: predList[node])
                 neigh.push_back(pred);
         }
-        if (criticalPriority)
+        if (criticalPriority) {
             sort(neigh.begin(), neigh.end(), [&](const long a, const long b) {
                 const long slack_a = slack[a];
                 const long slack_b = slack[b];
                 return slack_a > slack_b;
             });
+        }else {
+            randomVector(neigh);
+        }
 
         for (const auto pred: neigh) {
             if (!visited[pred]) {
