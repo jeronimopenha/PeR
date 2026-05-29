@@ -61,3 +61,11 @@ target_include_directories(rearrange PRIVATE
 )
 
 add_executable(test test.cpp ${COMMON_SRCS})
+
+add_executable(FPGABenchCsv bench_csv.cpp ${COMMON_SRCS} ${FPGA_SRCS})
+target_include_directories(FPGABenchCsv PRIVATE
+        ${CMAKE_SOURCE_DIR}/impl/common/include
+        ${CMAKE_SOURCE_DIR}/impl/fpga/include
+        ${CMAKE_SOURCE_DIR}/impl/cache/include
+
+)
