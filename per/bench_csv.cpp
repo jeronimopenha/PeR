@@ -24,6 +24,23 @@ struct GraphStats {
     double outDegreeAvgNonZero = 0.0;
 
     double degreeAssortativityOutIn = 0.0;
+
+    [[nodiscard]] string toString() const {
+        string toString;
+
+        toString += to_string(nNodes) + "; ";
+        toString += to_string(nEdges) + "; ";
+        toString += to_string(nInput) + "; ";
+        toString += to_string(nOutput) + "; ";
+        toString += to_string(nIO) + "; ";
+        toString += to_string(inDegreeAvg) + "; ";
+        toString += to_string(outDegreeAvg) + "; ";
+        toString += to_string(inDegreeAvgNonZero) + "; ";
+        toString += to_string(outDegreeAvgNonZero) + "; ";
+        toString += to_string(degreeAssortativityOutIn) + "\n";
+
+        return toString;
+    }
 };
 
 enum class NodeType {
@@ -82,8 +99,8 @@ void addNodeIfNotExists(
 }
 
 double pearsonCorrelation(
-    const std::vector<double>& x,
-    const std::vector<double>& y
+    const std::vector<double> &x,
+    const std::vector<double> &y
 ) {
     const std::size_t n = x.size();
 
@@ -120,9 +137,9 @@ double pearsonCorrelation(
 }
 
 double degreeAssortativityOutIn(
-    const std::vector<std::pair<long, long>>& edges,
-    const std::vector<long>& inDegree,
-    const std::vector<long>& outDegree
+    const std::vector<std::pair<long, long> > &edges,
+    const std::vector<long> &inDegree,
+    const std::vector<long> &outDegree
 ) {
     std::vector<double> x;
     std::vector<double> y;
@@ -130,7 +147,7 @@ double degreeAssortativityOutIn(
     x.reserve(edges.size());
     y.reserve(edges.size());
 
-    for (const auto& [src, dst] : edges) {
+    for (const auto &[src, dst]: edges) {
         x.push_back(static_cast<double>(outDegree[src]));
         y.push_back(static_cast<double>(inDegree[dst]));
     }
@@ -210,12 +227,18 @@ int main() {
 
     auto files = getFilesListByExtension(rootPath + benchPath, benchExt);
 
+    string reportPath = "/home/jeronimo/GIT/PER_GPU/DF_csv_benchmarks/";
+    createDir(reportPath);
+
+    string stattsFile = reportPath + "BENCHMARKS_STATS.csv";
+    ofstream statsWriter(stattsFile);
+    statsWriter << "Benchmark; nNodes; nEdges; nInput; nOutput; nIO; inDegreeAvg; outDegreeAvg; inDegreeAvgNonZero; outDegreeAvgNonZero; degreeAssortativityOutIn" << endl;
+
     for (const auto &[fst, snd]: files) {
         cout << fst << endl;
 
         // Reading graphs
         auto g = FPGAGraph(fst, snd.substr(0, snd.size() - 4));
-
 
         unordered_map<long, Node> nodesMap;
 
@@ -233,11 +256,12 @@ int main() {
 
 
         GraphStats stats = computeGraphStats(g);
+        statsWriter << g.dotName << "; " << stats.toString() << endl;
 
-        string edgesFile = rootPath + reportPath + "/DF_csv_benchmarks/" + g.dotName + "_EDGES.csv";
-        string reportFullPath = rootPath + reportPath + "/DF_csv_benchmarks/" + g.dotName + "/";
+        string reportFullPath = reportPath + g.dotName + "/";
         createDir(reportFullPath);
 
+        string edgesFile = reportPath + g.dotName + "_EDGES.csv";
 
         //full edges
         ofstream edgesAlgWriter(edgesFile);
@@ -256,6 +280,9 @@ int main() {
                     edgesAlgWriter << nodesMap[fst].toString() << "; " << nodesMap[snd].toString() << endl;
                 }
             }
+            edgesAlgWriter.close();
+        } else {
+            cerr << "Error opening file for writing: " << edgesFile << endl;
         }
 
         //statistics
@@ -302,18 +329,8 @@ int main() {
                 cerr << "Error opening file for writing: " << reportFile << ".json" << endl;
             }
         }
-
-
-        //ed = g.getEdgesDepthFirst(false);
-        //string alg_type = "DEPTH_FIRST";
-
-
-        //ed = g.getEdgesZigzag(convergence);
-
-        //string fileName = g.dotName + "_" + to_string(i);
-        //save edges csv files for the 10 better placements
-        //writeCsv(rootPath, fileName, reports[i]);
     }
+    statsWriter.close();
 
     return 0;
 }
