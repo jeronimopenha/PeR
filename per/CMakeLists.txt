@@ -69,3 +69,6 @@ target_include_directories(FPGABenchCsv PRIVATE
         ${CMAKE_SOURCE_DIR}/impl/cache/include
 
 )
+add_executable(merge_test merge.cpp)
+
+add_executable(quick_test quicksort.cpp)
